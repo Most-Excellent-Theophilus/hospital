@@ -1,26 +1,21 @@
 "use client";
 import * as React from "react";
-// import { Switch } from "@/components/ui/switch";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+
+
 import { cn } from "@/lib/utils"
 import { NavMain } from "@/components/nav-main";
 import Logo from "@/components/logo"
 import {
   SidebarInset,
   SidebarProvider,
-  SidebarTrigger, Sidebar, SidebarContent, SidebarHeader
+  Sidebar, SidebarContent, SidebarHeader,
+
 } from "@/components/ui/sidebar";
+import { X} from "lucide-react"
 import { linksIconMap } from "./config";
 import { Label } from "../ui/label";
 import DashBoardHeader from "./header";
+import { Button } from "../ui/button";
 const data = {
   navMain: Object.values(linksIconMap).map((item) => item),
 };
@@ -33,11 +28,13 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
         <SidebarContent className="bg-primary">
           <div >
             <SidebarHeader className={cn("flex  rounded-xl mt-4 mb-3 border mx-0.5", open && "mx-3")}  >
-              <div className="flex w-full justify-start space-x-4"><Logo className="text-background " />
-                {open && <Label className='text-background'>Hospital</Label>}
+              <div className="flex w-full justify-between space-x-4">
+                <div className="flex w-full justify-start space-x-4 items-center"><Logo className="text-background " onClick={()=> setOpen(!open)} />
+                  {open && <Label className='text-background font-bold tracking-wide text-xl'>Hospital</Label>}</div>
+
+                <Button size={'icon'} onClick={()=> setOpen(!open)}><X/></Button>
 
               </div>
-           
             </SidebarHeader>
 
           </div>

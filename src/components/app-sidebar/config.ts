@@ -7,10 +7,11 @@ import { FaCircleUser } from "react-icons/fa6";
 
 export type DashBoardLinksType =
   | "users"
-  | "apps"
-  | "menu-links"
-  | "content"
-  | "home";
+  | "account"
+  | "postOp"
+  | "preOp"
+  | "home"
+  | "system";
 export type DashBoardUrl = `?page=${DashBoardLinksType}` | `?`;
 export const linksIconMap: Record<
   DashBoardLinksType,
@@ -21,24 +22,29 @@ export const linksIconMap: Record<
     icon: FaHome,
     url: "?page=home",
   },
-  "menu-links": {
+  preOp: {
     icon: CgMenuGridO,
     name: "Menu Links",
-    url: "?page=menu-links",
+    url: "?page=preOp",
   },
-  apps: {
+  postOp: {
     icon: LuAppWindow,
     name: "Applications ",
-    url: "?page=apps",
+    url: "?page=postOp",
   },
-  content: {
+  account: {
     name: "Content",
     icon: FaFileAlt,
-    url: "?page=content",
+    url: "?page=account",
   },
   users: {
     name: "Users",
     icon: FaCircleUser,
     url: "?page=users",
+  },
+  system: {
+    name: "System",
+    icon: FaCircleUser,
+    url: "?page=system",
   },
 };

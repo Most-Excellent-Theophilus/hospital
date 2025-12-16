@@ -24,10 +24,10 @@ export function NavMain({
     <SidebarGroup className="text-background">
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem key={item.name} className="group/collapsible">
-            <SidebarMenuButton tooltip={item.name}  asChild >
-              <Link href={item.url}>
-                {item.icon && <item.icon className="size-12" size={34} />}
+          <SidebarMenuItem key={item.name}  className="h-10  ">
+            <SidebarMenuButton tooltip={item.name}  asChild className="h-full" >
+              <Link href={item.url} className="h-full">
+                {item.icon && <item.icon className="size-20"  />}
                 <span>{item.name}</span>
               </Link>
             </SidebarMenuButton>
