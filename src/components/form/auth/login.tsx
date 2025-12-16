@@ -9,7 +9,8 @@ import { Form } from "@/components/ui/form";
 // import { useTransition } from "react";
 import EmailUserNameInput from "./inputs/email-username";
 import PasswordInput from "./inputs/password";
-import { loginSchema } from "@/schemas/user";
+import { loginSchema } from "@/features/auth/auth.types";
+
 
 export default function LoginPage() {
   // const [isPending, startTransition] = useTransition();
@@ -35,11 +36,11 @@ export default function LoginPage() {
           className="min-w-[350px]"
         >
           <div className="flex items-center space-x-2.5 ">
-            <LogoIcon className="size-9 fill-primary" />
+            <LogoIcon className="size-9 text-primary" />
             <h1 className="text-xl font-semibold text-primary">Log In</h1>
           </div>
           <div className="mt-2.5 text-muted-foreground">
-            <h3 className="text-sm">Connect With Clarity</h3>
+            <h3 className="text-sm">Hearts 4 mission International</h3>
           </div>
           <div className="space-y-6 mt-6">
             {/* Username */}
@@ -57,15 +58,6 @@ export default function LoginPage() {
                 className="bg-accent"
                 name="password"
               />
-              <div className="flex w-full mt-1 justify-end">
-                <Link
-                  href="/reset"
-                  className={"text-xs     underline   text-primary"}
-                >
-                  {" "}
-                  Forgot Password?
-                </Link>
-              </div>
             </div>
             <div className="flex justify-between">
               <Button type="submit" size={"lg"} className="w-full m-0">
@@ -75,9 +67,13 @@ export default function LoginPage() {
           </div>
           <div className="bg-muted rounded-(--radius) border p-3 mt-4">
             <p className="text-accent-foreground text-center text-sm">
-              <a href="https://samuelmkamamnga.tech" className="text-primary">
-                {"Powereb by Samuel Mkamanga.tech"}
-              </a>
+              Forgot Password?{" "}
+              <Link
+                href="/reset"
+                className={"text-sm    underline   text-primary"}
+              >
+                {" Reset"}
+              </Link>
             </p>
           </div>
         </fieldset>

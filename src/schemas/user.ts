@@ -1,20 +1,5 @@
-import { create } from "domain";
-import z, { date, file, string, uppercase } from "zod";
-export const userSchema = z.object({
-  firstName: z.string().min(3).max(50),
-  middleName: z.string().min(3).max(50).optional(),
-  lastName: z.string().min(3).max(50),
-  email: z.string().email(),
-  dateOfBirth: z.date(),
-  gender: z.enum(["male", "female", "other"]),
-  userType: z.enum(["admin", "inputer", "viewer"]),
-  password: z.string().min(8).max(50),
-  createdAt: z.date(),
-  updateAt: z.date().optional(),
-});
+import z from "zod";
 
-export const loginSchema = userSchema.pick({ email: true, password: true });
-export const verificationSchema = userSchema.pick({ email: true });
 export const patientSchema = z.object({
   firstName: z.string().min(3).max(50),
   middleName: z.string().min(3).max(50).optional(),
@@ -38,8 +23,7 @@ export const patientSchema = z.object({
   gender: z.enum(["male", "female", "other"]),
   address: z.string().min(3).max(50),
   phoneNumber: z.string().min(3).max(50),
-  createdAt: z.date(),
-  updateAt: z.date().optional(),
+ 
 });
 
 export const preOpSchema = z.object({
@@ -79,15 +63,14 @@ export const preOpSchema = z.object({
   hospital: z.enum(["queens", "adventist"]),
   todo: z.string().max(5000),
   vitalSigns: z.array(z.string()),
-  createdAt: z.date(),
-  updateAt: z.date().optional(),
+
   // ID for the user that made the preOp entries
   staffId: z.string(),
 });
 
 export const postOpSchema = z.object({
-  id: string(),
-  preOpId: string(),
+  id: z.string(),
+  preOpId: z.string(),
   name: z.string(),
   operationDate: z.date(),
   procedure: z.string(),
@@ -99,6 +82,5 @@ export const postOpSchema = z.object({
 
   echoDate: z.date(),
   //
-  createdAt: z.date(),
-  updateAt: z.date().optional(),
+ 
 });

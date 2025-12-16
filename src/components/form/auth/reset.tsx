@@ -8,10 +8,9 @@ import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 // import { useTransition } from "react";
 import EmailUserNameInput from "./inputs/email-username";
-import { verificationSchema } from "@/schemas/user";
+import { verificationSchema } from "@/features/auth/auth.types";
 
 export default function ResetPage() {
-  // const [isPending, startTransition] = useTransition();
   const form = useForm<z.infer<typeof verificationSchema>>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
@@ -33,7 +32,7 @@ export default function ResetPage() {
           className="min-w-[350px]"
         >
           <div className="flex items-center space-x-2.5 ">
-            <LogoIcon className="size-9 fill-primary" />
+            <LogoIcon className="size-9 text-primary" />
             <h1 className="text-xl font-semibold text-primary">
               Reset Password
             </h1>
