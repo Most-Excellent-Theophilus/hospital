@@ -1,6 +1,6 @@
 "use client";
-import * as React from "react";
 
+import * as React from "react";
 
 import { cn } from "@/lib/utils"
 import { NavMain } from "@/components/nav-main";
@@ -38,7 +38,11 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
             </SidebarHeader>
 
           </div>
-          <NavMain items={data.navMain} />
+       
+
+            <NavMain items={data.navMain} />
+        
+
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
