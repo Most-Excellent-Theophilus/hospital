@@ -1,14 +1,9 @@
-"use client"
+import { IconType } from "react-icons";
+import { CgMenuGridO } from "react-icons/cg";
 
-import {
-  LayoutGrid as CgMenuGridO,
-  AppWindow as LuAppWindow,
-  FileText as FaFileAlt,
-  Home as FaHome,
-  CircleUser as FaCircleUser,
-  Settings
-
-} from "lucide-react";
+import { LuAppWindow } from "react-icons/lu";
+import { FaFileAlt, FaHome } from "react-icons/fa";
+import { FaCircleUser } from "react-icons/fa6";
 
 export type DashBoardLinksType =
   | "users"
@@ -20,7 +15,7 @@ export type DashBoardLinksType =
 export type DashBoardUrl = `?page=${DashBoardLinksType}` | `?`;
 export const linksIconMap: Record<
   DashBoardLinksType,
-  { icon: typeof CgMenuGridO; name: string; url: DashBoardUrl }
+  { icon: IconType; name: string; url: DashBoardUrl }
 > = {
   home: {
     name: "Home",
@@ -49,7 +44,7 @@ export const linksIconMap: Record<
   },
   system: {
     name: "System",
-    icon: Settings,
+    icon: FaCircleUser,
     url: "?page=system",
   },
 };
