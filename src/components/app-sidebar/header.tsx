@@ -1,4 +1,4 @@
-
+"use client"
 import { SidebarTrigger } from "../ui/sidebar";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button"

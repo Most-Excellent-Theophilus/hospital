@@ -1,3 +1,4 @@
+"use client"
 import { IconType } from "react-icons";
 import { CgMenuGridO } from "react-icons/cg";
 
