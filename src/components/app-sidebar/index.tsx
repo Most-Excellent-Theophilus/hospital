@@ -11,28 +11,28 @@ import {
   Sidebar, SidebarContent, SidebarHeader,
 
 } from "@/components/ui/sidebar";
-import { X} from "lucide-react"
+
 import { linksIconMap } from "./config";
 import { Label } from "../ui/label";
 import DashBoardHeader from "./header";
-import { Button } from "../ui/button";
+
 const data = {
   navMain: Object.values(linksIconMap).map((item) => item),
 };
 export function AppSidebarProcider({ children, ...props }: React.ComponentProps<typeof Sidebar> & { children?: React.ReactNode }) {
-  const [open, setOpen] = React.useState(true);
+
 
   return (
-    <SidebarProvider open={open} onOpenChange={setOpen}>
+    <SidebarProvider >
       <Sidebar collapsible="icon" {...props}>
         <SidebarContent className="bg-primary">
           <div >
-            <SidebarHeader className={cn("flex  rounded-xl mt-4 mb-3 border mx-0.5", open && "mx-3")}  >
+            <SidebarHeader className={cn("flex  rounded-xl mt-4 mb-3  mx-0.5", "mx-3")}  >
               <div className="flex w-full justify-between space-x-4">
-                <div className="flex w-full justify-start space-x-4 items-center"><Logo className="text-background " onClick={()=> setOpen(!open)} />
-                  {open && <Label className='text-background font-bold tracking-wide text-xl'>Hospital</Label>}</div>
+                <div className="flex w-full justify-start space-x-4 items-center"><Logo className="text-background " />
+                  {<Label className='text-background font-bold tracking-wide text-xl'>Hospital</Label>}</div>
 
-                <Button size={'icon'} onClick={()=> setOpen(!open)}><X/></Button>
+
 
               </div>
             </SidebarHeader>
@@ -43,7 +43,8 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
       </Sidebar>
       <SidebarInset>
         <DashBoardHeader />
-        {children}
+        <div className=" h-full flex items-center justify-center">{children}</div>
+
       </SidebarInset>
     </SidebarProvider>
   );

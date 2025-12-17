@@ -18,27 +18,27 @@ export const linksIconMap: Record<
   { icon: IconType; name: string; url: DashBoardUrl }
 > = {
   home: {
-    name: "Home & DashBoard",
+    name: "Home",
     icon: FaHome,
     url: "?page=home",
   },
+  account: {
+    name: "Patients",
+    icon: FaFileAlt,
+    url: "?page=account",
+  },
   preOp: {
     icon: CgMenuGridO,
-    name: "Menu Links",
+    name: "Pre Operation",
     url: "?page=preOp",
   },
   postOp: {
     icon: LuAppWindow,
-    name: "Applications ",
+    name: "Post Operation ",
     url: "?page=postOp",
   },
-  account: {
-    name: "Content",
-    icon: FaFileAlt,
-    url: "?page=account",
-  },
   users: {
-    name: "Users",
+    name: "Doctors",
     icon: FaCircleUser,
     url: "?page=users",
   },

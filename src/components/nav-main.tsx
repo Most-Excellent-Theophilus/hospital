@@ -5,12 +5,13 @@ import { IconType } from "react-icons";
 import {
   SidebarGroup,
   SidebarMenu,
-  SidebarMenuButton,
+
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-
-
+import { Label } from "./ui/label";
+import { cn } from "@/lib/utils"
+import { useSearchParams } from "next/navigation"
 export function NavMain({
   items,
 }: {
@@ -20,17 +21,19 @@ export function NavMain({
     url: string;
   }[];
 }) {
+  const searchParams = useSearchParams()
+  const path = searchParams.get('page')
   return (
-    <SidebarGroup className="text-background">
-      <SidebarMenu>
+    <SidebarGroup className="text-background border-t pt-12 ">
+      <SidebarMenu className="space-y-1">
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}  className="h-10  ">
-            <SidebarMenuButton tooltip={item.name}  asChild className="h-full" >
-              <Link href={item.url} className="h-full">
-                {item.icon && <item.icon className="size-20"  />}
-                <span>{item.name}</span>
-              </Link>
-            </SidebarMenuButton>
+          <SidebarMenuItem key={item.name} className="  " >
+
+            <Link href={item.url} className={cn(" py-3 px-5  h-full flex space-x-2 border border-primary hover:border-accent  ", item.url.includes(path || 'home') && " bg-accent text-secondary-foreground ")}>
+              {item.icon && <item.icon className="size-6" />}
+              <Label className="">{item.name}</Label>
+            </Link>
+
           </SidebarMenuItem>
         ))}
       </SidebarMenu>
