@@ -14,9 +14,11 @@ import { registrationSchema as userSchema } from "@/features/users/users.types";
 import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";
+import useCreateAction from "@/hooks/use-create-action";
 
 export default function CreateAccountPage({ data }: { data?: z.infer<typeof userSchema> }) {
     const createUser = useCreateUser()
+    const [_, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
 
     const form = useForm<z.infer<typeof userSchema>>({
         resolver: zodResolver(userSchema),
@@ -36,7 +38,7 @@ export default function CreateAccountPage({ data }: { data?: z.infer<typeof user
 
     const onSubmit = (data: z.infer<typeof userSchema>) => {
         const id = toast.loading("Please wait...", {
-            position:'top-center'
+            position: 'top-center'
         })
 
         createUser.mutate(data, {
@@ -44,13 +46,14 @@ export default function CreateAccountPage({ data }: { data?: z.infer<typeof user
                 const { status, message } = value
 
                 toast[status](message, { id })
+                setAction('view')
             },
             onError: () => {
                 toast.error("Something went wrong", { id })
             },
             onSettled: () => {
                 toast.dismiss(id)
-                
+
             },
         })
     }
@@ -165,10 +168,13 @@ export default function CreateAccountPage({ data }: { data?: z.infer<typeof user
                         </div>
                     </div>
 
-                    <div>
-                        <Button type="submit" size="lg" className="w-full">
+                    <div className="flex justify-between">
+                        <Button type="submit" size="lg" className="">
                             Create Account
+                        </Button> <Button type="button" size="lg" variant={'secondary'} onClick={() => form.reset()}>
+                            Clear
                         </Button>
+
                     </div>
 
 
