@@ -11,7 +11,7 @@ import useCreateAction from "@/hooks/use-create-action";
 import CreateAccountPage from "./doctors.form";
 const Accounts = ({ action }: { action?: string, id?: string }) => {
     const { data } = useUsers();
-    const [actions, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
+    const [_, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
 
 
 
@@ -61,7 +61,7 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
             setAction('new')
 
         },
-        data: user as unknown as UserSchema[],
+        data: data ? data : user as unknown as UserSchema[],
         searchConfig: {
             searchableFields: ["email", "firstName"],
             defaultSearchField: "email",

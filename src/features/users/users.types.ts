@@ -13,4 +13,5 @@ export const userSchema = z.object({
   password: z.string().min(8).max(50),
 });
 
+export const registrationSchema = userSchema.omit({password:true})
 export type User = z.infer<typeof userSchema>;

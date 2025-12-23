@@ -10,28 +10,50 @@ import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
-import { userSchema } from "@/features/users/users.types";
+import { registrationSchema as userSchema } from "@/features/users/users.types";
+import { useCreateUser } from "@/features/users/users.mutations";
 
-export default function CreateAccountPage() {
+import { toast } from "sonner";
+
+export default function CreateAccountPage({ data }: { data?: z.infer<typeof userSchema> }) {
+    const createUser = useCreateUser()
+
     const form = useForm<z.infer<typeof userSchema>>({
         resolver: zodResolver(userSchema),
-        defaultValues: {
+        defaultValues: data || {
             firstName: "",
             lastName: "",
             customGender: '',
             email: "",
-doctorId:'',
-            password: "",
+            doctorId: '',
+            middleName: '',
+
             dateOfBirth: undefined,
             userType: "viewer",
 
         },
     });
 
-    const onSubmit = (data: z.infer<typeof userSchema>) => { 
+    const onSubmit = (data: z.infer<typeof userSchema>) => {
+        const id = toast.loading("Please wait...", {
+            position:'top-center'
+        })
 
-alert(JSON.stringify(data))
-    };
+        createUser.mutate(data, {
+            onSuccess: (value) => {
+                const { status, message } = value
+
+                toast[status](message, { id })
+            },
+            onError: () => {
+                toast.error("Something went wrong", { id })
+            },
+            onSettled: () => {
+                toast.dismiss(id)
+                
+            },
+        })
+    }
 
     return (
         <Form {...form}>
@@ -53,9 +75,9 @@ alert(JSON.stringify(data))
                         </div>
                     </div>
                     {/* <pre
-            className="whitespace-pre-wrap text-sm leading-relaxed"
-            suppressHydrationWarning
-          >{JSON.stringify(form.watch(), null, 2)}</pre> */}
+                        className="whitespace-pre-wrap text-sm leading-relaxed"
+                        suppressHydrationWarning
+                    >{JSON.stringify(form.watch(), null, 2)}</pre> */}
 
                     {/* Grid layout */}
                     <div className="mt-6 mb-7 grid sm:grid-cols-2 gap-6 ">
@@ -81,33 +103,33 @@ alert(JSON.stringify(data))
                                 name="middleName"
                                 className="bg-accent"
                             />
-                           
+
                             <DropDownDatePicker
                                 control={form.control}
                                 label="BirthDay"
                                 name="dateOfBirth"
                             />
 
-                        
+
 
                         </div>
 
                         <div className="space-y-3 flex flex-col ">
                             <div>
-                              <EmailUserNameInput
+                                <EmailUserNameInput
                                     control={form.control}
                                     label="Email"
                                     name="email"
                                     className="bg-accent"
                                 />
-                              </div>
+                            </div>
                             <TextInput
                                 control={form.control}
                                 label="Doctor Id"
                                 name="doctorId"
                                 className="bg-accent "
                             />
-    <RadioGroupField<typeof userSchema>
+                            <RadioGroupField<typeof userSchema>
                                 layout="row"
                                 label="Rights"
                                 name="userType"
@@ -118,17 +140,17 @@ alert(JSON.stringify(data))
                                     { value: "view", label: "Readonly" },
                                 ]}
                             />
-                                <RadioGroupField<typeof userSchema>
-                                    layout="row"
-                                    label="Gender"
-                                    name="gender"
-                                    control={form.control}
-                                    options={[
-                                        { value: "male", label: "Male" },
-                                        { value: "female", label: "Female" },
-                                        { value: "other", label: "Other" },
-                                    ]}
-                                />
+                            <RadioGroupField<typeof userSchema>
+                                layout="row"
+                                label="Gender"
+                                name="gender"
+                                control={form.control}
+                                options={[
+                                    { value: "male", label: "Male" },
+                                    { value: "female", label: "Female" },
+                                    { value: "other", label: "Other" },
+                                ]}
+                            />
 
                             {form.watch("gender") == "other" && (
                                 <div className="mt-1">
