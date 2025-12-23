@@ -1,11 +1,11 @@
 
 
-import ACCOUNT from "@/app/dashboard/pages/account"
-import HOME from "@/app/dashboard/pages/home"
-import POSTOP from "@/app/dashboard/pages/postOp"
-import PREOP from "@/app/dashboard/pages/preOp"
-import STS from "@/app/dashboard/pages/system"
-import DOCTORS from "@/app/dashboard/pages/users"
+import ACCOUNT from "@/app/dashboard/_pages/account"
+import HOME from "@/app/dashboard/_pages/home"
+import POSTOP from "@/app/dashboard/_pages/postOp"
+import PREOP from "@/app/dashboard/_pages/preOp"
+import STS from "@/app/dashboard/_pages/system"
+import DOCTORS from "@/app/dashboard/_pages/users"
 import { DashBoardLinksType } from "@/components/app-sidebar/config"
 
 type PageProps = {

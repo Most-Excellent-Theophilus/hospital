@@ -15,9 +15,10 @@ import { GenericDataTableProps, BaseTableItem } from "./types";
 import { useTableColumns } from "./hooks/useTableColumns";
 import { TableTopBar } from "./components/TableTopBar";
 import { TableToolbar } from "./components/TableToolbar";
-import { TablePageSizeSelector } from "./components/TablePageSizeSelector";
+
 import { TableContent } from "./components/TableContent";
 import { TableFooter } from "./components/TableFooter";
+import { DataTableFilterToolbar } from "./components/TableFilterToolbar";
 
 export function GenericDataTable<T extends BaseTableItem>({
   data,
@@ -34,6 +35,7 @@ export function GenericDataTable<T extends BaseTableItem>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(
       fields.reduce((acc, field) => {
@@ -84,7 +86,7 @@ export function GenericDataTable<T extends BaseTableItem>({
   }, [rowSelection, onSelectionChange, table]);
 
   return (
-    <div className="">
+    <div className=" ">
       <TableTopBar
         table={table}
         createNewRecordLink={createNewRecordLink}
@@ -99,9 +101,9 @@ export function GenericDataTable<T extends BaseTableItem>({
         onSearchFieldChange={setSearchField}
       />
 
-      {enablePagination && <TablePageSizeSelector table={table} />}
+     {/* <DataTableFilterToolbar  table={table}/> */}
 
-      <div className="w-full px-6">
+      <div className=" px-6">
         <TableContent table={table} columnCount={columns.length} />
         {(enablePagination || enableSelection) && <TableFooter table={table} />}
       </div>

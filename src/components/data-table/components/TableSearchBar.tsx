@@ -12,6 +12,7 @@ import {
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Table } from "@tanstack/react-table";
 import { BaseTableItem, FieldConfig, SearchConfig } from "../types";
+import { DataTableSearchFilter } from "./TableSearchFilter";
 
 interface TableSearchBarProps<T extends BaseTableItem> {
   table: Table<T>;
@@ -30,8 +31,8 @@ export function TableSearchBar<T extends BaseTableItem>({
 }: TableSearchBarProps<T>) {
   return (
     <div className="flex items-center gap-2">
-      <ButtonGroup>
-        <Input
+      
+        <DataTableSearchFilter
           placeholder={`Filter by ${fields
             .find((f) => f.key === searchField)
             ?.label?.toLowerCase()}...`}
@@ -52,7 +53,7 @@ export function TableSearchBar<T extends BaseTableItem>({
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
                 {fields.find((f) => f.key === searchField)?.label || "Field"} :
-                <Filter className="ml-1 h-3 w-3" />
+                <Filter className="" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -71,7 +72,7 @@ export function TableSearchBar<T extends BaseTableItem>({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-      </ButtonGroup>
+      
     </div>
   );
 }

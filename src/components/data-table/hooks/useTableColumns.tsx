@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 
-import { trimAndEllipsis, isEmpty } from "@/lib/utils";
+import {  isEmpty } from "@/lib/utils";
 import React from "react";
 import {
   ActionConfig,
@@ -42,7 +42,7 @@ export function useTableColumns<T extends BaseTableItem>(
           const value = row.getValue(String(field.key)) as T[keyof T];
           return field.render
             ? field.render(value, row.original)
-            : trimAndEllipsis(String(value ?? ""), 10);
+            : value;
         },
         enableSorting: field.sortable || false,
         size: field.width ? parseInt(field.width) : undefined,

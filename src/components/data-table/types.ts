@@ -47,5 +47,5 @@ export interface GenericDataTableProps<T extends BaseTableItem> {
   enablePagination?: boolean;
   pageSize?: number;
   onSelectionChange?: (selectedRows: T[]) => void;
-  createNewRecordLink: string;
+  createNewRecordLink: ()=> void;
 }

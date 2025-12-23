@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.className}  antialiased flex w-screen min-h-screen items-center justify-center`}
+        className={`${geistSans.className}  antialiased flex  min-h-screen items-center justify-center`}
         suppressHydrationWarning
       >
         <Providers>
