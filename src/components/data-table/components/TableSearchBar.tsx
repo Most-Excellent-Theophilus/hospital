@@ -31,27 +31,10 @@ export function TableSearchBar<T extends BaseTableItem>({
 }: TableSearchBarProps<T>) {
   return (
     <div className="flex items-center gap-2">
-      
-        <DataTableSearchFilter
-          placeholder={`Filter by ${fields
-            .find((f) => f.key === searchField)
-            ?.label?.toLowerCase()}...`}
-          value={
-            (table
-              .getColumn(String(searchField))
-              ?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table
-              .getColumn(String(searchField))
-              ?.setFilterValue(event.target.value)
-          }
-          className="flex-1"
-        />
-        {searchConfig.searchableFields.length > 1 && (
+       {searchConfig.searchableFields.length > 1 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" size='sm'>
                 {fields.find((f) => f.key === searchField)?.label || "Field"} :
                 <Filter className="" />
               </Button>
@@ -72,6 +55,23 @@ export function TableSearchBar<T extends BaseTableItem>({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
+        <DataTableSearchFilter
+          placeholder={`Filter by ${fields
+            .find((f) => f.key === searchField)
+            ?.label?.toLowerCase()}...`}
+          value={
+            (table
+              .getColumn(String(searchField))
+              ?.getFilterValue() as string) ?? ""
+          }
+          onChange={(event) =>
+            table
+              .getColumn(String(searchField))
+              ?.setFilterValue(event.target.value)
+          }
+          className="flex-1"
+        />
+       
       
     </div>
   );

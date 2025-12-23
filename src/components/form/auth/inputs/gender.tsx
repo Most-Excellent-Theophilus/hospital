@@ -85,11 +85,11 @@ const RadioGroupField = <T extends z.ZodTypeAny>({
                     key={index}
                     htmlFor={`${name}-${index}`}
                     className={cn(
-                      "flex items-center space-x-2 border rounded-md px-3 py-2  cursor-pointer transition-all",
+                      "flex items-center bg-primary/10  space-x-2 border rounded-md px-3 py-2  cursor-pointer transition-all",
 
                       // selected styles
                       checked
-                        ? "border-primary bg-primary/10 shadow-sm"
+                        ? "border-primary shadow-sm"
                         : "border-muted-foreground bg-muted",
 
                       // error border

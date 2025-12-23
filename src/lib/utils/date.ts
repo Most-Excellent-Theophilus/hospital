@@ -1,7 +1,5 @@
-import { Timestamp } from "firebase/firestore";
+export type DateInput = Date | string | number | null | undefined;
 
-export type DateInput = Date | string | number | Timestamp | null | undefined;
-type FirestoreTimestampLike = { _seconds: number; _nanoseconds: number };
 type TimeUnit =
   | "year"
   | "month"
@@ -10,19 +8,6 @@ type TimeUnit =
   | "hour"
   | "minute"
   | "second";
-
-interface DateUtils {
-  formatDateLong(date?: DateInput): string;
-  formatDateShort(date?: DateInput): string;
-  formatFull(date?: DateInput): string;
-  timeAgo(date: DateInput): string;
-  startOfToday(): Date;
-  endOfToday(): Date;
-  shiftDays(date?: DateInput, days?: number): Date;
-  now(): number;
-  getYearsAgoDate(yearsAgo?: number): string;
-  formatDate(date: unknown): string;
-}
 
 /**
  * Strictly parse supported date inputs
@@ -43,14 +28,10 @@ const parseDate = (date: DateInput): Date => {
     return parsed;
   }
 
-  if (date instanceof Timestamp) {
-    return date.toDate();
-  }
-
   throw new Error(`Unsupported date input: ${date}`);
 };
 
-export const dateUtils: DateUtils = {
+export const dateUtils = {
   formatDateLong(date: DateInput = new Date()): string {
     return new Intl.DateTimeFormat("en-US", {
       year: "numeric",
@@ -126,34 +107,45 @@ export const dateUtils: DateUtils = {
     return Date.now();
   },
 
-  getYearsAgoDate(yearsAgo: number = 0): string {
+  getYearsAgoDate(yearsAgo: number = 0): Date {
     const today = new Date();
     const past = new Date(
       today.getFullYear() - yearsAgo,
       today.getMonth(),
       today.getDate()
     );
-    return past.toISOString().split("T")[0];
+    return past;
   },
   formatDate(date: unknown): string {
     const jsDate = toDate(date);
     if (!jsDate) return "Invalid date";
     return dateUtils.formatDateLong(jsDate);
   },
+  getYearsAgoDate2: (years: number) => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - years);
+    return d;
+  },
+
+  getMonthName: (date: Date, type: "long" | "short" = "long") =>
+    new Intl.DateTimeFormat("en-US", { month: type }).format(date),
+
+  getMonthNames: (type: "long" | "short" = "long") =>
+    Array.from({ length: 12 }, (_, i) =>
+      new Date(2000, i, 1).toLocaleString("en-US", { month: type })
+    ),
+
+  getYearsRange: (start: number, end: number) => {
+    const years = [];
+    for (let i = start; i <= end; i++) years.push(i);
+    return years;
+  },
+
+  getDaysInMonth: (year: number, monthIndex: number) =>
+    new Date(year, monthIndex + 1, 0).getDate(),
 };
 export const toDate = (date: unknown): Date | null => {
   if (!date) return null;
-
-  // Firestore Timestamp-like
-  if (
-    typeof date === "object" &&
-    date !== null &&
-    "_seconds" in date &&
-    "_nanoseconds" in date
-  ) {
-    const { _seconds, _nanoseconds } = date as FirestoreTimestampLike;
-    return new Date(_seconds * 1000 + _nanoseconds / 1e6);
-  }
 
   // Already a Date
   if (date instanceof Date) return date;

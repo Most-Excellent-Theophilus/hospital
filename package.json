@@ -7,9 +7,9 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "seed:users": "tsx scripts/seed-users.ts",
-    "seed:users:detailed": "tsx scripts/seed-users-detailed.ts",
-    "seed:users:validate": "tsx scripts/seed-users-with-validation.ts"
+    "seed:users": "tsx src/scripts/seed-users.ts",
+    "seed:users:detailed": "tsx src/scripts/seed-users-detailed.ts",
+    "seed:users:validate": "tsx src/scripts/seed-users-with-validation.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^10.1.0",

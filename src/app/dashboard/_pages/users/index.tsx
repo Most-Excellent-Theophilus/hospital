@@ -4,9 +4,17 @@ import { GenericDataTableProps } from "@/components/data-table/types";
 import { useUsers } from "@/features/users/users.queries";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 import user from "@/data/users.json";
+import { toast } from "sonner"
+
 import { dateUtils } from "@/lib/utils/date"
+import useCreateAction from "@/hooks/use-create-action";
+import CreateAccountPage from "./doctors.form";
 const Accounts = ({ action }: { action?: string, id?: string }) => {
     const { data } = useUsers();
+    const [actions, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
+
+
+
     const userResource: GenericDataTableProps<UserSchema> = {
         fields: [
             {
@@ -19,20 +27,20 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
             {
                 key: "email",
                 label: "Email",
-                  sortable: true,
-      searchable: true,
+                sortable: true,
+                searchable: true,
             },
             {
                 key: "userType",
                 label: "User Group",
-                  sortable: true,
-      searchable: true,
+                sortable: true,
+                searchable: true,
             },
             {
                 key: "createdAt",
                 label: "Date Created",
-                  sortable: true,
-      searchable: true,
+                sortable: true,
+                searchable: true,
                 render(value, row) {
                     return dateUtils.timeAgo(value)
                 },
@@ -40,8 +48,8 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
             {
                 key: "updatedAt",
                 label: "last Update",
-                  sortable: true,
-      searchable: true,
+                sortable: true,
+                searchable: true,
                 render(value, row) {
                     return dateUtils.timeAgo(value)
                 },
@@ -49,7 +57,9 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
         ],
 
         createNewRecordLink: () => {
-            alert("Create new doctor record");
+
+            setAction('new')
+
         },
         data: user as unknown as UserSchema[],
         searchConfig: {
@@ -58,11 +68,11 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
         },
     };
 
-    if(action=='view')
-    return (<GenericDataTable {...userResource} />);
-    if (action=='new')
+    if (action == 'view')
+        return (<GenericDataTable {...userResource} />);
+    if (action == 'new')
         // create doctor form 
-        return<></>
+        return <CreateAccountPage />
 }
 
 export default Accounts;
