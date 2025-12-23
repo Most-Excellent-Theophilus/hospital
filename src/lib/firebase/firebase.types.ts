@@ -1,15 +1,28 @@
 
 import { userSchema } from "@/features/users/users.types";
 import type admin from "firebase-admin";
+import { Timestamp } from "firebase-admin/firestore";
 import z from "zod";
 // 🔹 Collection & Subcollection
-export interface EveryTableMustHave {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
-type UserSchema = z.infer<typeof userSchema> & EveryTableMustHave;
+
+export type TypeReturn<T> = { message: string } & {
+  status: "success" | "warning" | "error" | "info" | "loading";
+  data: T | null;
+};
+const timestampToDate = z.union([
+  z.instanceof(Timestamp),
+  z.date(),
+]).transform((v) =>
+  v instanceof Timestamp ? v.toDate() : v
+);
+const mustHave = z.object({
+  id: z.string(),
+  createdAt: timestampToDate,
+  updatedAt: timestampToDate,
+});
+const userWithMetaSchema = mustHave.and(userSchema);
+export type UserSchema = z.infer<typeof userWithMetaSchema>;
 
 export type TableTypeMap = {
   users: UserSchema;
