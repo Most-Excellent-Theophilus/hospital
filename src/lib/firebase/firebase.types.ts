@@ -1,4 +1,5 @@
 
+import { tokenSchema } from "@/features/auth/auth.types";
 import { userSchema } from "@/features/users/users.types";
 import type admin from "firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
@@ -10,7 +11,7 @@ export type TypeReturn<T> = { message: string } & {
   status: "success" | "warning" | "error" | "info" | "loading";
   data: T | null;
 };
-const timestampToDate = z.union([
+export const timestampToDate = z.union([
   z.instanceof(Timestamp),
   z.date(),
 ]).transform((v) =>
@@ -21,11 +22,14 @@ const mustHave = z.object({
   createdAt: timestampToDate,
   updatedAt: timestampToDate,
 });
-const userWithMetaSchema = mustHave.and(userSchema);
+export const tokenWithMetaSchema = mustHave.and(tokenSchema)
+export type TokenSchema = z.infer<typeof tokenWithMetaSchema>
+export const userWithMetaSchema = mustHave.and(userSchema);
 export type UserSchema = z.infer<typeof userWithMetaSchema>;
 
 export type TableTypeMap = {
   users: UserSchema;
+  tokens: TokenSchema
 };
 
 export type CollectionNames = keyof TableTypeMap;

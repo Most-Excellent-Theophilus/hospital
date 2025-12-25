@@ -3,7 +3,7 @@
 import { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DataTableSearchFilter } from "./TableSearchFilter";
+
 import { DataTableFacetedFilter } from "./TableFacetedFilter";
 import { DataTableDateFilter} from "./TableDateFilter";
 import { useTableFilters } from "./../hooks/useTableFilters";

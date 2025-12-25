@@ -18,7 +18,7 @@ import { TableToolbar } from "./components/TableToolbar";
 
 import { TableContent } from "./components/TableContent";
 import { TableFooter } from "./components/TableFooter";
-import { DataTableFilterToolbar } from "./components/TableFilterToolbar";
+
 
 export function GenericDataTable<T extends BaseTableItem>({
   data,

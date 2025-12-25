@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { Filter } from "lucide-react";
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ButtonGroup } from "@/components/ui/button-group";
+
 import { Table } from "@tanstack/react-table";
 import { BaseTableItem, FieldConfig, SearchConfig } from "../types";
 import { DataTableSearchFilter } from "./TableSearchFilter";

@@ -9,15 +9,33 @@ import { Form } from "@/components/ui/form";
 // import { useTransition } from "react";
 import EmailUserNameInput from "./inputs/email-username";
 import { verificationSchema } from "@/features/auth/auth.types";
+import { useQueryState } from "nuqs";
+import { useTransition } from "react";
+import { setResetPassword } from "@/features/auth/auth.actions";
+import { toast } from "sonner";
 
 export default function ResetPage() {
+  const [, setName] = useQueryState('s')
+  const [isPending, setPending] = useTransition()
   const form = useForm<z.infer<typeof verificationSchema>>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
       email: "",
     },
   });
-  const onSubmit = () => {};
+  const onSubmit = (data: z.infer<typeof verificationSchema>) => {
+    const id = toast.loading('Please wait...', {
+      position: 'top-center'
+    })
+    setPending(() => {
+
+      setResetPassword(data.email).then((res) => {
+        setName(res.message)
+      }).finally(() => toast.dismiss(id))
+    })
+
+
+  };
   return (
     <Form {...form}>
       <form
@@ -27,7 +45,7 @@ export default function ResetPage() {
         <fieldset
           disabled={
             form.formState.isSubmitting
-            // || isPending
+            || isPending
           }
           className="min-w-[350px]"
         >

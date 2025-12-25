@@ -4,7 +4,7 @@ import * as React from "react";
 import { Column } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+
 
 interface DataTableBooleanFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;

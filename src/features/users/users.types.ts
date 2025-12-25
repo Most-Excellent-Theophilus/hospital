@@ -11,7 +11,11 @@ export const userSchema = z.object({
   customGender: z.string().max(50).optional(),
   userType: z.enum(["admin", "inputer", "viewer"]),
   password: z.string().min(8).max(50),
+  verified: z.optional(z.boolean())
 });
 
-export const registrationSchema = userSchema.omit({password:true})
+export const registrationSchema = userSchema.omit({ password: true, verified: true }).extend({
+  verified: z.optional(z.boolean())
+});
+
 export type User = z.infer<typeof userSchema>;

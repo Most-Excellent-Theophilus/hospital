@@ -1,5 +1,5 @@
 "use server";
-import  "server-only";
+import "server-only";
 import { createCacheActions } from "@/lib/firebase/cached.database";
 import { User } from "./users.types";
 import { UserSchema } from "@/lib/firebase/firebase.types";
@@ -13,8 +13,11 @@ export const getAllDoctor = async () =>
     orderBy: [{ field: "updatedAt", direction: "asc" }],
   });
 
-export const createDoctor = async (data: User) =>
-  await userDb.create(data as UserSchema);
+export const checkUserEmail = async (email: string) => await userDb.search('email', email, {
+  limit: 1
+})
+export const createDoctor = async (data: User) => await userDb.create(data as UserSchema);
+
 export const getDoctorById = async (id: string) => await userDb.getById(id);
 export const updateDoctor = async (
   id: string,

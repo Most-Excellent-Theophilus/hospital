@@ -4,14 +4,14 @@ import { GenericDataTableProps } from "@/components/data-table/types";
 import { useUsers } from "@/features/users/users.queries";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 import user from "@/data/users.json";
-import { toast } from "sonner"
+
 
 import { dateUtils } from "@/lib/utils/date"
 import useCreateAction from "@/hooks/use-create-action";
 import CreateAccountPage from "./doctors.form";
 const Accounts = ({ action }: { action?: string, id?: string }) => {
     const { data } = useUsers();
-    const [_, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
+    const [, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
 
 
 
@@ -41,8 +41,8 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
                 label: "Date Created",
                 sortable: true,
                 searchable: true,
-                render(value, row) {
-                    return dateUtils.timeAgo(value)
+                render(_, row) {
+                    return dateUtils.timeAgo(row.updatedAt)
                 },
             },
             {
@@ -50,8 +50,8 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
                 label: "last Update",
                 sortable: true,
                 searchable: true,
-                render(value, row) {
-                    return dateUtils.timeAgo(value)
+                render(_, row) {
+                    return dateUtils.timeAgo(row.updatedAt)
                 },
             },
         ],

@@ -11,7 +11,8 @@ import {
 import Link from "next/link";
 import { Label } from "./ui/label";
 import { cn } from "@/lib/utils"
-import { useSearchParams } from "next/navigation"
+
+import { useQueryState } from "nuqs";
 export function NavMain({
   items,
 }: {
@@ -21,8 +22,9 @@ export function NavMain({
     url: string;
   }[];
 }) {
-  const searchParams = useSearchParams()
-  const path = searchParams.get('page')
+    const [path] = useQueryState('page')
+
+  
   return (
     <SidebarGroup className="text-background border-t pt-12 ">
       <SidebarMenu className="space-y-1">

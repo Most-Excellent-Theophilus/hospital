@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { Column } from "@tanstack/react-table";
-import { Check, ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {  ChevronDown } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

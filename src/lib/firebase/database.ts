@@ -112,13 +112,13 @@ export class FirestoreDatabase {
           message: "",
           data: snap.exists
             ? ([
-                {
-                  id: snap.id,
-                  ...snap.data(),
-                  createdAt: snap.createTime?.toDate(),
-                  updatedAt: snap.updateTime?.toDate(),
-                },
-              ] as TableTypeMap[T][])
+              {
+                id: snap.id,
+                ...snap.data(),
+                createdAt: snap.createTime?.toDate(),
+                updatedAt: snap.updateTime?.toDate(),
+              },
+            ] as TableTypeMap[T][])
             : null,
         };
       } else {
@@ -138,7 +138,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Unknown error occurred",
       };
@@ -155,7 +155,7 @@ export class FirestoreDatabase {
       if (type !== "doc") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "getById() requires a document path with ID",
         };
       }
@@ -166,19 +166,19 @@ export class FirestoreDatabase {
         message: "",
         data: snap.exists
           ? ([
-              {
-                id: snap.id,
-                ...snap.data(),
-                createdAt: snap.createTime?.toDate(),
-                updatedAt: snap.updateTime?.toDate(),
-              },
-            ] as TableTypeMap[T][])
+            {
+              id: snap.id,
+              ...snap.data(),
+              createdAt: snap.createTime?.toDate(),
+              updatedAt: snap.updateTime?.toDate(),
+            },
+          ] as TableTypeMap[T][])
           : null,
       };
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Unknown error occurred",
       };
@@ -230,7 +230,7 @@ export class FirestoreDatabase {
       if (type !== "col") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "create() requires a collection path without ID",
         };
       }
@@ -251,7 +251,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Failed to create document",
       };
@@ -268,7 +268,7 @@ export class FirestoreDatabase {
       if (type !== "doc") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "createWithId() requires a document path with ID",
         };
       }
@@ -289,7 +289,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Failed to create document",
       };
@@ -299,7 +299,7 @@ export class FirestoreDatabase {
   // 🔹 UPDATE operations
   async update<T extends keyof TableTypeMap = CollectionNames>(
     def: BuildRefType,
-    data: CreateData<TableTypeMap[T]>
+    data: Partial<CreateData<TableTypeMap[T]>>
   ): Promise<TypeReturn<{ id: string }>> {
     try {
       const { type, ref } = this.buildRefOrCollection(def);
@@ -307,7 +307,7 @@ export class FirestoreDatabase {
       if (type !== "doc") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "update() requires a document path with ID",
         };
       }
@@ -326,7 +326,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Failed to update document",
       };
@@ -343,7 +343,7 @@ export class FirestoreDatabase {
       if (type !== "doc") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "upsert() requires a document path with ID",
         };
       }
@@ -364,7 +364,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Failed to upsert document",
       };
@@ -379,7 +379,7 @@ export class FirestoreDatabase {
       if (type !== "doc") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "delete() requires a document path with ID",
         };
       }
@@ -393,7 +393,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error ? error.message : "Failed to delete document",
       };
@@ -407,7 +407,7 @@ export class FirestoreDatabase {
       if (type !== "doc") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "softDelete() requires a document path with ID",
         };
       }
@@ -427,7 +427,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message:
           error instanceof Error
             ? error.message
@@ -600,7 +600,7 @@ export class FirestoreDatabase {
       if (type !== "col") {
         return {
           status: "error",
-          data:null,
+          data: null,
           message: "search() requires a collection path",
         };
       }
@@ -610,7 +610,7 @@ export class FirestoreDatabase {
         if (!searchTerm.trim().length) {
           return {
             status: "error",
-            data:null,
+            data: null,
             message: "Search term cannot be empty",
           };
         }
@@ -711,7 +711,7 @@ export class FirestoreDatabase {
     } catch (error) {
       return {
         status: "error",
-        data:null,
+        data: null,
         message: error instanceof Error ? error.message : "Search failed",
       };
     }
