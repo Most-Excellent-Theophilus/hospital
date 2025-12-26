@@ -18,4 +18,6 @@ export const registrationSchema = userSchema.omit({ password: true, verified: tr
   verified: z.optional(z.boolean())
 });
 
+export type DoctorFormValues = z.infer<typeof registrationSchema>
+
 export type User = z.infer<typeof userSchema>;

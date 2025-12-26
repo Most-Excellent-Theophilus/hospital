@@ -12,7 +12,7 @@ export type DashBoardLinksType =
   | "preOp"
   | "home"
   | "system";
-export type DashBoardUrl = `?page=${DashBoardLinksType}` | `?`;
+export type DashBoardUrl = DashBoardLinksType
 export const linksIconMap: Record<
   DashBoardLinksType,
   { icon: IconType; name: string; url: DashBoardUrl }
@@ -20,31 +20,31 @@ export const linksIconMap: Record<
   home: {
     name: "Home",
     icon: FaHome,
-    url: "?page=home",
+    url: "home",
   },
   account: {
     name: "Patients",
     icon: FaFileAlt,
-    url: "?page=account",
+    url: "account",
   },
   preOp: {
     icon: CgMenuGridO,
     name: "Pre Operation",
-    url: "?page=preOp",
+    url: "preOp",
   },
   postOp: {
     icon: LuAppWindow,
     name: "Post Operation ",
-    url: "?page=postOp",
+    url: "postOp",
   },
   users: {
     name: "Doctors",
     icon: FaCircleUser,
-    url: "?page=users",
+    url: "users",
   },
   system: {
     name: "System",
     icon: FaCircleUser,
-    url: "?page=system",
+    url: "system",
   },
 };

@@ -62,15 +62,16 @@ export const login = async (data: Login) => {
         } as const;
     }
     const { data: { email, password } } = res
-    const findEmail = await userDb.search('email', email, { limit: 1 })
+    const findEmail = await db.search<'users'>({ path: 'users' }, 'email', email, { limit: 1 })
     const user = findEmail.data?.[0];
     if (!user) {
         return {
             status: "error",
             message: "email-not-found",
         } as const;
-    }console.log({user})
-    console.log({data})
+    } 
+    console.log({ user })
+    console.log({ data })
 
     const comparePassword = await bcrypt.compare(password, user.password)
 
@@ -157,7 +158,7 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>)
         } as const;
     }
 
-    const result = await userDb.search("email", verified.data.email, {
+    const result = await db.search<'users'>({ path: "users" }, "email", verified.data.email, {
         limit: 1
     })
 

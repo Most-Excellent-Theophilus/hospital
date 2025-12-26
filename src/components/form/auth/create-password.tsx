@@ -66,17 +66,17 @@ export default function CreatePasswordPage({ email }: { email: string }) {
                     <div className="flex items-center space-x-2.5 ">
                         <LogoIcon className="size-9 text-primary" />
                         <h1 className="text-xl font-semibold text-primary">
-                            {email} : Set Password
+                            Set Password
                         </h1>
                     </div>
                     <div className="mt-2.5 text-muted-foreground">
-                        <h3 className="text-sm">Create Password</h3>
+                        <h3 className="text-sm">{email} </h3>
                     </div>
                     {name && <Alerter {...alertMap[name as "email-not-found" | "unable-to-verify"]} />}
 
                     <div className="space-y-6 mt-6">
-                        <PasswordInput control={form.control} label="Password" name="password" />
-                        <PasswordInput control={form.control} label="Confirm Password" name="passwordRepeat" />
+                        <PasswordInput control={form.control} label="Password" name="password" className="bg-accent" />
+                        <PasswordInput control={form.control} label="Confirm Password" className="bg-accent" name="passwordRepeat" />
                         <div className="flex justify-between">
                             <Button type="submit" size={"lg"}>
                                 Continue

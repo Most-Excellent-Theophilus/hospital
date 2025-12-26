@@ -1,80 +1,182 @@
 "use client";
+
 import LogoIcon from "@/components/logo";
 import z from "zod";
-import { Button } from "@/components/ui/button";
-import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { useState, useTransition } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-// import { useTransition } from "react";
 import EmailUserNameInput from "./inputs/email-username";
+import { Alerter } from "./feedback/alerter";
+
 import { verificationSchema } from "@/features/auth/auth.types";
-import { useQueryState } from "nuqs";
-import { useTransition } from "react";
 import { setResetPassword } from "@/features/auth/auth.actions";
+import { useQueryState } from "nuqs";
 import { toast } from "sonner";
+import { useOtpTimer } from "@/hooks/use-otp-timer";
+
+/* ---------------------------------- */
+/* Alerts */
+/* ---------------------------------- */
+
+type AlertKey =
+  | "email-not-found"
+  | "email-sent"
+  | "unable-to-send"
+  | "unable-to-set"
+  | "something-wrong";
+
+const ALERTS: Record<
+  AlertKey,
+  { title: string; message?: string; variant: "default" | "destructive" }
+> = {
+  "email-not-found": {
+    title: "Email Not Allowed",
+    variant: "destructive",
+  },
+  "email-sent": {
+    title: "We have sent you an email",
+    message: "Check your inbox to continue",
+    variant: "default",
+  },
+  "unable-to-send": {
+    title: "Unable to send email",
+    variant: "destructive",
+  },
+  "unable-to-set": {
+    title: "Unable to process request",
+    variant: "destructive",
+  },
+  "something-wrong": {
+    title: "Unable to connect to our servers",
+    variant: "destructive",
+  },
+};
+
+/* ---------------------------------- */
+/* Component */
+/* ---------------------------------- */
 
 export default function ResetPage() {
-  const [, setName] = useQueryState('s')
-  const [isPending, setPending] = useTransition()
+  const [timer, setTimer] = useState<number>(0)
+  const [status, setStatus] = useQueryState("s");
+  const [isPending, startTransition] = useTransition();
+
   const form = useForm<z.infer<typeof verificationSchema>>({
     resolver: zodResolver(verificationSchema),
-    defaultValues: {
-      email: "",
-    },
+    defaultValues: { email: "" },
   });
-  const onSubmit = (data: z.infer<typeof verificationSchema>) => {
-    const id = toast.loading('Please wait...', {
-      position: 'top-center'
-    })
-    setPending(() => {
 
-      setResetPassword(data.email).then((res) => {
-        setName(res.message)
-      }).finally(() => toast.dismiss(id))
-    })
+  /* ---------------------------------- */
+  /* Reset logic (single source of truth) */
+  /* ---------------------------------- */
 
+  const requestReset = async () => {
+    const valid = await form.trigger("email");
+    if (!valid) return;
 
+    const toastId = toast.loading("Please wait...", {
+      position: "top-center",
+    });
+
+    try {
+      const res = await setResetPassword(form.getValues("email"));
+      setStatus(res.message as AlertKey);
+    } catch {
+      setStatus("something-wrong");
+    } finally {
+      toast.dismiss(toastId);
+    }
   };
+
+  /* ---------------------------------- */
+  /* OTP cooldown */
+  /* ---------------------------------- */
+
+  const {
+    timeLeft,
+    isWaiting,
+    isResending,
+
+  } = useOtpTimer({
+    duration: timer,
+    onResend: requestReset,
+  });
+
+  /* ---------------------------------- */
+  /* Submit */
+  /* ---------------------------------- */
+
+  const onSubmit = () => {
+    startTransition(async () => {
+
+      await requestReset().finally(() => setTimer(60));
+    });
+  };
+
+  const isLocked =
+    form.formState.isSubmitting ||
+    isPending ||
+    isResending || isWaiting;
+
+  /* ---------------------------------- */
+  /* UI */
+  /* ---------------------------------- */
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full items-center justify-center flex px-7"
+        className="flex justify-center px-7"
       >
-        <fieldset
-          disabled={
-            form.formState.isSubmitting
-            || isPending
-          }
-          className="min-w-[350px]"
-        >
-          <div className="flex items-center space-x-2.5 ">
+        <fieldset disabled={isLocked} className="min-w-[350px]">
+          {/* Header */}
+          <div className="flex items-center space-x-2.5">
             <LogoIcon className="size-9 text-primary" />
             <h1 className="text-xl font-semibold text-primary">
               Reset Password
             </h1>
           </div>
-          <div className="mt-2.5 text-muted-foreground">
-            <h3 className="text-sm">Connect With Clarity</h3>
-          </div>
-          <div className="space-y-6 mt-6">
-            {/* Username */}
+
+          <p className="mt-2.5 text-sm text-muted-foreground">
+            Reset Password
+          </p>
+
+          {/* Alert */}
+          {status && <Alerter {...ALERTS[status as AlertKey]} />}
+
+          {/* Form */}
+          <div className="mt-6 space-y-6">
             <EmailUserNameInput
               control={form.control}
-              label="Email"
               name="email"
-              className=" bg-accent"
+              label="Email"
+              className="bg-accent"
             />
-            {/* Password */}
+
             <div className="flex justify-between">
-              <Button type="submit" size={"lg"}>
-                Reset Password
-              </Button>
-            </div>{" "}
+              {isWaiting ? (
+                <p className="text-sm text-destructive">
+                  Resend available in {timeLeft}s
+                </p>
+              ) : (
+                <Button type="submit" size="lg">
+                  {(isPending || isResending) && (
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Reset Password
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="bg-muted rounded-(--radius) border p-3 mt-4">
-            <p className="text-accent-foreground text-center text-sm">
+
+          {/* Footer */}
+          <div className="mt-4 border bg-muted p-3 rounded-(--radius)">
+            <p className="text-center text-sm text-accent-foreground">
               Have an account?
               <Button asChild variant="link" className="px-2">
                 <Link href="/login">Login</Link>

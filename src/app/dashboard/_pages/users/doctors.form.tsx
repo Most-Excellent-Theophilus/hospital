@@ -1,6 +1,6 @@
 "use client";
 
-import z from "zod";
+
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -10,37 +10,40 @@ import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
-import { registrationSchema } from "@/features/users/users.types";
+import { DoctorFormValues, registrationSchema } from "@/features/users/users.types";
 import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";
-import useCreateAction from "@/hooks/use-create-action";
+
 import { useQueryState } from "nuqs";
 import { Alerter } from "@/components/form/auth/feedback/alerter";
 import { checkUserEmail } from "@/features/users/users.actions";
 import { useTransition } from "react";
+import { dateUtils, toDate } from "@/lib/utils/date";
 
-type FormValues = z.infer<typeof registrationSchema>
-const alertMap: Record<"email-not-found" | "email-taken", { title: string, message?: string }> = {
+
+const alertMap: Record<"email-not-found" | "email-taken", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
-        title: 'Email Not Allowed'
+        title: 'Email Not Allowed',
+        variant: 'destructive',
     }
     ,
     "email-taken": {
+        variant: 'destructive',
         title: 'Email is taken'
     },
 
 }
-export default function CreateAccountPage({ data }: { data?: FormValues }) {
+export default function CreateAccountPage({ data }: { data?: DoctorFormValues | null }) {
     const createUser = useCreateUser()
     const [isPending, startTransition] = useTransition()
     const [name, setName] = useQueryState('s')
 
-    const [, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
 
-    const form = useForm<FormValues>({
+
+    const form = useForm<DoctorFormValues>({
         resolver: zodResolver(registrationSchema),
-        defaultValues: data || {
+        defaultValues: data ?{...data, dateOfBirth: toDate(data.dateOfBirth) } :{
             firstName: "",
             lastName: "",
             customGender: '',
@@ -52,7 +55,7 @@ export default function CreateAccountPage({ data }: { data?: FormValues }) {
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = (data: DoctorFormValues) => {
         const id = toast.loading("Please wait...", {
             position: 'top-center'
         })
@@ -69,7 +72,8 @@ export default function CreateAccountPage({ data }: { data?: FormValues }) {
                         const { status, message } = value
 
                         toast[status](message, { id })
-                        setAction('view')
+                        setName("success")
+
                     },
                     onError: () => {
                         toast.error("Something went wrong", { id })
@@ -95,12 +99,12 @@ export default function CreateAccountPage({ data }: { data?: FormValues }) {
                         <div className="flex items-center space-x-2.5">
 
                             <h1 className="text-xl font-semibold text-primary">
-                                Create Doctor account
+                                {data ? "Update" : "Create"} Doctor {data ? `: ${data.firstName} ${data.lastName}` : " Create"}
                             </h1>
                         </div>
-
+                        {dateUtils.formatDateShort(data?.dateOfBirth)}
                         <div className="mt-2.5 text-muted-foreground">
-                            <h3 className="text-sm">Get started</h3>
+                            <h3 className="text-sm">{data ? "Update Fields" : "Get started"}</h3>
                         </div>
                     </div>
 
@@ -135,6 +139,8 @@ export default function CreateAccountPage({ data }: { data?: FormValues }) {
                                 control={form.control}
                                 label="BirthDay"
                                 name="dateOfBirth"
+                                from={18}
+
                             />
                         </div>
 
@@ -190,11 +196,11 @@ export default function CreateAccountPage({ data }: { data?: FormValues }) {
                     </div>
 
                     <div className="flex justify-between">
-                        <Button type="submit" size="lg" className="">
-                            Create Account
-                        </Button>
                         <Button type="button" size="lg" variant={'secondary'} onClick={() => form.reset()}>
                             Clear
+                        </Button>
+                        <Button type="submit" size="lg" className=" ">
+                            {data ? "Update" : "Create"} Account
                         </Button>
                     </div>
                 </fieldset>

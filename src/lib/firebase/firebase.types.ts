@@ -24,7 +24,7 @@ const mustHave = z.object({
 });
 export const tokenWithMetaSchema = mustHave.and(tokenSchema)
 export type TokenSchema = z.infer<typeof tokenWithMetaSchema>
-export const userWithMetaSchema = mustHave.and(userSchema);
+export const userWithMetaSchema = mustHave.and(userSchema.omit({ dateOfBirth: true }).extend({ dateOfBirth: timestampToDate }));
 export type UserSchema = z.infer<typeof userWithMetaSchema>;
 
 export type TableTypeMap = {

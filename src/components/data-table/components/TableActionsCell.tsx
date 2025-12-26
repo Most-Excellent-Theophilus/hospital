@@ -5,6 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -35,7 +36,7 @@ export function TableActionsCell<T extends BaseTableItem>({
             Copy
           </DropdownMenuItem>
         )}
-
+        <DropdownMenuLabel>Menu</DropdownMenuLabel>
         {(actionConfig.onView ||
           actionConfig.onEdit ||
           actionConfig.onDelete) && <DropdownMenuSeparator />}

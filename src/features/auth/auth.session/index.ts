@@ -9,7 +9,7 @@ export const sessionOptions: SessionOptions = {
   password: process.env.SESSION_SECRET as string,
   cookieOptions: {
     // maxAge: 60 * 60 * 24 * 7, // 7 days (in seconds) ⏳
-    maxAge: 60 * 60, // 1 hour (in seconds) ⏳
+    maxAge: process.env.NODE_ENV === "production" ? 60 * 60 : 60 * 60 * 24,  // 1 hour (in seconds) ⏳
     secure: process.env.NODE_ENV === "production",
     httpOnly: true, // 🔒 prevent access via JavaScript
     sameSite: "lax",
@@ -36,11 +36,11 @@ export const createSession = async (params: SessionUser) => {
     await session.save();
     return { status: "success", message: "Session Created" } as const;
   } catch (error) {
-    console.log({error})
+    console.log({ error })
     return {
 
       status: "error",
-      message: "Unable to create Session" 
+      message: "Unable to create Session"
     } as const;
   }
 }

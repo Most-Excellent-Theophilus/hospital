@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { Timestamp } from "firebase/firestore";
+import { toDate } from "./date";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -76,4 +78,15 @@ export function encodeMessage(message: string): string {
 
 export function isString(value: unknown) {
   return typeof value === "string" || value instanceof String;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function normalizeFirestoreData<T extends Record<string, any>>(data: T): T {
+  return JSON.parse(
+    JSON.stringify(data, (_, value) => {
+      if (value instanceof Timestamp) {
+        return toDate(value); // or value.toMillis()
+      }
+      return value;
+    })
+  );
 }

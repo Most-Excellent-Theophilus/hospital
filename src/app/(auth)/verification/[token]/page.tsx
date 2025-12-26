@@ -46,7 +46,8 @@ const Page = async ({ params }: { params: Promise<{ token: string }> }) => {
 
         </Empty>
     }
+ 
 
-    return <CreatePasswordPage email={user.email} />
+    return <CreatePasswordPage email={ user.email} />
 }
 export default Page

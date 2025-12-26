@@ -23,6 +23,7 @@ type DropDownDatePickerProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   description?: string;
+  from?: number
 };
 
 export function DropDownDatePicker<T extends FieldValues>({
@@ -30,13 +31,14 @@ export function DropDownDatePicker<T extends FieldValues>({
   name,
   label,
   description,
+  from = 0
 }: DropDownDatePickerProps<T>) {
   const {
     field: { onChange },
   } = useController({ control, name });
 
   const currentYear = new Date().getFullYear();
-  const years = dateUtils.getYearsRange(currentYear - 120, currentYear);
+  const years = dateUtils.getYearsRange(currentYear - 120, currentYear - from);
   const months = dateUtils.getMonthNames("long");
 
   // All fields start EMPTY

@@ -13,6 +13,7 @@ type TimeUnit =
  * Strictly parse supported date inputs
  */
 const parseDate = (date: DateInput): Date => {
+  date = toDate(date)
   if (!date) throw new Error("Date is null/undefined");
 
   if (date instanceof Date) {
@@ -144,8 +145,20 @@ export const dateUtils = {
   getDaysInMonth: (year: number, monthIndex: number) =>
     new Date(year, monthIndex + 1, 0).getDate(),
 };
-export const toDate = (date: unknown): Date | null => {
-  if (!date) return null;
+
+export const toDate = (date: unknown): Date |  undefined => {
+  if (!date) return undefined;
+
+  // Firestore Timestamp-like
+  if (
+    typeof date === "object" &&
+    date !== null &&
+    "_seconds" in date &&
+    "_nanoseconds" in date
+  ) {
+    const { _seconds, _nanoseconds } = date as FirestoreTimestampLike;
+    return new Date(_seconds * 1000 + _nanoseconds / 1e6);
+  }
 
   // Already a Date
   if (date instanceof Date) return date;
@@ -153,8 +166,9 @@ export const toDate = (date: unknown): Date | null => {
   // String input
   if (typeof date === "string") {
     const parsed = new Date(date);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }
 
-  return null;
+  return undefined;
 };
+type FirestoreTimestampLike = { _seconds: number; _nanoseconds: number };

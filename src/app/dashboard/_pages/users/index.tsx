@@ -3,15 +3,28 @@ import { GenericDataTable } from "@/components/data-table/GenericDataTable";
 import { GenericDataTableProps } from "@/components/data-table/types";
 import { useUsers } from "@/features/users/users.queries";
 import { UserSchema } from "@/lib/firebase/firebase.types";
-import user from "@/data/users.json";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 
 import { dateUtils } from "@/lib/utils/date"
 import useCreateAction from "@/hooks/use-create-action";
 import CreateAccountPage from "./doctors.form";
+import { useState } from "react";
+import { DoctorFormValues } from "@/features/users/users.types";
+import DoctorViewer from "./viewer";
+
 const Accounts = ({ action }: { action?: string, id?: string }) => {
     const { data } = useUsers();
     const [, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
+    const [, setId] = useCreateAction({ key: 'id', defaultValue: '' })
+    const [url, setUrl] = useCreateAction({ key: 's', defaultValue: '' })
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [selectedUser, setSelectedDoctor] = useState<DoctorFormValues | null>(null)
 
 
 
@@ -42,7 +55,7 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
                 sortable: true,
                 searchable: true,
                 render(_, row) {
-                    return dateUtils.timeAgo(row.updatedAt)
+                    return dateUtils.timeAgo(row.createdAt)
                 },
             },
             {
@@ -57,22 +70,57 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
         ],
 
         createNewRecordLink: () => {
-
-            setAction('new')
-
+            setSelectedDoctor(null)
+            setUrl('')
+            setIsOpen(true)
         },
-        data: data ? data : user as unknown as UserSchema[],
+        data: data || [],
         searchConfig: {
             searchableFields: ["email", "firstName"],
             defaultSearchField: "email",
         },
+        actionConfig: {
+            onEdit(row) {
+
+                setSelectedDoctor(row)
+                setUrl('')
+
+                setIsOpen(true)
+
+            },
+            onDelete(row) {
+                setId(row.id)
+                setAction('delete')
+            },
+            onView(row) {
+                setId(row.id)
+
+            },
+        }
     };
 
     if (action == 'view')
-        return (<GenericDataTable {...userResource} />);
-    if (action == 'new')
-        // create doctor form 
-        return <CreateAccountPage />
+        return (<>
+            <GenericDataTable {...userResource} />
+            <Dialog open={isOpen && url !== 'success'} onOpenChange={setIsOpen}   >
+
+
+                <DialogContent className=" sm:max-w-[925px]">
+                    <DialogHeader>
+                        <DialogTitle className="hidden">Edit profile</DialogTitle>
+
+                    </DialogHeader>
+                    <>
+                    {/* <CreateAccountPage data={selectedUser} />  */}
+                    <DoctorViewer data={selectedUser as UserSchema} deletee /></>
+
+
+                </DialogContent>
+
+            </Dialog>
+        </>);
+
+
 }
 
 export default Accounts;
