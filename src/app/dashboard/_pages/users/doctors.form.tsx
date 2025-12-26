@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { Alerter } from "@/components/form/auth/feedback/alerter";
 import { checkUserEmail, updateDoctor } from "@/features/users/users.actions";
 import { useTransition } from "react";
-import {  toDate } from "@/lib/utils/date";
+import { toDate } from "@/lib/utils/date";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 import { useNavigationVariables } from "@/hooks/url-hooks";
 
@@ -69,39 +69,45 @@ export default function CreateAccountPage({ data, onChange }: { data?: UserSchem
             position: 'top-center'
         })
         startTransition(() => {
-            data ? updateDoctor(data.id, dataT as User).then((res) => {
+            const fn = () => {
+                if (data) {
+                    updateDoctor(data.id, dataT as User).then((res) => {
 
-                if (res.data?.id) {
-                    setStatus("success")
-                    onChange(false)
-                } else {
-                    setStatus("failed-to-update")
-                }
-            }).finally(() => toast.dismiss(id))
-                : checkUserEmail(dataT.email).then((da) => {
-                    if (da.data?.[0]) {
-                        setStatus("email-taken")
-                        toast.dismiss(id)
-                        return
-                    }
-
-                    createUser.mutate(dataT, {
-                        onSuccess: (value) => {
-                            const { status, message } = value
-
-                            toast[status](message, { id })
+                        if (res.data?.id) {
                             setStatus("success")
-
-                        },
-                        onError: () => {
-                            toast.error("Something went wrong", { id })
-                        },
-                        onSettled: () => {
+                            onChange(false)
+                        } else {
+                            setStatus("failed-to-update")
+                        }
+                    }).finally(() => toast.dismiss(id))
+                } else {
+                    checkUserEmail(dataT.email).then((da) => {
+                        if (da.data?.[0]) {
+                            setStatus("email-taken")
                             toast.dismiss(id)
+                            return
+                        }
 
-                        },
-                    })
-                }).finally(() => toast.dismiss(id))
+                        createUser.mutate(dataT, {
+                            onSuccess: (value) => {
+                                const { status, message } = value
+
+                                toast[status](message, { id })
+                                setStatus("success")
+
+                            },
+                            onError: () => {
+                                toast.error("Something went wrong", { id })
+                            },
+                            onSettled: () => {
+                                toast.dismiss(id)
+
+                            },
+                        })
+                    }).finally(() => toast.dismiss(id))
+                }
+            }
+            fn()
         })
 
     }
@@ -159,9 +165,9 @@ export default function CreateAccountPage({ data, onChange }: { data?: UserSchem
                                 label="BirthDay"
                                 name="dateOfBirth"
                                 def={data?.dateOfBirth ? {
-                                    year: toDate(data.dateOfBirth)?.getFullYear()!,
-                                    month: toDate(data.dateOfBirth)?.getMonth()!,
-                                    day: toDate(data.dateOfBirth)?.getDay()!,
+                                    year: toDate(data.dateOfBirth)?.getFullYear() || 2007,
+                                    month: toDate(data.dateOfBirth)?.getMonth() || 1,
+                                    day: toDate(data.dateOfBirth)?.getDay() || 1,
                                 } : null}
                                 from={18}
 

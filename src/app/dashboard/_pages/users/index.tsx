@@ -18,9 +18,10 @@ import { useState } from "react";
 import { DoctorFormValues } from "@/features/users/users.types";
 import DoctorViewer from "./viewer";
 import { useNavigationVariables } from "@/hooks/url-hooks";
+import { Loader } from "lucide-react";
 
 const Accounts = () => {
-    const { data } = useUsers();
+    const { data, } = useUsers();
     const { action, setAction, setStatus, status } = useNavigationVariables()
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [selectedUser, setSelectedDoctor] = useState<DoctorFormValues | null>(null)
@@ -82,7 +83,7 @@ const Accounts = () => {
         actionConfig: {
             onEdit(row) {
 
-              setSelectedDoctor(row)
+                setSelectedDoctor(row)
                 setAction('edi')
                 setStatus('')
 
@@ -112,6 +113,8 @@ const Accounts = () => {
 
 
     return (<>
+        <div >{!data && <p className="flex items-center w-full py-2 px-4"><Loader className="animate-spin" /> Loading...</p>}</div>
+
         <GenericDataTable {...userResource} />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 
@@ -124,7 +127,7 @@ const Accounts = () => {
                 <>
                     {action == "view" && <DoctorViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
                     {action == "delete" && <DoctorViewer data={selectedUser as UserSchema} deletee onChange={setIsOpen} />}
-                 { "edit".includes(action) && <CreateAccountPage data={selectedUser as UserSchema} onChange={setIsOpen} />}
+                    {"edit".includes(action) && <CreateAccountPage data={selectedUser as UserSchema} onChange={setIsOpen} />}
                     {action == "new" && <CreateAccountPage onChange={setIsOpen} />}
                 </>
 

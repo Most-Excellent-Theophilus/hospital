@@ -12,7 +12,7 @@ import sendMail from "../mail/sendmail";
 import { db } from "@/lib/firebase/database";
 import z from "zod";
 import { redirect } from "next/navigation";
-import { createSession, SessionUser } from "./auth.session";
+import { createSession, deleteSession, SessionUser } from "./auth.session";
 import { useDeviceInfo } from "@/hooks/use-device-info";
 
 
@@ -194,4 +194,10 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>,
         } as const;
     }
     redirect('/dashboard')
+}
+
+
+export const logoutNow = async () => {
+    await deleteSession()
+    redirect('/login')
 }

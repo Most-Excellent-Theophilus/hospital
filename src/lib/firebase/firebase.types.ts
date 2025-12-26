@@ -5,8 +5,7 @@ import { userSchema } from "@/features/users/users.types";
 import type admin from "firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
 import z from "zod";
-// 🔹 Collection & Subcollection
-import { NextRequest} from "next/server";
+
 
 export type TypeReturn<T> = { message: string } & {
   status: "success" | "warning" | "error" | "info" | "loading";

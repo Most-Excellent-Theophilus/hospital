@@ -1,6 +1,6 @@
 import { AppSidebarProcider } from "@/components/app-sidebar"
-import { getSession } from "@/features/auth/auth.session"
-import { User } from "@/features/users/users.types"
+import { getSession, SessionUser } from "@/features/auth/auth.session"
+
 import { redirect } from "next/navigation"
 
 const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
@@ -8,8 +8,8 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
     if (!session.email) {
         redirect('/login')
     }
-    const { middleName, doctorId, customGender, verified, userType, lastName, gender, firstName, email } = session
-    return <AppSidebarProcider user={{ middleName, doctorId, customGender, verified, userType, lastName, gender, firstName, email } as User}> {children} </AppSidebarProcider>
+    const { middleName, doctorId, customGender, verified, userType, lastName, gender, firstName, email, browser, browserVersion, city, continent, country, dateOfBirth, host, deviceType, ip, isTouch, timezone, screenWidth, vendor, screenHeight, region, osVersion, os, model, lon, lat, } = session
+    return <AppSidebarProcider user={{ middleName, doctorId, customGender, verified, userType, lastName, gender, firstName, email, browser, browserVersion, city, continent, country, dateOfBirth, host, deviceType, ip, isTouch, timezone, screenWidth, vendor, screenHeight, region, osVersion, os, model, lon, lat, } as SessionUser}> {children} </AppSidebarProcider>
 }
 
 export default DashBoardLayout
