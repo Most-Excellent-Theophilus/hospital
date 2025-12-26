@@ -18,6 +18,8 @@ import { Alerter } from "./feedback/alerter";
 import { Login, loginSchema } from "@/features/auth/auth.types";
 import { checkEmail, login } from "@/features/auth/auth.actions";
 import { useOtpTimer } from "@/hooks/use-otp-timer";
+import { useDeviceInfo } from "@/hooks/use-device-info";
+import { useDeviceVendor } from "@/hooks/use-device-vendor";
 
 /* ---------------------------------- */
 /* Alert Configuration */
@@ -73,6 +75,8 @@ export default function LoginPage() {
   const [status, setStatus] = useQueryState("s");
   const [isPending, startTransition] = useTransition();
   const [timer, setTimer] = useState<number>(0)
+  const info = useDeviceInfo()
+  const vendor = useDeviceVendor()
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -87,7 +91,7 @@ export default function LoginPage() {
 
   const validateEmail = async () => {
     const isValid = await form.trigger("email");
- 
+
     if (!isValid) {
       setStatus("invalid-fields");
       return;
@@ -121,7 +125,7 @@ export default function LoginPage() {
   const handleLogin = (data: Login) => {
     startTransition(async () => {
       try {
-        const res = await login(data);
+        const res = await login(data, { ...info, ...vendor });
         setStatus(res.message as AlertKey);
       } catch {
         setStatus("something-wrong");
@@ -208,7 +212,7 @@ export default function LoginPage() {
           <div className="mt-4 border bg-muted p-3 rounded-(--radius)">
             <p className="text-center text-sm text-accent-foreground" >
               Forgot Password?{" "}
-              <Link href="/reset"  className="underline text-primary">
+              <Link href="/reset" className="underline text-primary">
                 Reset
               </Link>
             </p>

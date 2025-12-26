@@ -24,6 +24,11 @@ type DropDownDatePickerProps<T extends FieldValues> = {
   label: string;
   description?: string;
   from?: number
+  def?: {
+    year: number,
+    month: number,
+    day: number
+  } | null
 };
 
 export function DropDownDatePicker<T extends FieldValues>({
@@ -31,7 +36,8 @@ export function DropDownDatePicker<T extends FieldValues>({
   name,
   label,
   description,
-  from = 0
+  from = 0,
+  def
 }: DropDownDatePickerProps<T>) {
   const {
     field: { onChange },
@@ -42,9 +48,9 @@ export function DropDownDatePicker<T extends FieldValues>({
   const months = dateUtils.getMonthNames("long");
 
   // All fields start EMPTY
-  const [year, setYear] = useState<number | "">("");
-  const [month, setMonth] = useState<number | "">("");
-  const [day, setDay] = useState<number | "">("");
+  const [year, setYear] = useState<number | "">(def?.year || "");
+  const [month, setMonth] = useState<number | "">(def?.month || "");
+  const [day, setDay] = useState<number | "">(def?.day || "");
 
   const daysInMonth =
     year !== "" && month !== ""

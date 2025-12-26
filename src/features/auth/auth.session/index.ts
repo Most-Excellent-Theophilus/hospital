@@ -1,3 +1,4 @@
+import { logsSchema } from "@/features/userlogs/userlogs.types";
 import { userSchema } from "@/features/users/users.types";
 import { SessionOptions, getIronSession } from "iron-session";
 import { cookies } from "next/headers";
@@ -18,7 +19,7 @@ export const sessionOptions: SessionOptions = {
 };
 
 export const sessionSchema = userSchema.omit({ password: true })
-type SessionUser = z.infer<typeof sessionSchema>
+export type SessionUser = z.infer<typeof logsSchema>
 export const getSession = async () => {
   const session = await getIronSession<SessionUser>(
     await cookies(),

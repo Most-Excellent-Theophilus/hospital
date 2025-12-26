@@ -15,6 +15,7 @@ export function useDeviceInfo() {
     screenWidth: 0,
     screenHeight: 0,
     isTouch: false,
+    
   });
 
   useEffect(() => {

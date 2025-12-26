@@ -9,13 +9,15 @@ import {
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react";
 import { User } from "@/features/users/users.types";
-import { useQueryState } from "nuqs";
+
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { useNavigationVariables } from "@/hooks/url-hooks";
 const DashBoardHeader = ({ user }: { user: Omit<User, "password"> }) => {
 
 
-  const [action] = useQueryState('action')
-  const [page] = useQueryState('page')
+
+  const { page } = useNavigationVariables()
+
   const router = useRouter()
   const { icon: Icon, name: title } = linksIconMap[page as DashBoardLinksType] || linksIconMap['home'];
 
@@ -27,7 +29,7 @@ const DashBoardHeader = ({ user }: { user: Omit<User, "password"> }) => {
 
         <Icon className="size-7 text-primary" />
         <h1 className="text-2xl font-bold">{title}</h1>
-        </div>
+      </div>
       <div className="flex flex-row-reverse">  <Button size={'lg'} variant={'link'}> Dr. {capitalizeFirstLetter(user.firstName)}</Button></div>
     </header>
   );

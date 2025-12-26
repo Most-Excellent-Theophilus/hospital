@@ -10,19 +10,20 @@ import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
-import { DoctorFormValues, registrationSchema } from "@/features/users/users.types";
+import { DoctorFormValues, registrationSchema, User } from "@/features/users/users.types";
 import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";
 
-import { useQueryState } from "nuqs";
 import { Alerter } from "@/components/form/auth/feedback/alerter";
-import { checkUserEmail } from "@/features/users/users.actions";
+import { checkUserEmail, updateDoctor } from "@/features/users/users.actions";
 import { useTransition } from "react";
-import { dateUtils, toDate } from "@/lib/utils/date";
+import {  toDate } from "@/lib/utils/date";
+import { UserSchema } from "@/lib/firebase/firebase.types";
+import { useNavigationVariables } from "@/hooks/url-hooks";
 
 
-const alertMap: Record<"email-not-found" | "email-taken", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
+const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success', { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
         title: 'Email Not Allowed',
         variant: 'destructive',
@@ -32,18 +33,26 @@ const alertMap: Record<"email-not-found" | "email-taken", { title: string, messa
         variant: 'destructive',
         title: 'Email is taken'
     },
+    "success": {
+        variant: 'default',
+        title: 'Updated Succefully'
+    },
+    "failed-to-update": {
+        variant: 'destructive',
+        title: 'Unable to Update'
+    },
 
 }
-export default function CreateAccountPage({ data }: { data?: DoctorFormValues | null }) {
+export default function CreateAccountPage({ data, onChange }: { data?: UserSchema | null, onChange: (value: boolean) => void; }) {
     const createUser = useCreateUser()
     const [isPending, startTransition] = useTransition()
-    const [name, setName] = useQueryState('s')
+    const { status, setStatus } = useNavigationVariables()
 
 
 
     const form = useForm<DoctorFormValues>({
         resolver: zodResolver(registrationSchema),
-        defaultValues: data ?{...data, dateOfBirth: toDate(data.dateOfBirth) } :{
+        defaultValues: data ? { ...data, dateOfBirth: toDate(data.dateOfBirth) } : {
             firstName: "",
             lastName: "",
             customGender: '',
@@ -55,35 +64,44 @@ export default function CreateAccountPage({ data }: { data?: DoctorFormValues | 
         },
     });
 
-    const onSubmit = (data: DoctorFormValues) => {
+    const onSubmit = (dataT: DoctorFormValues) => {
         const id = toast.loading("Please wait...", {
             position: 'top-center'
         })
         startTransition(() => {
-            checkUserEmail(data.email).then((da) => {
-                if (da.data?.[0]) {
-                    setName("email-taken")
-                    toast.dismiss(id)
-                    return
+            data ? updateDoctor(data.id, dataT as User).then((res) => {
+
+                if (res.data?.id) {
+                    setStatus("success")
+                    onChange(false)
+                } else {
+                    setStatus("failed-to-update")
                 }
-
-                createUser.mutate(data, {
-                    onSuccess: (value) => {
-                        const { status, message } = value
-
-                        toast[status](message, { id })
-                        setName("success")
-
-                    },
-                    onError: () => {
-                        toast.error("Something went wrong", { id })
-                    },
-                    onSettled: () => {
-                        toast.dismiss(id)
-
-                    },
-                })
             }).finally(() => toast.dismiss(id))
+                : checkUserEmail(dataT.email).then((da) => {
+                    if (da.data?.[0]) {
+                        setStatus("email-taken")
+                        toast.dismiss(id)
+                        return
+                    }
+
+                    createUser.mutate(dataT, {
+                        onSuccess: (value) => {
+                            const { status, message } = value
+
+                            toast[status](message, { id })
+                            setStatus("success")
+
+                        },
+                        onError: () => {
+                            toast.error("Something went wrong", { id })
+                        },
+                        onSettled: () => {
+                            toast.dismiss(id)
+
+                        },
+                    })
+                }).finally(() => toast.dismiss(id))
         })
 
     }
@@ -99,17 +117,17 @@ export default function CreateAccountPage({ data }: { data?: DoctorFormValues | 
                         <div className="flex items-center space-x-2.5">
 
                             <h1 className="text-xl font-semibold text-primary">
-                                {data ? "Update" : "Create"} Doctor {data ? `: ${data.firstName} ${data.lastName}` : " Create"}
+                                {data ? "Update" : "Create"} Doctor {data && `: ${data.firstName} ${data.lastName}`}
                             </h1>
                         </div>
-                        {dateUtils.formatDateShort(data?.dateOfBirth)}
+
                         <div className="mt-2.5 text-muted-foreground">
                             <h3 className="text-sm">{data ? "Update Fields" : "Get started"}</h3>
                         </div>
                     </div>
 
                     {/* Grid layout */}
-                    {name && <Alerter {...alertMap[name as "email-not-found" | "email-taken"]} />}
+                    {status && <Alerter {...alertMap[status as "email-not-found" | "email-taken"]} />}
 
                     <div className="mt-6 mb-7 grid sm:grid-cols-2 gap-6 ">
                         <div className="space-y-3 flex flex-col ">
@@ -135,10 +153,16 @@ export default function CreateAccountPage({ data }: { data?: DoctorFormValues | 
                                 className="bg-accent"
                             />
 
+
                             <DropDownDatePicker
                                 control={form.control}
                                 label="BirthDay"
                                 name="dateOfBirth"
+                                def={data?.dateOfBirth ? {
+                                    year: toDate(data.dateOfBirth)?.getFullYear()!,
+                                    month: toDate(data.dateOfBirth)?.getMonth()!,
+                                    day: toDate(data.dateOfBirth)?.getDay()!,
+                                } : null}
                                 from={18}
 
                             />

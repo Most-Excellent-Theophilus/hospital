@@ -16,6 +16,8 @@ import { useQueryState } from "nuqs";
 import { createPassword } from "@/features/auth/auth.actions";
 import { toast } from "sonner";
 import { Alerter } from "./feedback/alerter";
+import { useDeviceInfo } from "@/hooks/use-device-info";
+import { useDeviceVendor } from "@/hooks/use-device-vendor";
 const alertMap: Record<"email-not-found" | "unable-to-verify", { title: string, message?: string }> = {
     "email-not-found": {
         title: 'Email Not Allowed'
@@ -29,7 +31,8 @@ const alertMap: Record<"email-not-found" | "unable-to-verify", { title: string, 
 export default function CreatePasswordPage({ email }: { email: string }) {
     const [isPending, startTransition] = useTransition()
     const [name, setName] = useQueryState('s')
-
+    const info = useDeviceInfo()
+    const vendor = useDeviceVendor()
     const form = useForm<z.infer<typeof passwordCreateSchema>>({
         resolver: zodResolver(passwordCreateSchema),
         defaultValues: {
@@ -43,7 +46,7 @@ export default function CreatePasswordPage({ email }: { email: string }) {
             position: 'top-center'
         })
         startTransition(() => {
-            createPassword(data).then((res) => {
+            createPassword(data, { ...info, ...vendor }).then((res) => {
                 setName(res.message)
             }).finally(() => toast.dismiss(id))
         })

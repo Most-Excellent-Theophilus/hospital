@@ -12,7 +12,8 @@ import sendMail from "../mail/sendmail";
 import { db } from "@/lib/firebase/database";
 import z from "zod";
 import { redirect } from "next/navigation";
-import { createSession } from "./auth.session";
+import { createSession, SessionUser } from "./auth.session";
+import { useDeviceInfo } from "@/hooks/use-device-info";
 
 
 
@@ -53,7 +54,10 @@ export const checkEmail = async (email: Login["email"]) => {
     } as const;
 };
 
-export const login = async (data: Login) => {
+export const login = async (data: Login, device: ReturnType<typeof useDeviceInfo>) => {
+    const clientInfo = await clientDataServer()
+
+
     const res = await loginSchema.safeParseAsync(data)
     if (!res.success) {
         return {
@@ -69,7 +73,7 @@ export const login = async (data: Login) => {
             status: "error",
             message: "email-not-found",
         } as const;
-    } 
+    }
     console.log({ user })
     console.log({ data })
 
@@ -81,7 +85,8 @@ export const login = async (data: Login) => {
             message: "email-or-password",
         } as const;
     }
-    await createSession(user)
+    await createSession({ ...user, ...clientInfo, ...device } as SessionUser)
+
     redirect('/dashboard')
 }
 
@@ -147,8 +152,8 @@ export const sendLink = async (data: Login['email']) => {
 
 }
 
-export const createPassword = async (data: z.infer<typeof passwordCreateSchema>) => {
-
+export const createPassword = async (data: z.infer<typeof passwordCreateSchema>, device: ReturnType<typeof useDeviceInfo>) => {
+    const clientInfo = await clientDataServer()
     const verified = await passwordCreateSchema.safeParseAsync(data)
 
     if (!verified.success) {
@@ -181,7 +186,7 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>)
     }
 
     // create session and redirect 
-    const session = await createSession(user)
+    const session = await createSession({ ...user, ...clientInfo, ...device } as SessionUser)
     if (session.status == 'error') {
         return {
             status: "error",

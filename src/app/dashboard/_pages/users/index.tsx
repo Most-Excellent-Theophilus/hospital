@@ -12,17 +12,16 @@ import {
 
 
 import { dateUtils } from "@/lib/utils/date"
-import useCreateAction from "@/hooks/use-create-action";
+
 import CreateAccountPage from "./doctors.form";
 import { useState } from "react";
 import { DoctorFormValues } from "@/features/users/users.types";
 import DoctorViewer from "./viewer";
+import { useNavigationVariables } from "@/hooks/url-hooks";
 
-const Accounts = ({ action }: { action?: string, id?: string }) => {
+const Accounts = () => {
     const { data } = useUsers();
-    const [, setAction] = useCreateAction({ key: 'action', defaultValue: '' })
-    const [, setId] = useCreateAction({ key: 'id', defaultValue: '' })
-    const [url, setUrl] = useCreateAction({ key: 's', defaultValue: '' })
+    const { action, setAction, setStatus, status } = useNavigationVariables()
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [selectedUser, setSelectedDoctor] = useState<DoctorFormValues | null>(null)
 
@@ -71,7 +70,8 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
 
         createNewRecordLink: () => {
             setSelectedDoctor(null)
-            setUrl('')
+            setAction('new')
+            setStatus('')
             setIsOpen(true)
         },
         data: data || [],
@@ -82,43 +82,57 @@ const Accounts = ({ action }: { action?: string, id?: string }) => {
         actionConfig: {
             onEdit(row) {
 
-                setSelectedDoctor(row)
-                setUrl('')
+              setSelectedDoctor(row)
+                setAction('edi')
+                setStatus('')
+
 
                 setIsOpen(true)
 
             },
             onDelete(row) {
-                setId(row.id)
+                setSelectedDoctor(row)
                 setAction('delete')
+                setStatus('')
+
+
+                setIsOpen(true)
             },
             onView(row) {
-                setId(row.id)
+                setSelectedDoctor(row)
+                setAction('view')
+                setStatus('')
+
+
+                setIsOpen(true)
 
             },
         }
     };
 
-    if (action == 'view')
-        return (<>
-            <GenericDataTable {...userResource} />
-            <Dialog open={isOpen && url !== 'success'} onOpenChange={setIsOpen}   >
+
+    return (<>
+        <GenericDataTable {...userResource} />
+        <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 
 
-                <DialogContent className=" sm:max-w-[925px]">
-                    <DialogHeader>
-                        <DialogTitle className="hidden">Edit profile</DialogTitle>
+            <DialogContent className=" sm:max-w-[925px]">
+                <DialogHeader>
+                    <DialogTitle className="hidden">Edit profile</DialogTitle>
 
-                    </DialogHeader>
-                    <>
-                    {/* <CreateAccountPage data={selectedUser} />  */}
-                    <DoctorViewer data={selectedUser as UserSchema} deletee /></>
+                </DialogHeader>
+                <>
+                    {action == "view" && <DoctorViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
+                    {action == "delete" && <DoctorViewer data={selectedUser as UserSchema} deletee onChange={setIsOpen} />}
+                 { "edit".includes(action) && <CreateAccountPage data={selectedUser as UserSchema} onChange={setIsOpen} />}
+                    {action == "new" && <CreateAccountPage onChange={setIsOpen} />}
+                </>
 
 
-                </DialogContent>
+            </DialogContent>
 
-            </Dialog>
-        </>);
+        </Dialog>
+    </>);
 
 
 }

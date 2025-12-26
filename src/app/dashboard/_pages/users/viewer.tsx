@@ -5,13 +5,32 @@ import { Separator } from "@/components/ui/separator";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { dateUtils } from "@/lib/utils/date";
-import {  CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 
 
 
-const DoctorViewer = ({ data, deletee }: { data: UserSchema, deletee?: boolean }) => {
+const DoctorViewer = ({ data, deletee, onChange }: { data: UserSchema, deletee?: boolean, onChange: (value: boolean) => void }) => {
 
-    const { firstName, middleName, lastName, dateOfBirth, gender, email, customGender, doctorId, userType, updatedAt, createdAt, verified } = data
+    const {
+      
+        firstName,
+        middleName,
+        lastName,
+        dateOfBirth,
+        gender,
+        email,
+        customGender,
+        doctorId,
+        userType,
+        updatedAt,
+        createdAt,
+        verified
+    } = data
+
+
+    const onDelete = () => {
+
+    }
     return (<div className="w-full max-w-7xl mx-auto p-3 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -42,7 +61,7 @@ const DoctorViewer = ({ data, deletee }: { data: UserSchema, deletee?: boolean }
                 <InfoField label="Rights" value={capitalizeFirstLetter(userType)} />
 
                 <Separator className="my-2" />
-                <AddressInfo  label="Verified" value={verified ? <CheckCircle className="text-primary" /> : <XCircle className="text-destructive" />} />
+                <AddressInfo label="Verified" value={verified ? <CheckCircle className="text-primary" /> : <XCircle className="text-destructive" />} />
                 <AddressInfo label="Date Created" value={dateUtils.formatFull(createdAt)} />
                 <AddressInfo label="Last Update" value={dateUtils.formatFull(updatedAt)} />
 
@@ -53,7 +72,11 @@ const DoctorViewer = ({ data, deletee }: { data: UserSchema, deletee?: boolean }
 
 
         </div>
-        {deletee && <Button variant={'destructive'}> Delete</Button>}
+        <div className="flex items-center">
+
+            {deletee && <Button onClick={onDelete} variant={'destructive'}> Delete</Button>}
+            <Button onClick={() => onChange(false)}>Close</Button>
+        </div>
 
     </div>);
 }

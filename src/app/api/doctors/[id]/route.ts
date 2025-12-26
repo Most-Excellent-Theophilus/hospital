@@ -1,4 +1,4 @@
-import { getDoctorById } from "@/features/users/users.actions";
+
 import { db } from "@/lib/firebase/database";
 
 export async function GET(

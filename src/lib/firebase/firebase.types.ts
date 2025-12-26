@@ -1,11 +1,12 @@
 
 import { tokenSchema } from "@/features/auth/auth.types";
+import { logsSchema } from "@/features/userlogs/userlogs.types";
 import { userSchema } from "@/features/users/users.types";
 import type admin from "firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
 import z from "zod";
 // 🔹 Collection & Subcollection
-
+import { NextRequest} from "next/server";
 
 export type TypeReturn<T> = { message: string } & {
   status: "success" | "warning" | "error" | "info" | "loading";
@@ -22,12 +23,15 @@ const mustHave = z.object({
   createdAt: timestampToDate,
   updatedAt: timestampToDate,
 });
+export const logSchema = logsSchema.and(mustHave.extend({ referee: z.string(), dataString: z.string().optional(), options: z.string().optional(), worked: z.boolean() }))
+export type LogsShema = z.infer<typeof logSchema>
 export const tokenWithMetaSchema = mustHave.and(tokenSchema)
 export type TokenSchema = z.infer<typeof tokenWithMetaSchema>
 export const userWithMetaSchema = mustHave.and(userSchema.omit({ dateOfBirth: true }).extend({ dateOfBirth: timestampToDate }));
 export type UserSchema = z.infer<typeof userWithMetaSchema>;
 
 export type TableTypeMap = {
+  databaseLogs: LogsShema;
   users: UserSchema;
   tokens: TokenSchema
 };
