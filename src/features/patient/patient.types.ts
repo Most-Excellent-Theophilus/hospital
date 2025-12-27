@@ -24,7 +24,7 @@ export const patientSchema = z.object({
     gender: z.enum(["male", "female", "other"]),
     address: z.string().min(3).max(550),
     phoneNumber: z.string().min(3).max(50),
-    userSession: logsSchema
+ 
 });
 
 export type PatientSchema = z.infer<typeof patientSchema>

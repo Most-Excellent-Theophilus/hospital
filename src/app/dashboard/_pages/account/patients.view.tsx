@@ -23,7 +23,7 @@ const PatientViewer = ({ data, deletee, onChange }: { data: UserSchema, deletee?
 
         updatedAt,
         createdAt,
-        userSession
+    
     } = data
 
 
@@ -55,7 +55,7 @@ const PatientViewer = ({ data, deletee, onChange }: { data: UserSchema, deletee?
 
             <Section title="Work Details">
                 <InfoField label="Email" value={email} />
-                <InfoField label="Doctor ID" value={userSession.doctorId} />
+                {/* <InfoField label="Doctor ID" value={userSession.doctorId} /> */}
 
                 <Separator className="my-2" />
                 <AddressInfo label="Date Created" value={dateUtils.formatFull(createdAt)} />

@@ -10,19 +10,22 @@ import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
-import { DoctorFormValues, registrationSchema, User } from "@/features/users/users.types";
+
 import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";
 
 import { Alerter } from "@/components/form/auth/feedback/alerter";
-import { checkUserEmail, updateDoctor } from "@/features/users/users.actions";
+import { checkUserEmail } from "@/features/users/users.actions";
 import { useTransition } from "react";
 import { toDate } from "@/lib/utils/date";
-import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
+
 
 import { useNavigationVariables } from "@/hooks/url-hooks";
-
+import { patientSchema, PatientSchema } from "@/features/patient/patient.types";
+import { useSharedState } from "@/components/providers/dashboard-context";
+import { updatePatient } from "@/features/patient/patient.actions";
+import { PatientSchema as PSchema} from "@/lib/firebase/firebase.types"
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success', { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
@@ -44,35 +47,42 @@ const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 
     },
 
 }
-export default function CreatePatientPage({ data, onChange }: { data?: UserSchema | null, onChange: (value: boolean) => void; }) {
+export default function CreatePatientPage({ data, onChange }: { data?: PSchema | null, onChange: (value: boolean) => void; }) {
     const createUser = useCreateUser()
     const [isPending, startTransition] = useTransition()
     const { status, setStatus } = useNavigationVariables()
 
 
-
-    const form = useForm<DoctorFormValues>({
-        resolver: zodResolver(registrationSchema),
-        defaultValues: data ? { ...data, dateOfBirth: toDate(data.dateOfBirth) } : {
+    const { value: userSession } = useSharedState()
+    const form = useForm<PatientSchema>({
+        resolver: zodResolver(patientSchema),
+        defaultValues: data || {
             firstName: "",
             lastName: "",
-            customGender: '',
             email: "",
-            doctorId: '',
             middleName: '',
             dateOfBirth: undefined,
-            userType: "viewer",
+            address: '',
+            gender: 'other',
+            otherNumber: [{
+                number: '',
+                owner: "",
+                type: 'home'
+            }],
+            phoneNumber: '',
+            supportingDocuments: [{
+                description: ''
+            }],
         },
     });
-
-    const onSubmit = (dataT: DoctorFormValues) => {
+    const onSubmit = (dataT: PatientSchema) => {
         const id = toast.loading("Please wait...", {
             position: 'top-center'
         })
         startTransition(() => {
             const fn = () => {
                 if (data) {
-                    updateDoctor(data.id, dataT as User).then((res) => {
+                    updatePatient(data.id, dataT ).then((res) => {
 
                         if (res.data?.id) {
                             setStatus("success")

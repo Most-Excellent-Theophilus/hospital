@@ -3,14 +3,14 @@ import { userSchema } from "../users/users.types";
 const nullableString = (fallback = "unknown") =>
   z.string().nullable().transform(v => v ?? fallback);
 
-export const logsSchema = userSchema.and(
+export const logsSchema = userSchema.merge(
   z.object({
     os: z.string(),
     osVersion: z.string(),
     browser: z.string(),
     browserVersion: z.string(),
     deviceType: z.string(),
-    model: nullableString(),
+    model: z.string().optional(),
     vendor: nullableString(),
     screenWidth: z.number(),
     screenHeight: z.number(),
