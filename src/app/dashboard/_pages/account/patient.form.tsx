@@ -19,7 +19,8 @@ import { Alerter } from "@/components/form/auth/feedback/alerter";
 import { checkUserEmail, updateDoctor } from "@/features/users/users.actions";
 import { useTransition } from "react";
 import { toDate } from "@/lib/utils/date";
-import { UserSchema } from "@/lib/firebase/firebase.types";
+import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
+
 import { useNavigationVariables } from "@/hooks/url-hooks";
 
 

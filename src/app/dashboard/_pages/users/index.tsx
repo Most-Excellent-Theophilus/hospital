@@ -19,6 +19,8 @@ import { DoctorFormValues } from "@/features/users/users.types";
 import DoctorViewer from "./viewer";
 import { useNavigationVariables } from "@/hooks/url-hooks";
 import { Loader } from "lucide-react";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 const Accounts = () => {
     const { data, } = useUsers();
@@ -113,7 +115,13 @@ const Accounts = () => {
 
 
     return (<>
-        <div >{!data && <p className="flex items-center w-full py-2 px-4"><Loader className="animate-spin" /> Loading...</p>}</div>
+        <div >{!data && <Alert>
+            <Spinner />
+            <AlertTitle>
+                Loading...
+            </AlertTitle>
+        </Alert>}</div>
+
 
         <GenericDataTable {...userResource} />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >

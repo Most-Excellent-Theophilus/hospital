@@ -1,5 +1,6 @@
 
 import { tokenSchema } from "@/features/auth/auth.types";
+import { patientSchema } from "@/features/patient/patient.types";
 import { logsSchema } from "@/features/userlogs/userlogs.types";
 import { userSchema } from "@/features/users/users.types";
 import type admin from "firebase-admin";
@@ -22,17 +23,19 @@ const mustHave = z.object({
   createdAt: timestampToDate,
   updatedAt: timestampToDate,
 });
-export const logSchema = logsSchema.and(mustHave.extend({ dataString: z.string().optional(), action: z.enum(['login', "reset", "logout", 'inhouse', 'create-password']).optional(),  worked: z.boolean() }))
+export const logSchema = logsSchema.and(mustHave.extend({ dataString: z.string().optional(), action: z.enum(['login', "reset", "logout", 'inhouse', 'create-password']).optional(), worked: z.boolean() }))
 export type LogsShema = z.infer<typeof logSchema>
 export const tokenWithMetaSchema = mustHave.and(tokenSchema)
 export type TokenSchema = z.infer<typeof tokenWithMetaSchema>
 export const userWithMetaSchema = mustHave.and(userSchema.omit({ dateOfBirth: true }).extend({ dateOfBirth: timestampToDate }));
 export type UserSchema = z.infer<typeof userWithMetaSchema>;
-
+export const patientWithMetaSchema = patientSchema.and(mustHave)
+export type PatientSchema = z.infer<typeof patientWithMetaSchema>
 export type TableTypeMap = {
   databaseLogs: LogsShema;
   users: UserSchema;
-  tokens: TokenSchema
+  tokens: TokenSchema;
+  patients: PatientSchema;
 };
 
 export type CollectionNames = keyof TableTypeMap;

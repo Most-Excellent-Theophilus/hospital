@@ -27,3 +27,4 @@ export const patientSchema = z.object({
     userSession: logsSchema
 });
 
+export type PatientSchema = z.infer<typeof patientSchema>

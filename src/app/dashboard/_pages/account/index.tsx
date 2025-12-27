@@ -1,8 +1,8 @@
 "use client";
 import { GenericDataTable } from "@/components/data-table/GenericDataTable";
 import { GenericDataTableProps } from "@/components/data-table/types";
-import { useUsers } from "@/features/users/users.queries";
-import { UserSchema } from "@/lib/firebase/firebase.types";
+import { usePatients as useUsers } from "@/features/patient/patient.queries";
+import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
 import {
     Dialog,
     DialogContent,
@@ -15,18 +15,20 @@ import { dateUtils } from "@/lib/utils/date"
 
 
 import { useState } from "react";
-import { DoctorFormValues } from "@/features/users/users.types";
+
 
 import { useNavigationVariables } from "@/hooks/url-hooks";
 import { Loader } from "lucide-react";
 import CreatePatientPage from "./patient.form";
 import PatientViewer from "./patients.view";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
 
 const Accounts = () => {
     const { data, } = useUsers();
     const { action, setAction, setStatus, status } = useNavigationVariables()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [selectedUser, setSelectedDoctor] = useState<DoctorFormValues | null>(null)
+    const [selectedUser, setSelectedDoctor] = useState<UserSchema | null>(null)
 
 
 
@@ -45,12 +47,7 @@ const Accounts = () => {
                 sortable: true,
                 searchable: true,
             },
-            {
-                key: "userType",
-                label: "User Group",
-                sortable: true,
-                searchable: true,
-            },
+
             {
                 key: "createdAt",
                 label: "Date Created",
@@ -115,7 +112,12 @@ const Accounts = () => {
 
 
     return (<>
-        <div >{!data && <p className="flex items-center w-full py-2 px-4"><Loader className="animate-spin" /> Loading...</p>}</div>
+        <div >{!data && <Alert>
+            <Spinner />
+            <AlertTitle>
+                Loading...
+            </AlertTitle>
+        </Alert>}</div>
 
         <GenericDataTable {...userResource} />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >

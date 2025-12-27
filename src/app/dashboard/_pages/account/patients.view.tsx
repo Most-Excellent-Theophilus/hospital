@@ -2,29 +2,28 @@
 import { AddressInfo, InfoField, Section } from "@/components/review-componemts";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UserSchema } from "@/lib/firebase/firebase.types";
+import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
+
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { dateUtils } from "@/lib/utils/date";
-import { CheckCircle, XCircle } from "lucide-react";
+
 
 
 
 const PatientViewer = ({ data, deletee, onChange }: { data: UserSchema, deletee?: boolean, onChange: (value: boolean) => void }) => {
 
     const {
-      
+
         firstName,
         middleName,
         lastName,
         dateOfBirth,
         gender,
         email,
-        customGender,
-        doctorId,
-        userType,
+
         updatedAt,
         createdAt,
-        verified
+        userSession
     } = data
 
 
@@ -51,17 +50,14 @@ const PatientViewer = ({ data, deletee, onChange }: { data: UserSchema, deletee?
                 <AddressInfo label="Date Of Birth" value={dateUtils.formatFull(dateOfBirth)} />
                 <InfoField label="Gender" value={capitalizeFirstLetter(gender)} />
                 <Separator className="my-2" />
-                {customGender && <InfoField label="Gender" value={customGender} />}
 
             </Section>
 
             <Section title="Work Details">
                 <InfoField label="Email" value={email} />
-                <InfoField label="Doctor ID" value={doctorId} />
-                <InfoField label="Rights" value={capitalizeFirstLetter(userType)} />
+                <InfoField label="Doctor ID" value={userSession.doctorId} />
 
                 <Separator className="my-2" />
-                <AddressInfo label="Verified" value={verified ? <CheckCircle className="text-primary" /> : <XCircle className="text-destructive" />} />
                 <AddressInfo label="Date Created" value={dateUtils.formatFull(createdAt)} />
                 <AddressInfo label="Last Update" value={dateUtils.formatFull(updatedAt)} />
 
