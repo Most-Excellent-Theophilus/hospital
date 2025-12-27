@@ -16,12 +16,11 @@ import { linksIconMap } from "./config";
 import { Label } from "../ui/label";
 import DashBoardHeader from "./header";
 
-import { SessionUser } from "@/features/auth/auth.session";
 
 const data = {
   navMain: Object.values(linksIconMap).map((item) => item),
 };
-export function AppSidebarProcider({ children, user, ...props }: React.ComponentProps<typeof Sidebar> & { children?: React.ReactNode, user: Omit<SessionUser, "password"> }) {
+export function AppSidebarProcider({ children, ...props }: React.ComponentProps<typeof Sidebar> & { children?: React.ReactNode, }) {
 
 
   return (
@@ -48,7 +47,7 @@ export function AppSidebarProcider({ children, user, ...props }: React.Component
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <DashBoardHeader user={user} />
+        <DashBoardHeader  />
         <div className=" h-full flex  justify-center"> <div className="w-full ">{children}</div></div>
 
       </SidebarInset>

@@ -1,6 +1,6 @@
 
 
-import ACCOUNT from "@/app/dashboard/_pages/account"
+import ACCOUNT from "@/app/dashboard/_pages/account/index"
 import HOME from "@/app/dashboard/_pages/home"
 import POSTOP from "@/app/dashboard/_pages/postOp"
 import PREOP from "@/app/dashboard/_pages/preOp"

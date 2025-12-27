@@ -22,7 +22,7 @@ const mustHave = z.object({
   createdAt: timestampToDate,
   updatedAt: timestampToDate,
 });
-export const logSchema = logsSchema.and(mustHave.extend({ referee: z.string(), dataString: z.string().optional(), options: z.string().optional(), worked: z.boolean() }))
+export const logSchema = logsSchema.and(mustHave.extend({ dataString: z.string().optional(), action: z.enum(['login', "reset", "logout", 'inhouse', 'create-password']).optional(),  worked: z.boolean() }))
 export type LogsShema = z.infer<typeof logSchema>
 export const tokenWithMetaSchema = mustHave.and(tokenSchema)
 export type TokenSchema = z.infer<typeof tokenWithMetaSchema>

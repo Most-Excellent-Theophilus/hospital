@@ -14,22 +14,23 @@ import { capitalizeFirstLetter } from "@/lib/utils";
 
 import {
   Dialog,
- 
+
   DialogContent,
- 
+
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useNavigationVariables } from "@/hooks/url-hooks";
-import { SessionUser } from "@/features/auth/auth.session";
+
 import { AddressInfo, InfoField, Section } from "../review-componemts";
 import { Separator } from "../ui/separator";
 import { dateUtils } from "@/lib/utils/date";
 import { logoutNow } from "@/features/auth/auth.actions";
-const DashBoardHeader = ({ user }: { user: Omit<SessionUser, "password"> }) => {
+import { useSharedState } from "@/components/providers/dashboard-context"
+const DashBoardHeader = () => {
 
-  const { browser, browserVersion, city, continent, country, dateOfBirth, deviceType, doctorId, email, firstName, gender, host, ip, isTouch, lastName, lat, lon, model, os, osVersion, region, screenHeight, screenWidth, timezone, userType, vendor, customGender, middleName, verified } = user
+  const { value: { browser, browserVersion, city, continent, country, dateOfBirth, deviceType, doctorId, email, firstName, gender, host, ip, isTouch, lastName, lat, lon, model, os, osVersion, region, screenHeight, screenWidth, timezone, userType, vendor, customGender, middleName, verified } } = useSharedState();
 
 
   const { page } = useNavigationVariables()
@@ -43,7 +44,7 @@ const DashBoardHeader = ({ user }: { user: Omit<SessionUser, "password"> }) => {
   return (
     <header className="flex justify-between h-16 px-5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex space-x-2 items-center">
-        < SidebarTrigger className="sm:hidden" />
+        <SidebarTrigger className="sm:hidden" />
         <Button onClick={() => router.back()} variant={'outline'} size="icon" className="rounded-full"> <ArrowLeft />  </Button>
 
         <Icon className="size-7 text-primary" />
@@ -52,7 +53,7 @@ const DashBoardHeader = ({ user }: { user: Omit<SessionUser, "password"> }) => {
       <div className="flex flex-row-reverse">   <Dialog>
 
         <DialogTrigger asChild>
-          <Button variant="link">Dr. {capitalizeFirstLetter(user.firstName)}</Button>
+          <Button variant="link">Dr. {capitalizeFirstLetter(firstName)}</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[825px]  ">
           <DialogHeader className="hidden">

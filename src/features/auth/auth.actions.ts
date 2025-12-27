@@ -7,7 +7,7 @@ import { Login, loginSchema, passwordCreateSchema, Token } from "./auth.types";
 import { v4 as tokenGen } from "uuid";
 
 import clientDataServer from "./client.locale";
-import { TokenSchema } from "@/lib/firebase/firebase.types";
+import { LogsShema, TokenSchema } from "@/lib/firebase/firebase.types";
 import sendMail from "../mail/sendmail";
 import { db } from "@/lib/firebase/database";
 import z from "zod";
@@ -86,11 +86,14 @@ export const login = async (data: Login, device: ReturnType<typeof useDeviceInfo
         } as const;
     }
     await createSession({ ...user, ...clientInfo, ...device } as SessionUser)
+    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as LogsShema)
 
     redirect('/dashboard')
 }
 
-export const setResetPassword = async (email: Login["email"]) => {
+export const setResetPassword = async (email: Login["email"],) => {
+
+
     const result = await userDb.search('email', email)
     const user = result.data?.[0];
 
@@ -116,7 +119,7 @@ export const setResetPassword = async (email: Login["email"]) => {
 
 }
 
-export const sendLink = async (data: Login['email']) => {
+export const sendLink = async (data: Login['email'],) => {
     const { host } = await clientDataServer()
     const token = tokenGen()
     const tokenLink = host + '/verification/' + token
@@ -145,6 +148,7 @@ export const sendLink = async (data: Login['email']) => {
             } as const;
         }
     }
+
     return {
         status: "success",
         message: "email-sent",
@@ -179,6 +183,8 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>,
 
     const res = await db.update<'users'>({ path: 'users', id: user.id }, { password: hashedPassword, verified: true })
     if (res.data == null) {
+        await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as LogsShema)
+
         return {
             status: "error",
             message: "unable-to-verify",
@@ -188,11 +194,14 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>,
     // create session and redirect 
     const session = await createSession({ ...user, ...clientInfo, ...device } as SessionUser)
     if (session.status == 'error') {
+        await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as LogsShema)
+
         return {
             status: "error",
             message: "unable-to-verify",
         } as const;
     }
+    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: true, action: 'login' } as LogsShema)
     redirect('/dashboard')
 }
 
