@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form";
 import { CloudUpload, File, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils/index";
+import Image from "next/image";
 
 type DropzoneFieldProps<T extends FieldValues> = {
   control: Control<T>;
@@ -51,7 +52,7 @@ const DropzoneField = <T extends FieldValues>({
         const dropzone = useDropzone({
           onDropFile: async (file: File) => {
             await new Promise((resolve) => setTimeout(resolve, 500));
-            
+
             // Create preview URL for images
             const isImage = file.type.startsWith("image/");
             return {
@@ -119,7 +120,7 @@ const DropzoneField = <T extends FieldValues>({
                 <DropzoneFileList className="grid gap-3 p-0 mt-4 md:grid-cols-2 lg:grid-cols-3">
                   {dropzone.fileStatuses.map((file) => {
                     const isImage = file.file.type.startsWith("image/");
-                    
+
                     return (
                       <DropzoneFileListItem
                         className="overflow-hidden rounded-md bg-secondary p-0 shadow-sm"
@@ -133,10 +134,12 @@ const DropzoneField = <T extends FieldValues>({
                           )} />
                         )}
                         {file.status === "success" && isImage && file.result && (
-                          <img
+                          < Image
                             src={file.result}
                             alt={`uploaded-${file.fileName}`}
-                            className="aspect-video object-cover"
+                            width={300}
+                            height={200}
+                            className="aspect-video  object-cover"
                           />
                         )}
                         {file.status === "success" && !isImage && (
@@ -146,7 +149,7 @@ const DropzoneField = <T extends FieldValues>({
                         )}
                         <div className="flex items-center justify-between p-2 pl-4">
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium">{file.fileName}</p>
+                            <p className="truncate text-sm font-medium">{file.fileName} {file['file'].name}</p>
                             <p className="text-xs text-muted-foreground">
                               {(file.file.size / (1024 * 1024)).toFixed(2)} MB
                             </p>

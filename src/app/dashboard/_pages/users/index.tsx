@@ -18,9 +18,6 @@ import { useState } from "react";
 import { DoctorFormValues } from "@/features/users/users.types";
 import DoctorViewer from "./viewer";
 import { useNavigationVariables } from "@/hooks/url-hooks";
-import { Loader } from "lucide-react";
-import { Alert, AlertTitle } from "@/components/ui/alert";
-import { Spinner } from "@/components/ui/spinner";
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";
 
 const Accounts = () => {

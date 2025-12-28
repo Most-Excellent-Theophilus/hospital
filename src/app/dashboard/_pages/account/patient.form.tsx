@@ -27,10 +27,11 @@ import { PatientSchema as PSchema } from "@/lib/firebase/firebase.types"
 import { useCreatePatient } from "@/features/patient/patient.mutations";
 import AddressInput from "@/components/form/auth/inputs/address-input";
 import PhoneInputField from "@/components/form/auth/inputs/phone-input";
-import { Label } from "@/components/ui/label";
 import DropzoneField from "@/components/form/auth/inputs/file-uploader";
-import { Mail, Phone, Trash2 } from "lucide-react";
+import { Mail, Phone, Trash2, User } from "lucide-react";
 import { CommandSelectField } from "@/components/form/auth/inputs/command-input";
+import { Label } from "@/components/ui/label";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success' | "not-allowed", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
@@ -101,41 +102,25 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
             position: 'top-center'
         })
         startTransition(() => {
-            const fn = () => {
-                if (data) {
-                    updatePatient(data.id, dataT).then((res) => {
+            createUser.mutate(dataT, {
+                onSuccess: (value) => {
+                    const { status, message } = value
 
-                        if (res.data?.id) {
-                            setStatus("success")
-                            onChange(false)
-                        } else {
-                            setStatus("failed-to-update")
-                        }
-                    }).finally(() => toast.dismiss(id))
-                } else {
+                    toast[status](message, { id })
+                    setStatus("success")
+
+                },
+                onError: () => {
+                    toast.error("Something went wrong", { id })
+                },
+                onSettled: () => {
+                    toast.dismiss(id)
+
+                },
+            })
 
 
 
-                    createUser.mutate(dataT, {
-                        onSuccess: (value) => {
-                            const { status, message } = value
-
-                            toast[status](message, { id })
-                            setStatus("success")
-
-                        },
-                        onError: () => {
-                            toast.error("Something went wrong", { id })
-                        },
-                        onSettled: () => {
-                            toast.dismiss(id)
-
-                        },
-                    })
-
-                }
-            }
-            fn()
         })
 
     }
@@ -207,7 +192,6 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                                 from={18}
 
                             />
-                            <AddressInput control={form.control} label="Patient's Address" name="address" className="bg-accent h-28 " />
                         </div>
 
                         <div className="space-y-3 flex flex-col ">
@@ -239,37 +223,44 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
 
                     </div>
                     <div className="my-4 ">
-                        <div className="grid sm:grid-cols-2 gap-6 my-3"> {contactFields.map((contactField, id) => (<div key={id} className="relative space-y-4 ">
-                            {contactFields.length > 1 && <Button type="button" onClick={() => removeContact(id)} variant={'outline'} size={'icon'} className="hover:bg-destructive absolute right-0 top-0 z-50"> <Trash2 /> </Button >}
-                            <TextInput
-                                control={form.control}
-                                label="Patient's First Name"
-                                name={`otherContacts.${id}.fullName`}
-                                className="bg-accent"
-                            />
-
-                            {contactField.type == 'email' ? <EmailUserNameInput
-                                control={form.control}
-                                label={`${form.watch(`otherContacts.${id}.fullName`)}'s Email`}
-                                name={`otherContacts.${id}.contact`}
-                                className="bg-accent"
-                            /> : <PhoneInputField control={form.control} label name={`otherContacts.${id}.contact`} />}
-                            <CommandSelectField<typeof patientSchema>
-                                control={form.control}
-                                name={`otherContacts.${id}.relationship`}
-                                label="Relation Ship"
-                                placeholder="Choose owner"
-                                options={[
-                                    { value: "guardian", label: "Guardian" },
-                                    { value: "mother", label: "Mother" },
-                                    { value: "father", label: "Father" },
-                                    { value: "friend", label: "Friend" },
-                                    { value: "other", label: "Other" },
-                                ]}
-                            />
+                        <Label>Other Contacts</Label>
+                        <div className="grid sm:grid-cols-2 gap-6 my-3">
+                            <div className="my-3 "><AddressInput control={form.control} label="Patient's Address" name="address" className="bg-accent h-28 " /></div>
 
 
-                        </div>))}
+                            {contactFields.map((contactField, id) => (<div key={id} className="relative space-y-4  my-3">
+                                {contactFields.length > 1 && <Button type="button" onClick={() => removeContact(id)} variant={'outline'} size={'icon'} className="hover:bg-destructive  hover:text-background absolute right-0.5 top-0.5 z-50"> <Trash2 /> </Button >}
+                                <CommandSelectField<typeof patientSchema>
+                                    control={form.control}
+                                    name={`otherContacts.${id}.relationship`}
+                                    label="Relation Ship"
+                                    placeholder="RelationShip"
+
+                                    options={[
+                                        { value: "guardian", label: "Guardian", icon: <User /> },
+                                        { value: "mother", label: "Mother", icon: <User /> },
+                                        { value: "father", label: "Father", icon: <User /> },
+                                        { value: "friend", label: "Friend", icon: <User /> },
+                                        { value: "other", label: "Other", icon: <User /> },
+                                    ]}
+                                />
+                                <TextInput
+                                    control={form.control}
+                                    label={`${capitalizeFirstLetter(form.watch(`otherContacts.${id}.relationship`))} Full Name`}
+                                    name={`otherContacts.${id}.fullName`}
+                                    className="bg-accent"
+                                />
+
+                                {contactField.type == 'email' ? <EmailUserNameInput
+                                    control={form.control}
+                                    label={`${form.watch(`otherContacts.${id}.fullName`)}'s Email`}
+                                    name={`otherContacts.${id}.contact`}
+                                    className="bg-accent"
+                                /> : <PhoneInputField control={form.control} label name={`otherContacts.${id}.contact`} />}
+
+
+
+                            </div>))}
 
 
 
@@ -277,7 +268,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                         </div>
                         <div className="flex items-center  space-x-5"><Button disabled={contactFields.length >= 8} type="button" variant={'secondary'} size={'lg'} onClick={() => addContact('phone')}><Phone />Add Phone </Button>
                             <Button variant={'secondary'} type="button" disabled={contactFields.length >= 8} size={'lg'} onClick={() => addContact('email')}><Mail />Add Email</Button> <p className="text-primary/70 text-sm " > Can Add Up to 8 contacts </p></div>
-                       
+
 
                     </div>
                     <div className="my-4">
@@ -292,6 +283,8 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                             {data ? "Update" : "Create"} Account
                         </Button>
                     </div>
+
+
                 </fieldset>
             </form>
         </Form>
