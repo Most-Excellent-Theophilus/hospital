@@ -57,7 +57,7 @@ export function TableToolbar<T extends BaseTableItem>({
           />
         )} */}
 
-          {table.getColumn("userType") && (
+          { table.getColumn("userType") && table.getColumn("userType") && (
             <DataTableFacetedFilter
               column={table.getColumn("userType")}
               title="User Type"

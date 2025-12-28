@@ -21,6 +21,7 @@ import { useNavigationVariables } from "@/hooks/url-hooks";
 import { Loader } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import LoadingBar from "@/components/form/auth/feedback/loading.bar";
 
 const Accounts = () => {
     const { data, } = useUsers();
@@ -115,14 +116,9 @@ const Accounts = () => {
 
 
     return (<>
-        <div >{!data && <Alert>
-            <Spinner />
-            <AlertTitle>
-                Loading...
-            </AlertTitle>
-        </Alert>}</div>
 
 
+        {!data && <LoadingBar />}
         <GenericDataTable {...userResource} />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 

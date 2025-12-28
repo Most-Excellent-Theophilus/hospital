@@ -50,11 +50,16 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   /* Data visualization (vitals, analytics) */
-  --color-chart-1: var(--chart-1); /* Heart rate / alerts */
-  --color-chart-2: var(--chart-2); /* Oxygen / calm */
-  --color-chart-3: var(--chart-3); /* BP / neutral */
-  --color-chart-4: var(--chart-4); /* Warnings */
-  --color-chart-5: var(--chart-5); /* Recovery */
+  --color-chart-1: var(--chart-1);
+  /* Heart rate / alerts */
+  --color-chart-2: var(--chart-2);
+  /* Oxygen / calm */
+  --color-chart-3: var(--chart-3);
+  /* BP / neutral */
+  --color-chart-4: var(--chart-4);
+  /* Warnings */
+  --color-chart-5: var(--chart-5);
+  /* Recovery */
 
   /* Softer corners for medical UI */
   --radius-sm: calc(var(--radius) - 2px);
@@ -102,11 +107,16 @@
   --ring: oklch(0.55 0.14 230);
 
   /* Charts (vitals & reports) */
-  --chart-1: oklch(0.62 0.23 25);   /* Critical (red) */
-  --chart-2: oklch(0.65 0.14 190);  /* Oxygen (teal) */
-  --chart-3: oklch(0.55 0.08 230);  /* BP (blue) */
-  --chart-4: oklch(0.78 0.18 85);   /* Warning (yellow) */
-  --chart-5: oklch(0.7 0.16 145);   /* Recovery (green) */
+  --chart-1: oklch(0.62 0.23 25);
+  /* Critical (red) */
+  --chart-2: oklch(0.65 0.14 190);
+  /* Oxygen (teal) */
+  --chart-3: oklch(0.55 0.08 230);
+  /* BP (blue) */
+  --chart-4: oklch(0.78 0.18 85);
+  /* Warning (yellow) */
+  --chart-5: oklch(0.7 0.16 145);
+  /* Recovery (green) */
 
   /* Sidebar */
   --sidebar: oklch(0.97 0.01 210);
@@ -167,6 +177,18 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  * {
+    @apply transition-colors duration-200 ease-in-out;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    @apply transition-all duration-200 ease-in-out;
   }
 
   body {

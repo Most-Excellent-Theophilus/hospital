@@ -23,6 +23,7 @@ import CreatePatientPage from "./patient.form";
 import PatientViewer from "./patients.view";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import LoadingBar from "@/components/form/auth/feedback/loading.bar";
 
 const Accounts = () => {
     const { data, } = useUsers();
@@ -112,18 +113,13 @@ const Accounts = () => {
 
 
     return (<>
-        <div >{!data && <Alert>
-            <Spinner />
-            <AlertTitle>
-                Loading...
-            </AlertTitle>
-        </Alert>}</div>
 
+        {!data && <LoadingBar />}
         <GenericDataTable {...userResource} />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 
 
-            <DialogContent className=" sm:max-w-[925px]">
+            <DialogContent className=" sm:max-w-[925px] max-h-[90dvh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle className="hidden">Edit profile</DialogTitle>
 

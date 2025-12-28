@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.className}  antialiased flex  min-h-screen items-center justify-center`}
+        className={`${geistSans.className} animate-in fade-in duration-300  antialiased flex  min-h-screen items-center justify-center`}
         suppressHydrationWarning
       >
         <Providers>

@@ -4,20 +4,18 @@
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
 
-import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";
 
 import { Alerter } from "@/components/form/auth/feedback/alerter";
-import { checkUserEmail } from "@/features/users/users.actions";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { toDate } from "@/lib/utils/date";
 
 
@@ -25,9 +23,16 @@ import { useNavigationVariables } from "@/hooks/url-hooks";
 import { patientSchema, PatientSchema } from "@/features/patient/patient.types";
 import { useSharedState } from "@/components/providers/dashboard-context";
 import { updatePatient } from "@/features/patient/patient.actions";
-import { PatientSchema as PSchema} from "@/lib/firebase/firebase.types"
+import { PatientSchema as PSchema } from "@/lib/firebase/firebase.types"
+import { useCreatePatient } from "@/features/patient/patient.mutations";
+import AddressInput from "@/components/form/auth/inputs/address-input";
+import PhoneInputField from "@/components/form/auth/inputs/phone-input";
+import { Label } from "@/components/ui/label";
+import DropzoneField from "@/components/form/auth/inputs/file-uploader";
+import { Mail, Phone, Trash2 } from "lucide-react";
+import { CommandSelectField } from "@/components/form/auth/inputs/command-input";
 
-const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success', { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
+const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success' | "not-allowed", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
         title: 'Email Not Allowed',
         variant: 'destructive',
@@ -45,15 +50,21 @@ const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 
         variant: 'destructive',
         title: 'Unable to Update'
     },
+    "not-allowed": {
+        title: 'Disabled',
+        message: 'You do not have the rights to create or update a patient',
+        variant: 'destructive'
+    }
 
 }
+
+
 export default function CreatePatientPage({ data, onChange }: { data?: PSchema | null, onChange: (value: boolean) => void; }) {
-    const createUser = useCreateUser()
+    const createUser = useCreatePatient()
     const [isPending, startTransition] = useTransition()
+    const { value: userSession } = useSharedState()
     const { status, setStatus } = useNavigationVariables()
 
-
-    const { value: userSession } = useSharedState()
     const form = useForm<PatientSchema>({
         resolver: zodResolver(patientSchema),
         defaultValues: data || {
@@ -63,18 +74,28 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
             middleName: '',
             dateOfBirth: undefined,
             address: '',
-            gender: 'other',
-            otherNumber: [{
-                number: '',
-                owner: "",
-                type: 'home'
+            // gender: 'other',
+            otherContacts: [{
+                contact: '',
+                fullName: '',
+                relationship: "uncle",
+                type: 'phone'
             }],
             phoneNumber: '',
-            supportingDocuments: [{
-                description: ''
-            }],
+            documents: [],
+            doctorEmail: userSession.email,
+            doctorId: userSession.doctorId,
+
+
         },
     });
+    const { append: appendContact, remove: removeContact, fields: contactFields, } = useFieldArray({ control: form.control, name: "otherContacts" })
+
+    const addContact = (type: 'email' | 'phone') => {
+        appendContact({ contact: '', fullName: '', relationship: '', type })
+    }
+
+
     const onSubmit = (dataT: PatientSchema) => {
         const id = toast.loading("Please wait...", {
             position: 'top-center'
@@ -82,7 +103,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
         startTransition(() => {
             const fn = () => {
                 if (data) {
-                    updatePatient(data.id, dataT ).then((res) => {
+                    updatePatient(data.id, dataT).then((res) => {
 
                         if (res.data?.id) {
                             setStatus("success")
@@ -92,49 +113,52 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                         }
                     }).finally(() => toast.dismiss(id))
                 } else {
-                    checkUserEmail(dataT.email).then((da) => {
-                        if (da.data?.[0]) {
-                            setStatus("email-taken")
+
+
+
+                    createUser.mutate(dataT, {
+                        onSuccess: (value) => {
+                            const { status, message } = value
+
+                            toast[status](message, { id })
+                            setStatus("success")
+
+                        },
+                        onError: () => {
+                            toast.error("Something went wrong", { id })
+                        },
+                        onSettled: () => {
                             toast.dismiss(id)
-                            return
-                        }
 
-                        createUser.mutate(dataT, {
-                            onSuccess: (value) => {
-                                const { status, message } = value
+                        },
+                    })
 
-                                toast[status](message, { id })
-                                setStatus("success")
-
-                            },
-                            onError: () => {
-                                toast.error("Something went wrong", { id })
-                            },
-                            onSettled: () => {
-                                toast.dismiss(id)
-
-                            },
-                        })
-                    }).finally(() => toast.dismiss(id))
                 }
             }
             fn()
         })
 
     }
-
+    useEffect(() => {
+        const fn = () => {
+            if (userSession.userType == 'viewer') {
+                setStatus('not-allowed')
+            }
+        }
+        fn()
+    })
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="w-full items-center justify-center flex px-7   mt-8"
             >
-                <fieldset disabled={form.formState.isSubmitting || isPending}>
+                <fieldset disabled={form.formState.isSubmitting || isPending || userSession.userType == 'viewer'}>
                     <div>
                         <div className="flex items-center space-x-2.5">
 
                             <h1 className="text-xl font-semibold text-primary">
-                                {data ? "Update" : "Create"} Doctor {data && `: ${data.firstName} ${data.lastName}`}
+                                {data ? "Update" : "Create"} Patient {data && `: ${data.firstName} ${data.lastName}`}
                             </h1>
                         </div>
 
@@ -151,21 +175,21 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                             <div className="flex space-x-3">
                                 <TextInput
                                     control={form.control}
-                                    label="First Name"
+                                    label="Patient's First Name"
                                     name="firstName"
                                     className="bg-accent"
                                 />
 
                                 <TextInput
                                     control={form.control}
-                                    label="Last Name"
+                                    label="Patient's Last Name"
                                     name="lastName"
                                     className="bg-accent"
                                 />
                             </div>
                             <TextInput
                                 control={form.control}
-                                label="Middle Name"
+                                label="Patient's Middle Name"
                                 name="middleName"
                                 className="bg-accent"
                             />
@@ -173,7 +197,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
 
                             <DropDownDatePicker
                                 control={form.control}
-                                label="BirthDay"
+                                label="Patient's BirthDay"
                                 name="dateOfBirth"
                                 def={data?.dateOfBirth ? {
                                     year: toDate(data.dateOfBirth)?.getFullYear() || 2007,
@@ -183,37 +207,24 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                                 from={18}
 
                             />
+                            <AddressInput control={form.control} label="Patient's Address" name="address" className="bg-accent h-28 " />
                         </div>
 
                         <div className="space-y-3 flex flex-col ">
-                            <div>
-                                <EmailUserNameInput
-                                    control={form.control}
-                                    label="Email"
-                                    name="email"
-                                    className="bg-accent"
-                                />
-                            </div>
-                            <TextInput
+
+                            <EmailUserNameInput
                                 control={form.control}
-                                label="Doctor Id"
-                                name="doctorId"
-                                className="bg-accent "
+                                label="Patient's Email"
+                                name="email"
+                                className="bg-accent"
                             />
-                            <RadioGroupField<typeof registrationSchema>
+                            <PhoneInputField control={form.control} label="Phone Number" name="phoneNumber" />
+
+
+
+                            <RadioGroupField<typeof patientSchema>
                                 layout="row"
-                                label="Rights"
-                                name="userType"
-                                control={form.control}
-                                options={[
-                                    { value: "admin", label: "Administrator" },
-                                    { value: "inputer", label: "Editor" },
-                                    { value: "viewer", label: "Readonly" },
-                                ]}
-                            />
-                            <RadioGroupField<typeof registrationSchema>
-                                layout="row"
-                                label="Gender"
+                                label="Patient's Gender"
                                 name="gender"
                                 control={form.control}
                                 options={[
@@ -223,19 +234,56 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                                 ]}
                             />
 
-                            {form.watch("gender") == "other" && (
-                                <div className="mt-1">
-                                    <TextInput
-                                        control={form.control}
-                                        label="Specify Gender"
-                                        name="customGender"
-                                        className="bg-accent"
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
 
+                        </div>
+
+                    </div>
+                    <div className="my-4 ">
+                        <div className="grid sm:grid-cols-2 gap-6 my-3"> {contactFields.map((contactField, id) => (<div key={id} className="relative space-y-4 ">
+                            {contactFields.length > 1 && <Button type="button" onClick={() => removeContact(id)} variant={'outline'} size={'icon'} className="hover:bg-destructive absolute right-0 top-0 z-50"> <Trash2 /> </Button >}
+                            <TextInput
+                                control={form.control}
+                                label="Patient's First Name"
+                                name={`otherContacts.${id}.fullName`}
+                                className="bg-accent"
+                            />
+
+                            {contactField.type == 'email' ? <EmailUserNameInput
+                                control={form.control}
+                                label={`${form.watch(`otherContacts.${id}.fullName`)}'s Email`}
+                                name={`otherContacts.${id}.contact`}
+                                className="bg-accent"
+                            /> : <PhoneInputField control={form.control} label name={`otherContacts.${id}.contact`} />}
+                            <CommandSelectField<typeof patientSchema>
+                                control={form.control}
+                                name={`otherContacts.${id}.relationship`}
+                                label="Relation Ship"
+                                placeholder="Choose owner"
+                                options={[
+                                    { value: "guardian", label: "Guardian" },
+                                    { value: "mother", label: "Mother" },
+                                    { value: "father", label: "Father" },
+                                    { value: "friend", label: "Friend" },
+                                    { value: "other", label: "Other" },
+                                ]}
+                            />
+
+
+                        </div>))}
+
+
+
+
+                        </div>
+                        <div className="flex items-center  space-x-5"><Button disabled={contactFields.length >= 8} type="button" variant={'secondary'} size={'lg'} onClick={() => addContact('phone')}><Phone />Add Phone </Button>
+                            <Button variant={'secondary'} type="button" disabled={contactFields.length >= 8} size={'lg'} onClick={() => addContact('email')}><Mail />Add Email</Button> <p className="text-primary/70 text-sm " > Can Add Up to 8 contacts </p></div>
+                       
+
+                    </div>
+                    <div className="my-4">
+                        {/* File Uploader  */}
+                        <DropzoneField control={form.control} label="Supporting Documents" name="documents" maxSize={1} maxFiles={12} />
+                    </div>
                     <div className="flex justify-between">
                         <Button type="button" size="lg" variant={'secondary'} onClick={() => form.reset()}>
                             Clear
