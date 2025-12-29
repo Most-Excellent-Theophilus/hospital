@@ -20,7 +20,7 @@ interface CacheConfig {
  * Cache defaults
  */
 const DEFAULT_CACHE_CONFIG: Record<string, CacheConfig> = {
-  getAll: { duration: 60 * 60 * 24, enabled: true },
+  getAll: { duration: 60 * 60 * 24 * 30, enabled: true },
   getById: { duration: 60 * 60 * 24, enabled: true },
   search: { duration: 60 * 60 * 12, enabled: true },
   count: { duration: 60 * 60 * 6, enabled: true },
@@ -65,22 +65,26 @@ export async function createCacheActions<T extends CollectionNames>(
   // ====== CRUD & Queries ======
 
   async function getAll(
-    options?: QueryOptions<T>
+    options?: QueryOptions<T>,
+    skipTimeStap?: boolean,
   ): Promise<TypeReturn<TableTypeMap[T][]>> {
     const fetchFn = async (): Promise<TypeReturn<TableTypeMap[T][]>> => {
       try {
         const response = await db.get<T>(
           { path: collectionName },
-          { limit: 100, ...options }
+
+          { limit: 500, ...options },
+          skipTimeStap,
+
+
         );
         return response;
       } catch (err) {
         return {
           status: "error",
           data: null,
-          message: `Failed to retrieve ${collectionName}: ${
-            err instanceof Error ? err.message : "Unknown error"
-          }`,
+          message: `Failed to retrieve ${collectionName}: ${err instanceof Error ? err.message : "Unknown error"
+            }`,
         };
       }
     };
@@ -110,9 +114,8 @@ export async function createCacheActions<T extends CollectionNames>(
         return {
           status: "error",
           data: null,
-          message: `Failed to retrieve document: ${
-            err instanceof Error ? err.message : "Unknown error"
-          }`,
+          message: `Failed to retrieve document: ${err instanceof Error ? err.message : "Unknown error"
+            }`,
         };
       }
     };
@@ -143,9 +146,8 @@ export async function createCacheActions<T extends CollectionNames>(
         return {
           status: "error",
           data: null,
-          message: `Search failed: ${
-            err instanceof Error ? err.message : "Unknown error"
-          }`,
+          message: `Search failed: ${err instanceof Error ? err.message : "Unknown error"
+            }`,
         };
       }
     };
@@ -178,9 +180,8 @@ export async function createCacheActions<T extends CollectionNames>(
         return {
           status: "error",
           data: null,
-          message: `Count failed: ${
-            err instanceof Error ? err.message : "Unknown error"
-          }`,
+          message: `Count failed: ${err instanceof Error ? err.message : "Unknown error"
+            }`,
         };
       }
     };
@@ -210,9 +211,8 @@ export async function createCacheActions<T extends CollectionNames>(
       return {
         status: "error",
         data: null,
-        message: `Create failed: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
+        message: `Create failed: ${err instanceof Error ? err.message : "Unknown error"
+          }`,
       };
     }
   }
@@ -238,9 +238,8 @@ export async function createCacheActions<T extends CollectionNames>(
       return {
         status: "error",
         data: null,
-        message: `Update failed: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
+        message: `Update failed: ${err instanceof Error ? err.message : "Unknown error"
+          }`,
       };
     }
   }
@@ -264,9 +263,8 @@ export async function createCacheActions<T extends CollectionNames>(
       return {
         status: "error",
         data: null,
-        message: `Delete failed: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`,
+        message: `Delete failed: ${err instanceof Error ? err.message : "Unknown error"
+          }`,
       };
     }
   }

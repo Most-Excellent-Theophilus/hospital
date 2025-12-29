@@ -2,6 +2,14 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
+// app/api/upload/route.ts
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '20mb',
+    },
+  },
+};
 
 const auth = (req: Request) => {
   console.log(req);
@@ -13,7 +21,7 @@ export const ourFileRouter = {
   imageUploader: f({
     image: {
       maxFileSize: "4MB",
-      maxFileCount: 1,
+      maxFileCount: 8,
     },
   })
     .middleware(async ({ req }) => {
@@ -31,7 +39,7 @@ export const ourFileRouter = {
   fileUploader: f({
     blob: {
       maxFileSize: "8MB", // allow bigger files if needed
-      maxFileCount: 1,
+      maxFileCount: 8,
     },
   })
     .middleware(async ({ req }) => {

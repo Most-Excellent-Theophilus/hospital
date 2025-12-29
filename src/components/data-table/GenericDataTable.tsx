@@ -41,7 +41,7 @@ export function GenericDataTable<T extends BaseTableItem>({
       fields.reduce((acc, field) => {
         if (field.hidden) acc[String(field.key)] = false;
         return acc;
-      }, {} as VisibilityState)
+      }, { } as VisibilityState)
     );
   const [rowSelection, setRowSelection] = React.useState({});
   const [searchField, setSearchField] = React.useState<keyof T>(

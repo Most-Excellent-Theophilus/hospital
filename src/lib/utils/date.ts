@@ -129,7 +129,7 @@ export const dateUtils = {
   },
 
   getMonthName: (date: Date, type: "long" | "short" = "long") =>
-    new Intl.DateTimeFormat("en-US", { month: type }).format(date),
+    new Intl.DateTimeFormat("en-US", { month: type }).format(toDate(date)),
 
   getMonthNames: (type: "long" | "short" = "long") =>
     Array.from({ length: 12 }, (_, i) =>
@@ -146,7 +146,7 @@ export const dateUtils = {
     new Date(year, monthIndex + 1, 0).getDate(),
 };
 
-export const toDate = (date: unknown): Date |  undefined => {
+export const toDate = (date: unknown): Date | undefined => {
   if (!date) return undefined;
 
   // Firestore Timestamp-like

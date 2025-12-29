@@ -71,7 +71,7 @@ export default function CreateAccountPage({ data, onChange }: { data?: UserSchem
         startTransition(() => {
             const fn = () => {
                 if (data) {
-                    updateDoctor(data.id, dataT as User).then((res) => {
+                    updateDoctor(data.id, { ...dataT, dateOfBirth: dataT.dateOfBirth.toISOString() } as UserSchema).then((res) => {
 
                         if (res.data?.id) {
                             setStatus("success")
@@ -88,7 +88,7 @@ export default function CreateAccountPage({ data, onChange }: { data?: UserSchem
                             return
                         }
 
-                        createUser.mutate(dataT, {
+                        createUser.mutate({ ...dataT, dateOfBirth: dataT.dateOfBirth.toISOString() }, {
                             onSuccess: (value) => {
                                 const { status, message } = value
 

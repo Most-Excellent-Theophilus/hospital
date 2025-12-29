@@ -99,51 +99,63 @@ export class FirestoreDatabase {
 
   // 🔹 GET operations - Made more flexible with proper typing
   async get<T extends keyof TableTypeMap = CollectionNames>(
-    def: BuildRefType,
-    options?: QueryOptions<T>
-  ): Promise<TypeReturn<TableTypeMap[T][] | null>> {
-    try {
-      const { type, ref } = this.buildRefOrCollection(def);
+  def: BuildRefType,
+  options?: QueryOptions<T>,
+  skipTimeStap?: boolean,
+): Promise<TypeReturn<TableTypeMap[T][] | null>> {
+  try {
+    const { type, ref } = this.buildRefOrCollection(def);
 
-      if (type === "doc") {
-        const snap = await ref.get();
-        return {
-          status: "success",
-          message: "",
-          data: snap.exists
-            ? ([
+    const withTimestamps = (
+      snap: FirebaseFirestore.DocumentSnapshot,
+    ) =>
+      skipTimeStap
+        ? {}
+        : {
+            createdAt: snap.createTime?.toDate(),
+            updatedAt: snap.updateTime?.toDate(),
+          };
+
+    if (type === "doc") {
+      const snap = await ref.get();
+
+      return {
+        status: "success",
+        message: "",
+        data: snap.exists
+          ? ([
               {
                 id: snap.id,
                 ...snap.data(),
-                createdAt: snap.createTime?.toDate(),
-                updatedAt: snap.updateTime?.toDate(),
+                ...withTimestamps(snap),
               },
             ] as TableTypeMap[T][])
-            : null,
-        };
-      } else {
-        const query = this.buildQuery(ref, options);
-        const snap = await query.get();
-        return {
-          status: "success",
-          message: "",
-          data: snap.docs.map((d) => ({
-            id: d.id,
-            ...d.data(),
-            createdAt: d.createTime?.toDate(),
-            updatedAt: d.updateTime?.toDate(),
-          })) as TableTypeMap[T][],
-        };
-      }
-    } catch (error) {
-      return {
-        status: "error",
-        data: null,
-        message:
-          error instanceof Error ? error.message : "Unknown error occurred",
+          : null,
       };
     }
+
+    const query = this.buildQuery(ref, options);
+    const snap = await query.get();
+
+    return {
+      status: "success",
+      message: "",
+      data: snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        ...withTimestamps(d),
+      })) as TableTypeMap[T][],
+    };
+  } catch (error) {
+    return {
+      status: "error",
+      data: null,
+      message:
+        error instanceof Error ? error.message : "Unknown error occurred",
+    };
   }
+}
+
 
   // 🔹 GET single document by ID
   async getById<T extends keyof TableTypeMap = CollectionNames>(

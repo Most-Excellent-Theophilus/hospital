@@ -27,9 +27,26 @@ export const logSchema = logsSchema.and(mustHave.extend({ dataString: z.string()
 export type LogsShema = z.infer<typeof logSchema>
 export const tokenWithMetaSchema = mustHave.and(tokenSchema)
 export type TokenSchema = z.infer<typeof tokenWithMetaSchema>
-export const userWithMetaSchema = mustHave.and(userSchema.omit({ dateOfBirth: true }).extend({ dateOfBirth: timestampToDate }));
+export const userWithMetaSchema = mustHave.and(userSchema.omit({ dateOfBirth: true }).extend({ dateOfBirth: z.string() }));
 export type UserSchema = z.infer<typeof userWithMetaSchema>;
-export const patientWithMetaSchema = patientSchema.and(mustHave)
+// export const patientWithMetaSchema = patientSchema.and(mustHave)
+export const patientWithMetaSchema = mustHave.and(patientSchema.omit({ documents: true, dateOfBirth: true }).extend({
+  dateOfBirth: z.string(),
+  documents: z.array(z.object({
+    customId: z.string().nullable(),
+    fileHash: z.string(),
+    key: z.string(),
+    name: z.string(),
+    size: z.number(),
+    type: z.string(),
+    ufsUrl: z.string(),
+    lastModified: z.number().optional(),
+    serverData: z.object({ uploadedBy: z.string() }),
+    url: z.string(),
+    appUrl: z.string()
+  }))
+}))
+
 export type PatientSchema = z.infer<typeof patientWithMetaSchema>
 export type TableTypeMap = {
   databaseLogs: LogsShema;

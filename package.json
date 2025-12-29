@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed:users": "tsx src/scripts/seed-users.ts",
+    "seed:pat": "pnpm tsc -p tsconfig.scripts.json && node dist/scripts/firestore.seed.js",
     "seed:users:detailed": "tsx src/scripts/seed-users-detailed.ts",
     "seed:users:validate": "tsx src/scripts/seed-users-with-validation.ts"
   },

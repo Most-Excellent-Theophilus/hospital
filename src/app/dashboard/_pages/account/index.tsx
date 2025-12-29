@@ -3,6 +3,8 @@ import { GenericDataTable } from "@/components/data-table/GenericDataTable";
 import { GenericDataTableProps } from "@/components/data-table/types";
 import { usePatients as useUsers } from "@/features/patient/patient.queries";
 import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
+
+
 import {
     Dialog,
     DialogContent,
@@ -21,6 +23,7 @@ import { useNavigationVariables } from "@/hooks/url-hooks";
 import CreatePatientPage from "./patient.form";
 import PatientViewer from "./patients.view";
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";
+import { PatientSchema } from "@/features/patient/patient.types";
 
 const Accounts = () => {
     const { data, } = useUsers();
@@ -47,7 +50,16 @@ const Accounts = () => {
             },
 
             {
-                key: "createdAt",
+                key: "documents",
+                label: "Documents",
+                sortable: true,
+                searchable: true,
+                render(_, row) {
+                    return row.documents.length
+                },
+            },
+            {
+                key: "documents",
                 label: "Date Created",
                 sortable: true,
                 searchable: true,
@@ -124,7 +136,7 @@ const Accounts = () => {
                 <>
                     {action == "view" && <PatientViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
                     {action == "delete" && <PatientViewer data={selectedUser as UserSchema} deletee onChange={setIsOpen} />}
-                    {"edit".includes(action) && <CreatePatientPage data={selectedUser as UserSchema} onChange={setIsOpen} />}
+                    {/* {"edit".includes(action) && <CreatePatientPage data={selectedUser as PatientSchema} onChange={setIsOpen} />} */}
                     {action == "new" && <CreatePatientPage onChange={setIsOpen} />}
                 </>
 

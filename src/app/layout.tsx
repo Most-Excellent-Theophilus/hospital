@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
 
 import type { Viewport } from 'next'
+import { generatePatientsWithMeta } from "@/scripts/patient-seed";
+import { db } from "@/lib/firebase/init";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -26,11 +28,26 @@ export const metadata: Metadata = {
   description: "Heart Rate",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const patients = await generatePatientsWithMeta(500)
+  // console.log({ patients })
+
+  // const bulkWriter = db.bulkWriter();
+
+  // patients.forEach((patient) => {
+  //   const ref = db.collection("patients").doc(patient.id);
+
+  //   bulkWriter.create(ref, {
+  //     ...patient,
+
+  //   });
+  // });
+
+  // await bulkWriter.close();
   return (
     <html lang="en" suppressHydrationWarning>
       <body

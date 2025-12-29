@@ -15,15 +15,15 @@ import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
 import { toast } from "sonner";
 
 import { Alerter } from "@/components/form/auth/feedback/alerter";
-import { useEffect, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { toDate } from "@/lib/utils/date";
 
 
 import { useNavigationVariables } from "@/hooks/url-hooks";
 import { patientSchema, PatientSchema } from "@/features/patient/patient.types";
 import { useSharedState } from "@/components/providers/dashboard-context";
-import { updatePatient } from "@/features/patient/patient.actions";
-import { PatientSchema as PSchema } from "@/lib/firebase/firebase.types"
+import { PatientSchema as Pt } from "@/lib/firebase/firebase.types"
+
 import { useCreatePatient } from "@/features/patient/patient.mutations";
 import AddressInput from "@/components/form/auth/inputs/address-input";
 import PhoneInputField from "@/components/form/auth/inputs/phone-input";
@@ -32,6 +32,7 @@ import { Mail, Phone, Trash2, User } from "lucide-react";
 import { CommandSelectField } from "@/components/form/auth/inputs/command-input";
 import { Label } from "@/components/ui/label";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { uploadMultipleFiles } from "@/hooks/useSingleFileUpload";
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success' | "not-allowed", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
@@ -58,11 +59,12 @@ const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 
     }
 
 }
+const controller = new AbortController();
 
-
-export default function CreatePatientPage({ data, onChange }: { data?: PSchema | null, onChange: (value: boolean) => void; }) {
+export default function CreatePatientPage({ data, onChange }: { data?: PatientSchema | null, onChange: (value: boolean) => void; }) {
     const createUser = useCreatePatient()
     const [isPending, startTransition] = useTransition()
+    const [uploadProgress, setUploadProgress] = useState<number>(0)
     const { value: userSession } = useSharedState()
     const { status, setStatus } = useNavigationVariables()
 
@@ -86,6 +88,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
             documents: [],
             doctorEmail: userSession.email,
             doctorId: userSession.doctorId,
+            gender: 'female'
 
 
         },
@@ -98,25 +101,41 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
 
 
     const onSubmit = (dataT: PatientSchema) => {
-        const id = toast.loading("Please wait...", {
-            position: 'top-center'
-        })
+        const id = toast.loading(`Please wait ${uploadProgress}...  `)
         startTransition(() => {
-            createUser.mutate(dataT, {
-                onSuccess: (value) => {
-                    const { status, message } = value
 
-                    toast[status](message, { id })
-                    setStatus("success")
+            uploadMultipleFiles({
+                files: dataT.documents,
+                options: {
+                    abortSignal: controller.signal,
+                    onProgress: ({ progress }) => {
+                        setUploadProgress(progress);
+                    },
+                },
+            }).then((data) => {
 
-                },
-                onError: () => {
-                    toast.error("Something went wrong", { id })
-                },
-                onSettled: () => {
-                    toast.dismiss(id)
 
-                },
+                toast.loading(`Uploading Patient info  `, { id })
+                createUser.mutate({
+                    ...dataT, documents: data,
+                    dateOfBirth: dataT.dateOfBirth.toISOString()
+                } as Pt, {
+                    onSuccess: (value) => {
+                        const { status, message } = value
+
+                        toast[status](message, { id })
+                        toast.success("Record created")
+                        setStatus("success")
+
+                    },
+                    onError: () => {
+                        toast.error("Something went wrong", { id })
+                    },
+                    onSettled: () => {
+                        toast.dismiss(id)
+
+                    },
+                })
             })
 
 
@@ -189,7 +208,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PSchema |
                                     month: toDate(data.dateOfBirth)?.getMonth() || 1,
                                     day: toDate(data.dateOfBirth)?.getDay() || 1,
                                 } : null}
-                                from={18}
+                                from={0}
 
                             />
                         </div>

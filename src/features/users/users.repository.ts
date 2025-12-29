@@ -14,10 +14,10 @@ export const usersRepository = {
     return data as UserSchema;
   },
 
-  create: async (payload: Partial<User>) =>  await createDoctor(payload as User),
+  create: async (payload: Partial<UserSchema>) =>  await createDoctor(payload as UserSchema),
   
 
-  update: async (id: string, payload: Partial<User>) => await updateDoctor(id, payload as User),
+  update: async (id: string, payload: Partial<UserSchema>) => await updateDoctor(id, payload as UserSchema),
 
   remove: async (id: string)=> await deleteDoctor(id),
 };
