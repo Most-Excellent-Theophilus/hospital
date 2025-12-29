@@ -33,98 +33,85 @@ const Accounts = () => {
 
 
 
-    const userResource: GenericDataTableProps<UserSchema> = {
-        fields: [
-            {
-                key: "firstName",
-                label: "First Name",
-
-                sortable: true,
-                searchable: true,
-            },
-            {
-                key: "email",
-                label: "Email",
-                sortable: true,
-                searchable: true,
-            },
-
-            {
-                key: "documents",
-                label: "Documents",
-                sortable: true,
-                searchable: true,
-                render(_, row) {
-                    return row.documents.length
-                },
-            },
-            {
-                key: "documents",
-                label: "Date Created",
-                sortable: true,
-                searchable: true,
-                render(_, row) {
-                    return dateUtils.timeAgo(row.createdAt)
-                },
-            },
-            {
-                key: "updatedAt",
-                label: "last Update",
-                sortable: true,
-                searchable: true,
-                render(_, row) {
-                    return dateUtils.timeAgo(row.updatedAt)
-                },
-            },
-        ],
-
-        createNewRecordLink: () => {
-            setSelectedDoctor(null)
-            setAction('new')
-            setStatus('')
-            setIsOpen(true)
-        },
-        data: data || [],
-        searchConfig: {
-            searchableFields: ["email", "firstName"],
-            defaultSearchField: "email",
-        },
-        actionConfig: {
-            onEdit(row) {
-
-                setSelectedDoctor(row)
-                setAction('edi')
-                setStatus('')
-
-
-                setIsOpen(true)
-
-            },
-            onDelete(row) {
-                setSelectedDoctor(row)
-                setAction('delete')
-                setStatus('')
-
-
-                setIsOpen(true)
-            },
-            onView(row) {
-                setSelectedDoctor(row)
-                setAction('view')
-                setStatus('')
-
-
-                setIsOpen(true)
-
-            },
-        }
-    };
-
 
     return (<>
 
         {!data && <LoadingBar />}
-        <GenericDataTable {...userResource} />
+        <GenericDataTable data={data || []}
+            pageSize={30}
+            createNewRecordLink=""
+            actionConfig={{
+                onEdit(row) {
+
+                    setSelectedDoctor(row)
+                    setAction('edi')
+                    setStatus('')
+
+
+                    setIsOpen(true)
+
+                },
+                onDelete(row) {
+                    setSelectedDoctor(row)
+                    setAction('delete')
+                    setStatus('')
+
+
+                    setIsOpen(true)
+                },
+                onView(row) {
+                    setSelectedDoctor(row)
+                    setAction('view')
+                    setStatus('')
+
+
+                    setIsOpen(true)
+
+                },
+            }}
+            fields={[
+                {
+                    key: "firstName",
+                    label: "First Name",
+
+                    sortable: true,
+                    // searchable: true,
+                },
+                {
+                    key: "email",
+                    label: "Email",
+                    sortable: true,
+                    // searchable: true,
+                },
+
+                {
+                    key: "documents",
+                    label: "Documents",
+                    sortable: true,
+                    // searchable: true,
+                    render(_, row) {
+                        return row.documents.length
+                    },
+                },
+                {
+                    key: "documents",
+                    label: "Date Created",
+                    sortable: true,
+                    // searchable: true,
+                    render(_, row) {
+                        return dateUtils.timeAgo(row.createdAt)
+                    },
+                },
+                {
+                    key: "updatedAt",
+                    label: "last Update",
+                    sortable: true,
+                    // searchable: true,
+                    render(_, row) {
+                        return dateUtils.timeAgo(row.updatedAt)
+                    },
+                },
+            ]} />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 
 

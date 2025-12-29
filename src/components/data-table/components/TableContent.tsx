@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/table";
 import { flexRender, Table as TableType } from "@tanstack/react-table";
 import { BaseTableItem } from "../types";
+import {  Search } from "lucide-react";
+
 
 interface TableContentProps<T extends BaseTableItem> {
   table: TableType<T>;
@@ -20,6 +22,7 @@ export function TableContent<T extends BaseTableItem>({
   table,
   columnCount,
 }: TableContentProps<T>) {
+
   return (
     <div className="overflow-hidden rounded-md border">
       <Table>
@@ -27,13 +30,13 @@ export function TableContent<T extends BaseTableItem>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead key={header.id} className="font-bold">
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                 </TableHead>
               ))}
             </TableRow>
@@ -56,7 +59,11 @@ export function TableContent<T extends BaseTableItem>({
           ) : (
             <TableRow>
               <TableCell colSpan={columnCount} className="h-24 text-center">
-                No results.
+                <div className="flex flex-col items-center justify-center text-gray-500">
+                  <Search className="h-12 w-12 mb-2 opacity-40" />
+                  <p className="text-sm font-medium">No results found</p>
+                  <p className="text-xs">Try adjusting your filters or search terms</p>
+                </div>
               </TableCell>
             </TableRow>
           )}

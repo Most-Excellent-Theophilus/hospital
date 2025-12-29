@@ -202,6 +202,7 @@ export default function PatientDashboard() {
         accessorKey: 'id',
         header: 'ID',
         cell: ({ row }) => <div className="font-mono text-xs">{row.getValue('id')}</div>,
+        
       },
       {
         accessorKey: 'firstName',
@@ -220,13 +221,17 @@ export default function PatientDashboard() {
             {row.getValue('gender')}
           </Badge>
         ),
+        
+
         filterFn: (row, id, value) => {
           return value.includes(row.getValue(id));
         },
+
       },
       {
         accessorKey: 'doctorEmail',
         header: 'Doctor',
+
         cell: ({ row }) => {
           const email = row.getValue('doctorEmail');
           return <div className="text-sm">{email.split('@')[0]}</div>;
@@ -238,6 +243,7 @@ export default function PatientDashboard() {
       {
         accessorKey: 'documents',
         header: 'Documents',
+        
         cell: ({ row }) => {
           const docs = row.getValue('documents');
           return <div className="text-center">{docs.length}</div>;
