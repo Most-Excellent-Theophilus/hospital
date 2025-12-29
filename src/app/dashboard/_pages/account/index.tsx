@@ -23,7 +23,7 @@ import { useNavigationVariables } from "@/hooks/url-hooks";
 import CreatePatientPage from "./patient.form";
 import PatientViewer from "./patients.view";
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";
-import { PatientSchema } from "@/features/patient/patient.types";
+
 
 const Accounts = () => {
     const { data, } = useUsers();
@@ -39,7 +39,7 @@ const Accounts = () => {
         {!data && <LoadingBar />}
         <GenericDataTable data={data || []}
             pageSize={30}
-            createNewRecordLink=""
+            createNewRecordLink={()=>{}}
             actionConfig={{
                 onEdit(row) {
 
@@ -93,13 +93,14 @@ const Accounts = () => {
                         return row.documents.length
                     },
                 },
+                // { key:'gender', label:'Gender'},
                 {
                     key: "documents",
                     label: "Date Created",
                     sortable: true,
                     // searchable: true,
                     render(_, row) {
-                        return dateUtils.timeAgo(row.createdAt)
+                        return dateUtils.formatDateShort(row.createdAt)
                     },
                 },
                 {

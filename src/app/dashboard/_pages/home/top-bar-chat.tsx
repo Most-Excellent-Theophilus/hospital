@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { 
-  CalendarIcon, 
+  Calendar as CalendarIcon, 
   Search, 
   X, 
   Filter,
@@ -23,17 +23,77 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  Column,
 } from '@tanstack/react-table';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+// Type definitions
+type Gender = 'male' | 'female' | 'other';
+
+interface Document {
+  customId: string;
+  name: string;
+  type: string;
+}
+
+interface Patient {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  email: string;
+  dateOfBirth: string;
+  gender: Gender;
+  address: string;
+  phoneNumber: string;
+  doctorEmail: string;
+  doctorId: string;
+  documents: Document[];
+}
+
+interface DateRange {
+  from: Date | undefined;
+  to: Date | undefined;
+}
+
+interface FilterOption {
+  label: string;
+  value: string;
+}
+
+interface Statistics {
+  totalPatients: number;
+  maleCount: number;
+  femaleCount: number;
+  totalDocuments: number;
+}
+
+interface ChartDataPoint {
+  month: string;
+  count: number;
+}
+
+interface FacetedFilterProps {
+  column: Column<Patient, unknown> | undefined;
+  title: string;
+  options: FilterOption[];
+}
+
+interface DateRangePickerProps {
+  dateRange: DateRange;
+  setDateRange: (range: DateRange) => void;
+}
+
 // Mock data generator
-const generateMockData = () => {
-  const genders = ['male', 'female', 'other'];
-  const doctors = ['dr.smith@hospital.com', 'dr.jones@hospital.com', 'dr.williams@hospital.com', 'dr.brown@hospital.com'];
-  const firstNames = ['John', 'Emma', 'Michael', 'Sarah', 'David', 'Lisa', 'James', 'Maria', 'Robert', 'Jennifer'];
-  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+const generateMockData = (): Patient[] => {
+  const genders: Gender[] = ['male', 'female', 'other'];
+  const doctors: string[] = ['dr.smith@hospital.com', 'dr.jones@hospital.com', 'dr.williams@hospital.com', 'dr.brown@hospital.com'];
+  const firstNames: string[] = ['John', 'Emma', 'Michael', 'Sarah', 'David', 'Lisa', 'James', 'Maria', 'Robert', 'Jennifer'];
+  const lastNames: string[] = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
   
-  return Array.from({ length: 200 }, (_, i) => {
+  return Array.from({ length: 200 }, (_, i): Patient => {
     const createdDate = new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
     return {
       id: `patient-${i + 1}`,
@@ -49,7 +109,7 @@ const generateMockData = () => {
       phoneNumber: `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
       doctorEmail: doctors[Math.floor(Math.random() * doctors.length)],
       doctorId: `doctor-${Math.floor(Math.random() * 4) + 1}`,
-      documents: Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, j) => ({
+      documents: Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, j): Document => ({
         customId: `doc-${j}`,
         name: `document-${j}.pdf`,
         type: 'application/pdf',
@@ -59,8 +119,8 @@ const generateMockData = () => {
 };
 
 // Faceted Filter Component
-function FacetedFilter({ column, title, options }) {
-  const selectedValues = new Set(column?.getFilterValue());
+function FacetedFilter({ column, title, options }: FacetedFilterProps) {
+  const selectedValues = new Set(column?.getFilterValue() as string[]);
 
   return (
     <Popover>
@@ -132,7 +192,7 @@ function FacetedFilter({ column, title, options }) {
 }
 
 // Date Range Picker Component
-function DateRangePicker({ dateRange, setDateRange }) {
+function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
   return (
     <div className="flex gap-2">
       <Popover>
@@ -176,15 +236,14 @@ function DateRangePicker({ dateRange, setDateRange }) {
 }
 
 export default function PatientDashboard() {
-    
-  const [patients] = useState(generateMockData());
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [sorting, setSorting] = useState([]);
-  const [dateRange, setDateRange] = useState({ from: undefined, to: undefined });
+  const [patients] = useState<Patient[]>(generateMockData());
+  const [globalFilter, setGlobalFilter] = useState<string>('');
+  const [columnFilters, setColumnFilters] = useState<any[]>([]);
+  const [sorting, setSorting] = useState<any[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange>({ from: undefined, to: undefined });
 
   // Filter patients by date range
-  const filteredPatients = useMemo(() => {
+  const filteredPatients = useMemo<Patient[]>(() => {
     if (!dateRange.from && !dateRange.to) return patients;
     
     return patients.filter((patient) => {
@@ -196,13 +255,12 @@ export default function PatientDashboard() {
   }, [patients, dateRange]);
 
   // Table columns
-  const columns = useMemo(
+  const columns = useMemo<ColumnDef<Patient>[]>(
     () => [
       {
         accessorKey: 'id',
         header: 'ID',
         cell: ({ row }) => <div className="font-mono text-xs">{row.getValue('id')}</div>,
-        
       },
       {
         accessorKey: 'firstName',
@@ -221,31 +279,26 @@ export default function PatientDashboard() {
             {row.getValue('gender')}
           </Badge>
         ),
-        
-
-        filterFn: (row, id, value) => {
+        filterFn: (row, id, value: string[]) => {
           return value.includes(row.getValue(id));
         },
-
       },
       {
         accessorKey: 'doctorEmail',
         header: 'Doctor',
-
         cell: ({ row }) => {
-          const email = row.getValue('doctorEmail');
+          const email = row.getValue('doctorEmail') as string;
           return <div className="text-sm">{email.split('@')[0]}</div>;
         },
-        filterFn: (row, id, value) => {
+        filterFn: (row, id, value: string[]) => {
           return value.includes(row.getValue(id));
         },
       },
       {
         accessorKey: 'documents',
         header: 'Documents',
-        
         cell: ({ row }) => {
-          const docs = row.getValue('documents');
+          const docs = row.getValue('documents') as Document[];
           return <div className="text-center">{docs.length}</div>;
         },
       },
@@ -253,7 +306,7 @@ export default function PatientDashboard() {
         accessorKey: 'createdAt',
         header: 'Registered',
         cell: ({ row }) => {
-          const date = new Date(row.getValue('createdAt'));
+          const date = row.getValue('createdAt') as Date;
           return <div className="text-sm">{date.toLocaleDateString()}</div>;
         },
       },
@@ -261,7 +314,7 @@ export default function PatientDashboard() {
     []
   );
 
-  const table = useReactTable({
+  const table = useReactTable<Patient>({
     data: filteredPatients,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -279,7 +332,7 @@ export default function PatientDashboard() {
   });
 
   // Statistics
-  const stats = useMemo(() => {
+  const stats = useMemo<Statistics>(() => {
     const totalPatients = filteredPatients.length;
     const maleCount = filteredPatients.filter((p) => p.gender === 'male').length;
     const femaleCount = filteredPatients.filter((p) => p.gender === 'female').length;
@@ -289,8 +342,8 @@ export default function PatientDashboard() {
   }, [filteredPatients]);
 
   // Chart data
-  const chartData = useMemo(() => {
-    const months = {};
+  const chartData = useMemo<ChartDataPoint[]>(() => {
+    const months: Record<string, number> = {};
     filteredPatients.forEach((patient) => {
       const date = new Date(patient.createdAt);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -299,19 +352,19 @@ export default function PatientDashboard() {
     
     return Object.entries(months)
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, count]) => ({ month, count }));
+      .map(([month, count]): ChartDataPoint => ({ month, count }));
   }, [filteredPatients]);
 
-  const genderOptions = [
+  const genderOptions: FilterOption[] = [
     { label: 'Male', value: 'male' },
     { label: 'Female', value: 'female' },
     { label: 'Other', value: 'other' },
   ];
 
-  const doctorOptions = useMemo(
+  const doctorOptions = useMemo<FilterOption[]>(
     () => [
       ...new Set(patients.map((p) => p.doctorEmail)),
-    ].map((email) => ({
+    ].map((email): FilterOption => ({
       label: email.split('@')[0],
       value: email,
     })),
