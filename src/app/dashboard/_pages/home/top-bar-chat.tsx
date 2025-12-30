@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
@@ -11,13 +11,10 @@ import {
   Calendar as CalendarIcon,
   Search,
   X,
-  Filter,
   FileText,
   Venus,
   Mars,
-  Sigma,
-  TrendingUp
-} from 'lucide-react';
+  Sigma} from 'lucide-react';
 import {
   ColumnDef,
   flexRender,
@@ -26,9 +23,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-  Column,
 } from '@tanstack/react-table';
-import { IconType } from 'react-icons';
+
 import { dateUtils, toDate } from '@/lib/utils/date';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { usePatients } from '@/features/patient/patient.queries';
@@ -36,11 +32,12 @@ import { PatientSchema } from '@/lib/firebase/firebase.types';
 import LoadingBar from '@/components/form/auth/feedback/loading.bar';
 import { capitalizeFirstLetter } from '@/lib/utils';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Label, Pie, PieChart } from 'recharts';
+import { LabelList, Pie, PieChart } from 'recharts';
+import { ChartLineMultiple } from './line-chart';
 
 
 // Type definitions
-type Gender = 'male' | 'female' | 'other';
+
 export const TIMELINES = {
   today: {
     label: "Today",
@@ -126,17 +123,7 @@ interface DateRange {
   to: Date | undefined;
 }
 
-interface FilterOption {
-  label: string;
-  value: string;
-}
 
-type Statistics = { value: string, count: number, icon: IconType, title: string, desc: string }
-
-interface ChartDataPoint {
-  month: string;
-  count: number;
-}
 
 
 
@@ -173,6 +160,7 @@ function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
             mode="range"
             selected={{ from: dateRange.from, to: dateRange.to }}
             captionLayout='dropdown'
+            defaultMonth={dateRange.from ?? new Date()}
             onSelect={(range) => setDateRange({ from: range?.from, to: range?.to })}
             numberOfMonths={2}
           />
@@ -196,7 +184,9 @@ export default function PatientDashboard() {
   const { data } = usePatients()
 
   const [globalFilter, setGlobalFilter] = useState<string>('');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sorting, setSorting] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState<DateRange>({ from: dateUtils.getYearsAgoDate(100), to: new Date() });
   const [genderFilter, setGenderFilter] = useState<"male" | "female" | "other" | "all">("all")
@@ -383,6 +373,93 @@ export default function PatientDashboard() {
 
     { gender: "other", count: Number(stats?.total.count) - (Number(stats.female.count) + Number(stats.male.count)), fill: "var(--color-other)" },
   ]
+  type LineChartItem = {
+    month: string
+    male: number
+    female: number
+    other: number
+  }
+
+  type LineChartType = LineChartItem[]
+  const randomInt = (min: number, max: number) =>
+    Math.floor(Math.random() * (max - min + 1)) + min
+
+  const lineChartData: LineChartType = useMemo(() => {
+    return [
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'Jan'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'Feb'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'March'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'April'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'May'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'June'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'July'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'August'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'Sept'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'Octo'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'Nov'
+      },
+      {
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
+        month: 'Dec'
+      },
+    ]
+  }, [filteredPatients])
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-6">
@@ -403,23 +480,25 @@ export default function PatientDashboard() {
             </CardContent>
           </div>)}
 
-          <div> <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[250px]"
-          >
-            <PieChart>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent />}
-              />
-              <Pie
-                data={chartData}
-                dataKey="count"
-                nameKey="gender"
-                innerRadius={60}
-                strokeWidth={5}
-              >
-                <Label
+          <div>
+
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square max-h-[250px]"
+            >
+              <PieChart>
+                <ChartTooltip
+                  cursor
+                  content={<ChartTooltipContent />}
+                />
+                <Pie
+                  data={chartData}
+                  dataKey="count"
+                  nameKey="gender"
+                // innerRadius={60}
+                // strokeWidth={5}
+                >
+                  {/* <Label
                   content={({ viewBox }) => {
                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                       return (
@@ -447,11 +526,25 @@ export default function PatientDashboard() {
                       )
                     }
                   }}
-                />
-              </Pie>
-            </PieChart>
-          </ChartContainer></div>
 
+                /> */}
+                  <LabelList
+                    dataKey="gender"
+                    className="fill-background"
+                    stroke="none"
+                    fontSize={12}
+                    formatter={(value: keyof typeof chartConfig) =>
+                      chartConfig[value]?.label
+                    }
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+
+
+          </div>
+
+          <div className='col-span-3  flex items-center '> <ChartLineMultiple data={lineChartData} /> </div>
 
         </div>
 

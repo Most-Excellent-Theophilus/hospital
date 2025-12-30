@@ -2,7 +2,7 @@
 
 import { genUploader } from "uploadthing/client";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
-import z from "zod";
+
 
 export const { uploadFiles } = genUploader<OurFileRouter>();
 

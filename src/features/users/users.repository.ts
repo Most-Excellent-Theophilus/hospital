@@ -1,5 +1,5 @@
 import { api } from "@/lib/api";
-import { User } from "./users.types";
+
 import { createDoctor, deleteDoctor, updateDoctor } from "./users.actions";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 

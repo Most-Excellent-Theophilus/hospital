@@ -1,6 +1,6 @@
 "use client"
 import { SessionUser } from "@/features/auth/auth.session";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext,  } from "react";
 
 type SharedState = {
     value: SessionUser;

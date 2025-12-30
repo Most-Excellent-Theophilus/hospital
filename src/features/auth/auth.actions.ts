@@ -85,8 +85,8 @@ export const login = async (data: Login, device: ReturnType<typeof useDeviceInfo
             message: "email-or-password",
         } as const;
     }
-    await createSession({ ...user, ...clientInfo, ...device } as SessionUser)
-    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as LogsShema)
+    await createSession({ ...user, ...clientInfo, ...device } as unknown as SessionUser)
+    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as unknown as LogsShema)
 
     redirect('/dashboard')
 }
@@ -183,7 +183,7 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>,
 
     const res = await db.update<'users'>({ path: 'users', id: user.id }, { password: hashedPassword, verified: true })
     if (res.data == null) {
-        await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as LogsShema)
+        await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as unknown as LogsShema)
 
         return {
             status: "error",
@@ -192,16 +192,16 @@ export const createPassword = async (data: z.infer<typeof passwordCreateSchema>,
     }
 
     // create session and redirect 
-    const session = await createSession({ ...user, ...clientInfo, ...device } as SessionUser)
+    const session = await createSession({ ...user, ...clientInfo, ...device } as unknown as SessionUser)
     if (session.status == 'error') {
-        await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as LogsShema)
+        await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as unknown as LogsShema)
 
         return {
             status: "error",
             message: "unable-to-verify",
         } as const;
     }
-    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: true, action: 'login' } as LogsShema)
+    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: true, action: 'login' } as unknown as LogsShema)
     redirect('/dashboard')
 }
 

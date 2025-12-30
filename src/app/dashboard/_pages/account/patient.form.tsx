@@ -125,6 +125,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PatientSc
 
                         toast[status](message, { id })
                         toast.success("Record created")
+                        onChange(true)
                         setStatus("success")
 
                     },

@@ -15,7 +15,6 @@ import { dateUtils } from "@/lib/utils/date"
 
 import CreateAccountPage from "./doctors.form";
 import { useState } from "react";
-import { DoctorFormValues } from "@/features/users/users.types";
 import DoctorViewer from "./viewer";
 import { useNavigationVariables } from "@/hooks/url-hooks";
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";

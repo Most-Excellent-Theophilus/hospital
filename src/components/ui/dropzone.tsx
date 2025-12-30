@@ -187,7 +187,7 @@ type UseDropzoneProps<TUploadRes, TUploadError> = {
     shapeUploadError: (error: TUploadError) => string | void;
   });
 
-interface UseDropzoneReturn<TUploadRes, TUploadError> {
+type UseDropzoneReturn<TUploadRes, TUploadError> = {
   getRootProps: ReturnType<typeof rootUseDropzone>["getRootProps"];
   getInputProps: ReturnType<typeof rootUseDropzone>["getInputProps"];
   onRemoveFile: (id: string) => Promise<void>;
@@ -412,8 +412,8 @@ const useDropzoneContext = <TUploadRes, TUploadError>() => {
   >;
 };
 
-interface DropzoneProps<TUploadRes, TUploadError>
-  extends UseDropzoneReturn<TUploadRes, TUploadError> {
+type DropzoneProps<TUploadRes, TUploadError>
+  = UseDropzoneReturn<TUploadRes, TUploadError>& {
   children: React.ReactNode;
 }
 const Dropzone = <TUploadRes, TUploadError>(
@@ -426,7 +426,7 @@ const Dropzone = <TUploadRes, TUploadError>(
 };
 Dropzone.displayName = "Dropzone";
 
-interface DropZoneAreaProps extends React.HTMLAttributes<HTMLDivElement> { }
+type DropZoneAreaProps = React.HTMLAttributes<HTMLDivElement> &{ }
 const DropZoneArea = forwardRef<HTMLDivElement, DropZoneAreaProps>(
   ({ className, children, ...props }, forwardedRef) => {
     const context = useDropzoneContext();
@@ -472,8 +472,8 @@ const DropZoneArea = forwardRef<HTMLDivElement, DropZoneAreaProps>(
 );
 DropZoneArea.displayName = "DropZoneArea";
 
-export interface DropzoneDescriptionProps
-  extends React.HTMLAttributes<HTMLParagraphElement> { }
+export type DropzoneDescriptionProps
+  = React.HTMLAttributes<HTMLParagraphElement> & { }
 
 const DropzoneDescription = forwardRef<
   HTMLParagraphElement,
@@ -496,7 +496,7 @@ const DropzoneDescription = forwardRef<
 });
 DropzoneDescription.displayName = "DropzoneDescription";
 
-interface DropzoneFileListContext<TUploadRes, TUploadError> {
+type DropzoneFileListContext<TUploadRes, TUploadError> = {
   onRemoveFile: () => Promise<void>;
   onRetry: () => Promise<void>;
   fileStatus: FileStatus<TUploadRes, TUploadError>;
@@ -520,8 +520,8 @@ const useDropzoneFileListContext = () => {
   return useContext(DropzoneFileListContext);
 };
 
-interface DropZoneFileListProps
-  extends React.OlHTMLAttributes<HTMLOListElement> { }
+type DropZoneFileListProps
+  = React.OlHTMLAttributes<HTMLOListElement> & { }
 
 const DropzoneFileList = forwardRef<HTMLOListElement, DropZoneFileListProps>(
   (props, ref) => {
@@ -543,8 +543,8 @@ const DropzoneFileList = forwardRef<HTMLOListElement, DropZoneFileListProps>(
 );
 DropzoneFileList.displayName = "DropzoneFileList";
 
-interface DropzoneFileListItemProps<TUploadRes, TUploadError>
-  extends React.LiHTMLAttributes<HTMLLIElement> {
+type DropzoneFileListItemProps<TUploadRes, TUploadError>
+  = React.LiHTMLAttributes<HTMLLIElement> & {
   file: FileStatus<TUploadRes, TUploadError>;
 }
 
@@ -596,8 +596,8 @@ const DropzoneFileListItem = forwardRef<
 });
 DropzoneFileListItem.displayName = "DropzoneFileListItem";
 
-interface DropzoneFileMessageProps
-  extends React.HTMLAttributes<HTMLParagraphElement> { }
+type DropzoneFileMessageProps
+  = React.HTMLAttributes<HTMLParagraphElement> & { }
 
 const DropzoneFileMessage = forwardRef<
   HTMLParagraphElement,
@@ -630,8 +630,8 @@ const DropzoneFileMessage = forwardRef<
   );
 });
 DropzoneFileMessage.displayName = "DropzoneFileMessage";
-interface DropzoneMessageProps
-  extends React.HTMLAttributes<HTMLParagraphElement> { }
+type DropzoneMessageProps
+  = React.HTMLAttributes<HTMLParagraphElement> & { }
 
 const DropzoneMessage = forwardRef<HTMLParagraphElement, DropzoneMessageProps>(
   (props, ref) => {
@@ -659,7 +659,7 @@ const DropzoneMessage = forwardRef<HTMLParagraphElement, DropzoneMessageProps>(
 );
 DropzoneMessage.displayName = "DropzoneMessage";
 
-interface DropzoneRemoveFileProps extends ButtonProps { }
+type DropzoneRemoveFileProps = ButtonProps & { }
 
 const DropzoneRemoveFile = forwardRef<
   HTMLButtonElement,
@@ -690,7 +690,7 @@ const DropzoneRemoveFile = forwardRef<
 });
 DropzoneRemoveFile.displayName = "DropzoneRemoveFile";
 
-interface DropzoneRetryFileProps extends ButtonProps { }
+type DropzoneRetryFileProps = ButtonProps & { }
 
 const DropzoneRetryFile = forwardRef<HTMLButtonElement, DropzoneRetryFileProps>(
   ({ className, ...props }, ref) => {
@@ -726,8 +726,8 @@ const DropzoneRetryFile = forwardRef<HTMLButtonElement, DropzoneRetryFileProps>(
 );
 DropzoneRetryFile.displayName = "DropzoneRetryFile";
 
-interface DropzoneTriggerProps
-  extends React.LabelHTMLAttributes<HTMLLabelElement> { }
+type DropzoneTriggerProps
+  = React.LabelHTMLAttributes<HTMLLabelElement> &{ }
 
 const DropzoneTrigger = forwardRef<HTMLLabelElement, DropzoneTriggerProps>(
   ({ className, children, ...props }, ref) => {
@@ -777,7 +777,7 @@ const DropzoneTrigger = forwardRef<HTMLLabelElement, DropzoneTriggerProps>(
 );
 DropzoneTrigger.displayName = "DropzoneTrigger";
 
-interface InfiniteProgressProps extends React.HTMLAttributes<HTMLDivElement> {
+type InfiniteProgressProps = React.HTMLAttributes<HTMLDivElement> & {
   status: "pending" | "success" | "error";
 }
 

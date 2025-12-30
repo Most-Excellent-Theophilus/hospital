@@ -21,7 +21,7 @@ export const useNavigationVariables = () => {
     useEffect(() => {
         if (action) setAction(null, { history: "replace" });
         if (status) setStatus(null, { history: "replace" });
-    }, [page]);
+    }, [page, action, status, setAction, setStatus]);
 
     return {
         page,

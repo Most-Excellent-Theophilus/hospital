@@ -1,13 +1,11 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
 import { Column, Table } from "@tanstack/react-table";
-import { CalendarIcon, Filter, X } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { DataTableFacetedFilter as FacetedFilter } from "./TableFaceted";
 import { dateUtils } from "@/lib/utils/date";
-import { DataTableMultiSelectFilter } from "./TableMultiSelectFilter";
+
 
 // ==================== Type Definitions ====================
 
@@ -110,31 +108,7 @@ function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
     );
 }
 
-// ==================== Main Component ====================
 
-/**
- * DataTableFilterBar Component
- * 
- * A reusable, generic filter bar for data tables with support for:
- * - Date range filtering
- * - Multiple column faceted filters
- * - Clear all functionality
- * 
- * @example
- * ```tsx
- * <DataTableFilterBar
- *   table={table}
- *   dateRange={dateRange}
- *   setDateRange={setDateRange}
- *   columnFilters={[
- *     { columnId: 'status', title: 'Status', options: statusOptions },
- *     { columnId: 'priority', title: 'Priority', options: priorityOptions }
- *   ]}
- *   globalFilter={globalFilter}
- *   setGlobalFilter={setGlobalFilter}
- * />
- * ```
- */
 export function DataTableFilterBar<TData>({
     table,
     dateRange,

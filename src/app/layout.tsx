@@ -5,8 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
 
 import type { Viewport } from 'next'
-import { generatePatientsWithMeta } from "@/scripts/patient-seed";
-import { db } from "@/lib/firebase/init";
+
 
 export const viewport: Viewport = {
   width: 'device-width',

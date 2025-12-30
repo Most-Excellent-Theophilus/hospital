@@ -10,7 +10,7 @@ import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
-import { DoctorFormValues, registrationSchema, User } from "@/features/users/users.types";
+import { DoctorFormValues, registrationSchema,} from "@/features/users/users.types";
 import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";

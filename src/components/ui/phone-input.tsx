@@ -52,7 +52,7 @@ const PhoneInput = React.forwardRef<
       <RPNInput.default
         ref={ref}
         value={value || undefined}
-        onChange={(val) => onChange?.(val)}
+        onChange={(val) => onChange?.(val!)}
         smartCaret={false}
         className={cn("flex h-10 space-x-3", className)}
         flagComponent={FlagComponent}
@@ -156,7 +156,7 @@ const CountrySelect = ({
                         key={opt.value}
                         className="gap-2"
                         onSelect={() => {
-                          onChange(opt.value);
+                          onChange(opt.value!||'MW');
                           setOpen(false);
                         }}
                       >

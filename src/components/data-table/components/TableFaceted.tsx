@@ -32,10 +32,7 @@ export interface FacetedFilterProps<TData, TValue> {
     icon?: React.ComponentType<{ className?: string }>
   }[]
 }
-interface FilterOption {
-    label: string;
-    value: string;
-}
+
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>

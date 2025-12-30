@@ -1,6 +1,7 @@
 // src/components/data-table/filterFns.ts
 import { FilterFn } from "@tanstack/react-table";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const includesSome: FilterFn<any> = (
   row,
   columnId,

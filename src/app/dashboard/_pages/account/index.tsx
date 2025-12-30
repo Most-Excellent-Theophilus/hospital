@@ -1,6 +1,5 @@
 "use client";
 import { GenericDataTable } from "@/components/data-table/GenericDataTable";
-import { GenericDataTableProps } from "@/components/data-table/types";
 import { usePatients as useUsers } from "@/features/patient/patient.queries";
 import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
 
@@ -24,7 +23,7 @@ import CreatePatientPage from "./patient.form";
 import PatientViewer from "./patients.view";
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";
 import { PatientSchema } from "@/features/patient/patient.types";
-import { unknown } from "zod";
+
 
 
 

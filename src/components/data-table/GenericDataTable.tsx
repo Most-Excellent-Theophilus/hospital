@@ -9,7 +9,7 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
-  Column,
+
 } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
 import { GenericDataTableProps, BaseTableItem } from "./types";
