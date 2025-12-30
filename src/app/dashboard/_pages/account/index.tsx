@@ -23,6 +23,9 @@ import { useNavigationVariables } from "@/hooks/url-hooks";
 import CreatePatientPage from "./patient.form";
 import PatientViewer from "./patients.view";
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";
+import { PatientSchema } from "@/features/patient/patient.types";
+import { unknown } from "zod";
+
 
 
 const Accounts = () => {
@@ -37,9 +40,17 @@ const Accounts = () => {
     return (<>
 
         {!data && <LoadingBar />}
-        <GenericDataTable data={data || []}
+        <GenericDataTable<UserSchema>
+            data={data || []}
             pageSize={30}
-            createNewRecordLink={()=>{}}
+
+            createNewRecordLink={() => {
+                setAction('nw')
+                setStatus('')
+
+                setSelectedDoctor(null)
+                setIsOpen(true)
+            }}
             actionConfig={{
                 onEdit(row) {
 
@@ -69,6 +80,24 @@ const Accounts = () => {
 
                 },
             }}
+            facets={[{
+                column: 'gender',
+                title: 'Gender',
+                options: [
+                    {
+                        label: 'Male',
+                        value: 'male'
+                    },
+                    {
+                        label: 'Female',
+                        value: 'female'
+                    },
+                    {
+                        label: 'Other',
+                        value: 'other'
+                    },
+                ]
+            }]}
             fields={[
                 {
                     key: "firstName",
@@ -82,6 +111,12 @@ const Accounts = () => {
                     label: "Email",
                     sortable: true,
                     // searchable: true,
+                }, {
+                    key: 'gender',
+                    label: "Gender",
+                    render: (value,) => {
+                        return <>  {value}</>
+                    },
                 },
 
                 {
@@ -100,7 +135,7 @@ const Accounts = () => {
                     sortable: true,
                     // searchable: true,
                     render(_, row) {
-                        return dateUtils.formatDateShort(row.createdAt)
+                        return dateUtils.formatDate(row.createdAt)
                     },
                 },
                 {
@@ -109,10 +144,12 @@ const Accounts = () => {
                     sortable: true,
                     // searchable: true,
                     render(_, row) {
-                        return dateUtils.timeAgo(row.updatedAt)
+                        return dateUtils.formatDate(row.updatedAt)
                     },
                 },
-            ]} />
+            ]}
+
+        />
         <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 
 
@@ -124,8 +161,8 @@ const Accounts = () => {
                 <>
                     {action == "view" && <PatientViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
                     {action == "delete" && <PatientViewer data={selectedUser as UserSchema} deletee onChange={setIsOpen} />}
-                    {/* {"edit".includes(action) && <CreatePatientPage data={selectedUser as PatientSchema} onChange={setIsOpen} />} */}
-                    {action == "new" && <CreatePatientPage onChange={setIsOpen} />}
+                    {"edit".includes(action) && <CreatePatientPage data={selectedUser as unknown as PatientSchema} onChange={setIsOpen} />}
+                    {action == "nw" && <CreatePatientPage onChange={setIsOpen} />}
                 </>
 
 

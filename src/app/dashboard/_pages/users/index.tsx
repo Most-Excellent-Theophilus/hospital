@@ -24,7 +24,7 @@ const Accounts = () => {
     const { data, } = useUsers();
     const { action, setAction, setStatus, status } = useNavigationVariables()
     const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [selectedUser, setSelectedDoctor] = useState<DoctorFormValues | null>(null)
+    const [selectedUser, setSelectedDoctor] = useState<UserSchema | null>(null)
 
 
 

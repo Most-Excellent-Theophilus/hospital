@@ -1,7 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-
-import {  isEmpty } from "@/lib/utils";
 import React from "react";
+import { isEmpty } from "@/lib/utils";
 import {
   ActionConfig,
   BaseTableItem,
@@ -11,13 +10,22 @@ import { SelectionCell, SelectionHeader } from "../components/TableSelectionCell
 import { TableActionsCell } from "../components/TableActionsCell";
 import { DataTableColumnHeader } from "../components/TableColumnHeader";
 
+interface Facet<T> {
+  column: keyof T;
+}
+
 export function useTableColumns<T extends BaseTableItem>(
   fields: FieldConfig<T>[],
   actionConfig?: ActionConfig<T>,
-  enableSelection = true
+  enableSelection = true,
+  facets?: Facet<T>[]
 ) {
   return React.useMemo(() => {
     const cols: ColumnDef<T>[] = [];
+
+    const facetedColumns = new Set(
+      facets?.map((f) => String(f.column))
+    );
 
     if (enableSelection) {
       cols.push({
@@ -30,23 +38,28 @@ export function useTableColumns<T extends BaseTableItem>(
     }
 
     fields.forEach((field) => {
+      const columnId = String(field.key);
+      const isFaceted = facetedColumns.has(columnId);
+
       cols.push({
-        id: String(field.key),
-        accessorKey: String(field.key),
+        id: columnId,
+        accessorKey: columnId,
         header: field.sortable
           ? ({ column }) => (
-              <DataTableColumnHeader column={column} title={field.label} />
-            )
+            <DataTableColumnHeader column={column} title={field.label} />
+          )
           : field.label,
         cell: ({ row }) => {
-          const value = row.getValue(String(field.key)) as T[keyof T];
+          const value = row.getValue(columnId) as T[keyof T];
           return field.render
             ? field.render(value, row.original)
             : value;
         },
         enableSorting: field.sortable || false,
+        filterFn: isFaceted ? "arrIncludesSome" : undefined,
         size: field.width ? parseInt(field.width) : undefined,
       });
+
     });
 
     if (!isEmpty(actionConfig)) {
@@ -54,7 +67,10 @@ export function useTableColumns<T extends BaseTableItem>(
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <TableActionsCell row={row.original} actionConfig={actionConfig!} />
+          <TableActionsCell
+            row={row.original}
+            actionConfig={actionConfig!}
+          />
         ),
         enableSorting: false,
         enableHiding: false,
@@ -62,5 +78,5 @@ export function useTableColumns<T extends BaseTableItem>(
     }
 
     return cols;
-  }, [fields, actionConfig, enableSelection]);
+  }, [fields, actionConfig, enableSelection, facets]);
 }

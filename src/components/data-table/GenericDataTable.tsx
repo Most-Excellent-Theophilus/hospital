@@ -9,6 +9,7 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   VisibilityState,
+  Column,
 } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
 import { GenericDataTableProps, BaseTableItem } from "./types";
@@ -17,12 +18,13 @@ import { TableTopBar } from "./components/TableTopBar";
 
 
 import { TableContent } from "./components/TableContent";
-import { TableFooter } from "./components/TableFooter";
+
 
 import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { DataTableFilterBar } from "./components/TableFilter";
 import { toDate } from "@/lib/utils/date";
+import { includesSome } from "./hooks/filterFns";
 
 
 export function GenericDataTable<T extends BaseTableItem>({
@@ -33,6 +35,7 @@ export function GenericDataTable<T extends BaseTableItem>({
   enableSelection = true,
   enablePagination = true,
   pageSize = 10,
+  facets,
   onSelectionChange,
   createNewRecordLink,
 }: GenericDataTableProps<T>) {
@@ -54,7 +57,7 @@ export function GenericDataTable<T extends BaseTableItem>({
 
   const [globalFilter, setGlobalFilter] = useState('');
 
-  const columns = useTableColumns(fields, actionConfig, enableSelection);
+  const columns = useTableColumns(fields, actionConfig, enableSelection, facets);
   const filteredPatients = useMemo(() => {
     if (!dateRange.from && !dateRange.to) return data;
 
@@ -68,6 +71,9 @@ export function GenericDataTable<T extends BaseTableItem>({
   const table = useReactTable({
     data: filteredPatients,
     columns,
+    filterFns: {
+      includesSome,
+    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: enablePagination
       ? getPaginationRowModel()
@@ -107,7 +113,10 @@ export function GenericDataTable<T extends BaseTableItem>({
         table={table}
         createNewRecordLink={createNewRecordLink}
         enablePagination={enablePagination}
-      />
+      >
+
+
+      </TableTopBar>
 
       <div className="flex items-center gap-2 px-6 py-2">
         <div className="relative flex-1">
@@ -121,21 +130,17 @@ export function GenericDataTable<T extends BaseTableItem>({
         </div>
       </div>
 
-      <div className="px-6 py-2">  <DataTableFilterBar
+      <div className="px-6 py-2">  <DataTableFilterBar<T>
         table={table}
         dateRange={dateRange}
         setDateRange={setDateRange}
-        columnFilters={[
-          { columnId: 'gender', title: 'Status', options: [{ label: "Male", value: "male" }, { value: "female", label: "Female" }] },
-          // { columnId: 'doctorEmail', title: 'Priority', options: [{}] }
-        ]}
+        facets={facets?.map((facet) => ({ ...facet, column: table.getColumn(facet.column as string) }))}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
       /></div>
 
-      <div className=" px-6">
+      <div className="mb-20 px-6">
         <TableContent table={table} columnCount={columns.length} />
-        {(enablePagination || enableSelection) && <TableFooter table={table} />}
       </div>
     </div>
   );

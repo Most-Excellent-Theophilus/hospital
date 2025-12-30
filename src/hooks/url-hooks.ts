@@ -3,30 +3,25 @@
 import { useEffect } from "react";
 import { useQueryState } from "nuqs";
 
-const useNavigationVariables = () => {
+export const useNavigationVariables = () => {
     const [page, setPage] = useQueryState("page", {
         defaultValue: "home",
         shallow: false,
         history: "push",
     });
 
-    const [action, setAction] = useQueryState("action", {
-        defaultValue: "",
-
+    const [action, setAction] = useQueryState("act", {
+        defaultValue: '',
     });
 
     const [status, setStatus] = useQueryState("status", {
-        defaultValue: "",
+        defaultValue: '',
     });
 
-    /* ---------------------------------- */
-    /* Reset action + status when page changes */
-    /* ---------------------------------- */
-
     useEffect(() => {
-        setAction("", { history: "replace" });
-        setStatus("", { history: "replace" });
-    }, [page, setAction, setStatus]);
+        if (action) setAction(null, { history: "replace" });
+        if (status) setStatus(null, { history: "replace" });
+    }, [page]);
 
     return {
         page,
@@ -37,5 +32,3 @@ const useNavigationVariables = () => {
         setStatus,
     };
 };
-
-export { useNavigationVariables };

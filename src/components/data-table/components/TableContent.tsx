@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { flexRender, Table as TableType } from "@tanstack/react-table";
 import { BaseTableItem } from "../types";
-import {  Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 
 interface TableContentProps<T extends BaseTableItem> {
@@ -57,15 +57,15 @@ export function TableContent<T extends BaseTableItem>({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <TableCell colSpan={columnCount} className="h-24 text-center">
-                <div className="flex flex-col items-center justify-center text-gray-500">
+            <tr>
+              <td colSpan={columnCount} className="px-4 py-12 text-center">
+                <div className="flex flex-col items-center justify-center ">
                   <Search className="h-12 w-12 mb-2 opacity-40" />
                   <p className="text-sm font-medium">No results found</p>
                   <p className="text-xs">Try adjusting your filters or search terms</p>
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           )}
         </TableBody>
       </Table>

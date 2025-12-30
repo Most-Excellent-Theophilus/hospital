@@ -3,6 +3,8 @@
 // ============================================================================
 
 import React from "react";
+import { FilterOption } from "./components/TableFilter";
+
 
 export interface BaseTableItem {
   id: string;
@@ -47,6 +49,12 @@ export interface GenericDataTableProps<T extends BaseTableItem> {
   enableSelection?: boolean;
   enablePagination?: boolean;
   pageSize?: number;
+  facets?: FacetedFilterProps<T>[]
   onSelectionChange?: (selectedRows: T[]) => void;
-  createNewRecordLink: ()=> void;
+  createNewRecordLink: () => void;
+}
+interface FacetedFilterProps<T> {
+    column: keyof T
+    title: string;
+    options: FilterOption[];
 }

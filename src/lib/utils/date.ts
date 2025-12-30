@@ -146,8 +146,8 @@ export const dateUtils = {
     new Date(year, monthIndex + 1, 0).getDate(),
 };
 
-export const toDate = (date: unknown): Date | undefined => {
-  if (!date) return undefined;
+export const toDate = (date: unknown): Date => {
+  if (!date) return new Date();
 
   // Firestore Timestamp-like
   if (
@@ -166,9 +166,9 @@ export const toDate = (date: unknown): Date | undefined => {
   // String input
   if (typeof date === "string") {
     const parsed = new Date(date);
-    return isNaN(parsed.getTime()) ? undefined : parsed;
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
   }
 
-  return undefined;
+  return new Date();
 };
 type FirestoreTimestampLike = { _seconds: number; _nanoseconds: number };

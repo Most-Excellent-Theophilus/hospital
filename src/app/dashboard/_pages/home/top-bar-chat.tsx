@@ -1,19 +1,22 @@
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  Calendar as CalendarIcon, 
-  Search, 
-  X, 
+
+
+import {
+  Calendar as CalendarIcon,
+  Search,
+  X,
   Filter,
-  Users,
   FileText,
-  Download
+  Venus,
+  Mars,
+  Sigma,
+  TrendingUp
 } from 'lucide-react';
 import {
   ColumnDef,
@@ -25,33 +28,98 @@ import {
   useReactTable,
   Column,
 } from '@tanstack/react-table';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { IconType } from 'react-icons';
+import { dateUtils, toDate } from '@/lib/utils/date';
+import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
+import { usePatients } from '@/features/patient/patient.queries';
+import { PatientSchema } from '@/lib/firebase/firebase.types';
+import LoadingBar from '@/components/form/auth/feedback/loading.bar';
+import { capitalizeFirstLetter } from '@/lib/utils';
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Label, Pie, PieChart } from 'recharts';
+
 
 // Type definitions
 type Gender = 'male' | 'female' | 'other';
+export const TIMELINES = {
+  today: {
+    label: "Today",
+    days: 0,
+  },
+  yesterday: {
+    label: "Yesterday",
+    days: 1,
+  },
+  lastWeek: {
+    label: "Last 7 days",
+    days: 7,
+  },
+  lastMonth: {
+    label: "Last 30 days",
+    days: 30,
+  },
+  last3Months: {
+    label: "Last 3 months",
+    months: 3,
+  },
+  last6Months: {
+    label: "Last 6 months",
+    months: 6,
+  },
+  lastYear: {
+    label: "Last year",
+    years: 1,
+  },
+  last2Years: {
+    label: "Last 2 years",
+    years: 2,
+  },
+  last5Years: {
+    label: "Last 5 years",
+    years: 5,
+  },
+  last10Years: {
+    label: "Last 10 years",
+    years: 10,
+  },
+  last15Years: {
+    label: "Last 15 years",
+    years: 15,
+  },
+  last20Years: {
+    label: "Last 20 years",
+    years: 20,
+  },
+  last30Years: {
+    label: "Last 30 years",
+    years: 30,
+  },
+  last40Years: {
+    label: "Last 40 years",
+    years: 40,
+  },
+  last50Years: {
+    label: "Last 50 years",
+    years: 50,
+  },
+  last80Years: {
+    label: "Last 80 years",
+    years: 80,
+  },
+  last100Years: {
+    label: "Last 100 years",
+    years: 100,
+  },
+} as const;
+export type TimelineType = keyof typeof TIMELINES;
 
+const timelines: TimelineType[] = ["last100Years", "last80Years", "last50Years", "last40Years", "last30Years", "last20Years", "last15Years", 'last10Years', 'last5Years', "last2Years", "lastYear", "last6Months", "last3Months", "lastWeek", "yesterday", 'today']
 interface Document {
   customId: string;
   name: string;
   type: string;
 }
 
-interface Patient {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  firstName: string;
-  middleName?: string;
-  lastName: string;
-  email: string;
-  dateOfBirth: string;
-  gender: Gender;
-  address: string;
-  phoneNumber: string;
-  doctorEmail: string;
-  doctorId: string;
-  documents: Document[];
-}
 
 interface DateRange {
   from: Date | undefined;
@@ -63,133 +131,21 @@ interface FilterOption {
   value: string;
 }
 
-interface Statistics {
-  totalPatients: number;
-  maleCount: number;
-  femaleCount: number;
-  totalDocuments: number;
-}
+type Statistics = { value: string, count: number, icon: IconType, title: string, desc: string }
 
 interface ChartDataPoint {
   month: string;
   count: number;
 }
 
-interface FacetedFilterProps {
-  column: Column<Patient, unknown> | undefined;
-  title: string;
-  options: FilterOption[];
-}
+
 
 interface DateRangePickerProps {
   dateRange: DateRange;
   setDateRange: (range: DateRange) => void;
 }
 
-// Mock data generator
-const generateMockData = (): Patient[] => {
-  const genders: Gender[] = ['male', 'female', 'other'];
-  const doctors: string[] = ['dr.smith@hospital.com', 'dr.jones@hospital.com', 'dr.williams@hospital.com', 'dr.brown@hospital.com'];
-  const firstNames: string[] = ['John', 'Emma', 'Michael', 'Sarah', 'David', 'Lisa', 'James', 'Maria', 'Robert', 'Jennifer'];
-  const lastNames: string[] = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
-  
-  return Array.from({ length: 200 }, (_, i): Patient => {
-    const createdDate = new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
-    return {
-      id: `patient-${i + 1}`,
-      createdAt: createdDate,
-      updatedAt: new Date(createdDate.getTime() + Math.random() * 30 * 24 * 60 * 60 * 1000),
-      firstName: firstNames[Math.floor(Math.random() * firstNames.length)],
-      middleName: Math.random() > 0.5 ? 'Middle' : undefined,
-      lastName: lastNames[Math.floor(Math.random() * lastNames.length)],
-      email: `patient${i + 1}@email.com`,
-      dateOfBirth: `${1950 + Math.floor(Math.random() * 60)}-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-      gender: genders[Math.floor(Math.random() * genders.length)],
-      address: `${Math.floor(Math.random() * 9999)} Main St, City, State`,
-      phoneNumber: `+1${Math.floor(Math.random() * 9000000000) + 1000000000}`,
-      doctorEmail: doctors[Math.floor(Math.random() * doctors.length)],
-      doctorId: `doctor-${Math.floor(Math.random() * 4) + 1}`,
-      documents: Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, j): Document => ({
-        customId: `doc-${j}`,
-        name: `document-${j}.pdf`,
-        type: 'application/pdf',
-      })),
-    };
-  });
-};
 
-// Faceted Filter Component
-function FacetedFilter({ column, title, options }: FacetedFilterProps) {
-  const selectedValues = new Set(column?.getFilterValue() as string[]);
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-9 border-dashed">
-          <Filter className="mr-2 h-4 w-4" />
-          {title}
-          {selectedValues?.size > 0 && (
-            <>
-              <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge variant="secondary" className="rounded-sm px-1 font-normal lg:hidden">
-                {selectedValues.size}
-              </Badge>
-              <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 2 ? (
-                  <Badge variant="secondary" className="rounded-sm px-1 font-normal">
-                    {selectedValues.size} selected
-                  </Badge>
-                ) : (
-                  options
-                    .filter((option) => selectedValues.has(option.value))
-                    .map((option) => (
-                      <Badge
-                        variant="secondary"
-                        key={option.value}
-                        className="rounded-sm px-1 font-normal"
-                      >
-                        {option.label}
-                      </Badge>
-                    ))
-                )}
-              </div>
-            </>
-          )}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
-        <div className="space-y-2 p-4">
-          {options.map((option) => {
-            const isSelected = selectedValues.has(option.value);
-            return (
-              <div key={option.value} className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => {
-                    if (isSelected) {
-                      selectedValues.delete(option.value);
-                    } else {
-                      selectedValues.add(option.value);
-                    }
-                    const filterValues = Array.from(selectedValues);
-                    column?.setFilterValue(
-                      filterValues.length ? filterValues : undefined
-                    );
-                  }}
-                  className="h-4 w-4 rounded border-gray-300"
-                />
-                <label className="text-sm font-medium leading-none">
-                  {option.label}
-                </label>
-              </div>
-            );
-          })}
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 // Date Range Picker Component
 function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
@@ -202,10 +158,10 @@ function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
             {dateRange.from ? (
               dateRange.to ? (
                 <>
-                  {dateRange.from.toLocaleDateString()} - {dateRange.to.toLocaleDateString()}
+                  {dateUtils.formatDate(dateRange.from)} - {dateUtils.formatDate(dateRange.to)}
                 </>
               ) : (
-                dateRange.from.toLocaleDateString()
+                dateUtils.formatDate(dateRange.from)
               )
             ) : (
               'Pick a date range'
@@ -216,6 +172,7 @@ function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
           <Calendar
             mode="range"
             selected={{ from: dateRange.from, to: dateRange.to }}
+            captionLayout='dropdown'
             onSelect={(range) => setDateRange({ from: range?.from, to: range?.to })}
             numberOfMonths={2}
           />
@@ -236,32 +193,36 @@ function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
 }
 
 export default function PatientDashboard() {
-  const [patients] = useState<Patient[]>(generateMockData());
+  const { data } = usePatients()
+
   const [globalFilter, setGlobalFilter] = useState<string>('');
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
   const [sorting, setSorting] = useState<any[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange>({ from: undefined, to: undefined });
+  const [dateRange, setDateRange] = useState<DateRange>({ from: dateUtils.getYearsAgoDate(100), to: new Date() });
+  const [genderFilter, setGenderFilter] = useState<"male" | "female" | "other" | "all">("all")
+  const [dateOption, setDateOption] = useState<"createdAt" | "updatedAt" | "dateOfBirth">("createdAt")
 
   // Filter patients by date range
-  const filteredPatients = useMemo<Patient[]>(() => {
-    if (!dateRange.from && !dateRange.to) return patients;
-    
-    return patients.filter((patient) => {
-      const createdDate = new Date(patient.createdAt);
+
+  const filteredPatients = useMemo(() => {
+
+
+
+    return data?.filter((patient) => {
+      const createdDate = toDate(patient[dateOption]);
       if (dateRange.from && createdDate < dateRange.from) return false;
       if (dateRange.to && createdDate > dateRange.to) return false;
       return true;
-    });
-  }, [patients, dateRange]);
+    })?.filter((t) => genderFilter == 'all' ? true : t.gender == genderFilter);
+
+
+
+  }, [data, dateOption, dateRange, genderFilter]);
 
   // Table columns
-  const columns = useMemo<ColumnDef<Patient>[]>(
+  const columns = useMemo<ColumnDef<PatientSchema>[]>(
     () => [
-      {
-        accessorKey: 'id',
-        header: 'ID',
-        cell: ({ row }) => <div className="font-mono text-xs">{row.getValue('id')}</div>,
-      },
+
       {
         accessorKey: 'firstName',
         header: 'First Name',
@@ -290,6 +251,7 @@ export default function PatientDashboard() {
           const email = row.getValue('doctorEmail') as string;
           return <div className="text-sm">{email.split('@')[0]}</div>;
         },
+
         filterFn: (row, id, value: string[]) => {
           return value.includes(row.getValue(id));
         },
@@ -302,20 +264,22 @@ export default function PatientDashboard() {
           return <div className="text-center">{docs.length}</div>;
         },
       },
+      { accessorKey: 'dateOfBirth', header: 'Date of Birth', cell: ({ row }) => <div className="font-medium">{dateUtils.formatDate(row.getValue('dateOfBirth'))}</div>, },
+
       {
         accessorKey: 'createdAt',
         header: 'Registered',
         cell: ({ row }) => {
           const date = row.getValue('createdAt') as Date;
-          return <div className="text-sm">{date.toLocaleDateString()}</div>;
+          return <div className="text-sm">{dateUtils.formatDate(date)}</div>;
         },
       },
     ],
     []
   );
 
-  const table = useReactTable<Patient>({
-    data: filteredPatients,
+  const table = useReactTable<PatientSchema>({
+    data: filteredPatients || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -332,154 +296,194 @@ export default function PatientDashboard() {
   });
 
   // Statistics
-  const stats = useMemo<Statistics>(() => {
-    const totalPatients = filteredPatients.length;
-    const maleCount = filteredPatients.filter((p) => p.gender === 'male').length;
-    const femaleCount = filteredPatients.filter((p) => p.gender === 'female').length;
-    const totalDocuments = filteredPatients.reduce((sum, p) => sum + p.documents.length, 0);
-    
-    return { totalPatients, maleCount, femaleCount, totalDocuments };
+  function setTimelineRange(type: TimelineType) {
+    const now = new Date();
+    const config = TIMELINES[type];
+
+    const from = new Date(now);
+
+    if ("days" in config) {
+      from.setDate(from.getDate() - config.days);
+    }
+
+    if ("months" in config) {
+      from.setMonth(from.getMonth() - config.months);
+    }
+
+    if ("years" in config) {
+      from.setFullYear(from.getFullYear() - config.years);
+    }
+
+    setDateRange({ from, to: now });
+  }
+
+
+
+  const stats = useMemo(() => {
+
+    const totalPatients = filteredPatients?.length;
+    const maleCount = filteredPatients?.filter((p) => p.gender === 'male').length;
+    const femaleCount = filteredPatients?.filter((p) => p.gender === 'female').length;
+    const totalDocuments = filteredPatients?.reduce((sum, p) => sum + p.documents.length, 0);
+
+    return {
+      documents: {
+        count: totalDocuments,
+        desc: `Avg: ${totalPatients! > 0 ? (totalDocuments! / totalPatients!).toFixed(1) : 0} per patient`,
+        icon: FileText,
+        title: 'Documents',
+        value: ""
+      },
+      female: {
+        count: femaleCount,
+        desc: `  ${totalPatients! > 0 ? ((femaleCount! / totalPatients!) * 100).toFixed(1) : 0}% of total`,
+        icon: Venus,
+        title: 'Females',
+        value: ''
+      },
+      male: {
+        count: maleCount,
+        desc: `${totalPatients! > 0 ? ((maleCount! / totalPatients!) * 100).toFixed(1) : 0}% of total`,
+        icon: Mars,
+        title: 'Males',
+        value: ''
+      },
+      total: {
+        count: totalPatients,
+        value: '',
+        icon: Sigma,
+        title: 'Total',
+        desc: "Active Registration's"
+      }
+    };
   }, [filteredPatients]);
 
-  // Chart data
-  const chartData = useMemo<ChartDataPoint[]>(() => {
-    const months: Record<string, number> = {};
-    filteredPatients.forEach((patient) => {
-      const date = new Date(patient.createdAt);
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-      months[monthKey] = (months[monthKey] || 0) + 1;
-    });
-    
-    return Object.entries(months)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([month, count]): ChartDataPoint => ({ month, count }));
-  }, [filteredPatients]);
+  const chartConfig = {
+    all: {
+      label: "All",
+    },
+    male: {
+      label: "Male",
+      color: "var(--chart-1)",
+    },
+    female: {
+      label: "Female",
+      color: "var(--chart-2)",
+    },
 
-  const genderOptions: FilterOption[] = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-    { label: 'Other', value: 'other' },
-  ];
+    other: {
+      label: "Other",
+      color: "var(--chart-5)",
+    },
+  } satisfies ChartConfig
 
-  const doctorOptions = useMemo<FilterOption[]>(
-    () => [
-      ...new Set(patients.map((p) => p.doctorEmail)),
-    ].map((email): FilterOption => ({
-      label: email.split('@')[0],
-      value: email,
-    })),
-    [patients]
-  );
+  const chartData = [
+    { gender: "male", count: stats.male.count, fill: "var(--color-male)" },
+    { gender: "female", count: stats.female.count, fill: "var(--color-female)" },
+
+    { gender: "other", count: Number(stats?.total.count) - (Number(stats.female.count) + Number(stats.male.count)), fill: "var(--color-other)" },
+  ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br p-6">
+      {!data && <LoadingBar />}
+
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Patient Analytics Dashboard</h1>
-            <p className="text-gray-500 mt-1">Advanced filtering and comprehensive patient data management</p>
-          </div>
-          <Button className="gap-2">
-            <Download className="h-4 w-4" />
-            Export Report
-          </Button>
-        </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-500">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
-              <Users className="h-5 w-5 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalPatients}</div>
-              <p className="text-xs text-gray-500 mt-1">Active registrations</p>
-            </CardContent>
-          </Card>
 
-          <Card className="border-l-4 border-l-indigo-500">
+          {Object.values(stats).reverse().map((key, id) => <div key={id} className='bg-secondary py-3.5'>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Male Patients</CardTitle>
-              <Users className="h-5 w-5 text-indigo-500" />
+              <CardTitle className="text-sm font-medium">{key.title}</CardTitle>
+              <key.icon className=" text-primary/90" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.maleCount}</div>
-              <p className="text-xs text-gray-500 mt-1">
-                {stats.totalPatients > 0 ? ((stats.maleCount / stats.totalPatients) * 100).toFixed(1) : 0}% of total
-              </p>
+              <div className="text-3xl text-primary font-bold">{key.count}</div>
+              <p className="text-xs text-gray-500 mt-1">{key.desc}</p>
             </CardContent>
-          </Card>
+          </div>)}
 
-          <Card className="border-l-4 border-l-pink-500">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Female Patients</CardTitle>
-              <Users className="h-5 w-5 text-pink-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.femaleCount}</div>
-              <p className="text-xs text-gray-500 mt-1">
-                {stats.totalPatients > 0 ? ((stats.femaleCount / stats.totalPatients) * 100).toFixed(1) : 0}% of total
-              </p>
-            </CardContent>
-          </Card>
+          <div> <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[250px]"
+          >
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent />}
+              />
+              <Pie
+                data={chartData}
+                dataKey="count"
+                nameKey="gender"
+                innerRadius={60}
+                strokeWidth={5}
+              >
+                <Label
+                  content={({ viewBox }) => {
+                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                      return (
+                        <text
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          <tspan
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            className="fill-foreground text-3xl font-bold"
+                          >
+                            {stats.total.count}
+                          </tspan>
+                          <tspan
+                            x={viewBox.cx}
+                            y={(viewBox.cy || 0) + 24}
+                            className="fill-muted-foreground"
+                          >
+                            Patients
+                          </tspan>
+                        </text>
+                      )
+                    }
+                  }}
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer></div>
 
-          <Card className="border-l-4 border-l-green-500">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Documents</CardTitle>
-              <FileText className="h-5 w-5 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{stats.totalDocuments}</div>
-              <p className="text-xs text-gray-500 mt-1">
-                Avg: {stats.totalPatients > 0 ? (stats.totalDocuments / stats.totalPatients).toFixed(1) : 0} per patient
-              </p>
-            </CardContent>
-          </Card>
+
         </div>
 
-        {/* Chart */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Patient Registration Trends</CardTitle>
-            <CardDescription>Monthly patient registration over time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" />
-                <XAxis dataKey="month" className="text-xs" />
-                <YAxis className="text-xs" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '6px' }}
-                />
-                <Area 
-                  type="monotone" 
-                  dataKey="count" 
-                  stroke="#3b82f6" 
-                  fill="url(#colorCount)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
 
-        {/* Filters and Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Patient Records</CardTitle>
-            <CardDescription>Search, filter and manage patient information</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Search Bar */}
+        <div className=' bg-gray-50 rounded-lg border'>
+          <div className="flex flex-wrap items-center gap-2 p-3">
+            <div className="text-sm font-medium text-gray-700 mr-2">Filters:</div>
+
+            <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+            <NativeSelect onChange={(e) => setTimelineRange(e.target.value as TimelineType)} >   {timelines.map((timeline, id) => (<NativeSelectOption key={id} value={timeline}> {TIMELINES[timeline].label}</NativeSelectOption>))}</NativeSelect>
+            <NativeSelect onChange={(e) => setDateOption(e.target.value as "updatedAt")}>
+              {[{ value: "createdAt", label: "Registration Date " }, { value: "updatedAt", label: "Last Update" }, { value: "dateOfBirth", label: 'Date Of Birth' }].map((dte, id) => (<NativeSelectOption value={dte.value} key={id}>{dte.label} </NativeSelectOption>))}</NativeSelect>
+
+            <NativeSelect onChange={(e) => setGenderFilter(e.target.value as "male")} >   {["male", "female", "other", "all"].reverse().map((timeline, id) => (<NativeSelectOption key={id} value={timeline}> {capitalizeFirstLetter(timeline)}</NativeSelectOption>))}</NativeSelect>
+            {(columnFilters.length > 0 || dateRange.from || genderFilter !== 'all') && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  table.resetColumnFilters();
+                  setDateRange({ from: undefined, to: undefined });
+                  setGlobalFilter('');
+                  setGenderFilter('all')
+                }}
+                className="h-9"
+              >
+                <X className="h-4 w-4 mr-2" />
+                Clear all
+              </Button>
+            )}
+          </div>
+          <div className='p-3  '>
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -487,130 +491,103 @@ export default function PatientDashboard() {
                   placeholder="Search by name, email, or ID..."
                   value={globalFilter ?? ''}
                   onChange={(e) => setGlobalFilter(e.target.value)}
-                  className="pl-10 h-10"
+                  className="pl-10 h-10 bg-background"
                 />
               </div>
             </div>
+            <div>
 
-            {/* Filter Bar */}
-            <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 rounded-lg border">
-              <div className="text-sm font-medium text-gray-700 mr-2">Filters:</div>
-              
-              <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
-              
-              {table.getColumn('gender') && (
-                <FacetedFilter
-                  column={table.getColumn('gender')}
-                  title="Gender"
-                  options={genderOptions}
-                />
-              )}
-              
-              {table.getColumn('doctorEmail') && (
-                <FacetedFilter
-                  column={table.getColumn('doctorEmail')}
-                  title="Doctor"
-                  options={doctorOptions}
-                />
-              )}
+              {/* Pagination */}
 
-              {(columnFilters.length > 0 || dateRange.from) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    table.resetColumnFilters();
-                    setDateRange({ from: undefined, to: undefined });
-                    setGlobalFilter('');
-                  }}
-                  className="h-9"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Clear all
-                </Button>
-              )}
             </div>
+          </div>
 
-            {/* Table */}
-            <div className="rounded-lg border overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <tr key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <th
-                            key={header.id}
-                            className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </th>
+
+        </div>
+
+        <div>
+
+
+
+
+          <div className="rounded-lg border overflow-hidden my-6 ">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <th
+                          key={header.id}
+                          className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        </th>
+                      ))}
+                    </tr>
+                  ))}
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                        {row.getVisibleCells().map((cell) => (
+                          <td key={cell.id} className="px-4 py-3 text-sm text-gray-900">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
                         ))}
                       </tr>
-                    ))}
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {table.getRowModel().rows?.length ? (
-                      table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className="hover:bg-gray-50 transition-colors">
-                          {row.getVisibleCells().map((cell) => (
-                            <td key={cell.id} className="px-4 py-3 text-sm text-gray-900">
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </td>
-                          ))}
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={columns.length} className="px-4 py-12 text-center">
-                          <div className="flex flex-col items-center justify-center text-gray-500">
-                            <Search className="h-12 w-12 mb-2 opacity-40" />
-                            <p className="text-sm font-medium">No results found</p>
-                            <p className="text-xs">Try adjusting your filters or search terms</p>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={columns.length} className="px-4 py-12 text-center">
+                        <div className="flex flex-col items-center justify-center text-gray-500">
+                          <Search className="h-12 w-12 mb-2 opacity-40" />
+                          <p className="text-sm font-medium">No results found</p>
+                          <p className="text-xs">Try adjusting your filters or search terms</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
+          </div>
 
-            {/* Pagination */}
-            <div className="flex items-center justify-between pt-2">
-              <div className="text-sm text-gray-600">
-                Showing <span className="font-medium">{table.getRowModel().rows.length}</span> of{' '}
-                <span className="font-medium">{filteredPatients.length}</span> patients
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  Previous
-                </Button>
-                <div className="text-sm text-gray-600">
-                  Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  Next
-                </Button>
-              </div>
+
+          <div className="flex items-center justify-between pb-20">
+            <div className="text-sm text-gray-600">
+              Showing <span className="font-medium">{table.getRowModel().rows.length}</span> of{' '}
+              <span className="font-medium">{filteredPatients?.length}</span> patients
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <div className="text-sm text-gray-600">
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
