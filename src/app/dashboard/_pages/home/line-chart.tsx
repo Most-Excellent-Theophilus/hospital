@@ -80,6 +80,7 @@ export function ChartLineMultiple({ data }: { data: typeof lineChartData }) {
                     strokeWidth={2}
                     dot={false}
                 />
+                <ChartLegend content={<ChartLegendContent />} />
             </LineChart>
         </ChartContainer>
 
