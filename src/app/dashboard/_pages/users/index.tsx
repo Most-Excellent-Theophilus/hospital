@@ -16,12 +16,14 @@ import { dateUtils } from "@/lib/utils/date"
 import CreateAccountPage from "./doctors.form";
 import { useState } from "react";
 import DoctorViewer from "./viewer";
-import { useNavigationVariables } from "@/hooks/url-hooks";
+
 import LoadingBar from "@/components/form/auth/feedback/loading.bar";
+import { useQueryState } from "nuqs";
 
 const Accounts = () => {
     const { data, } = useUsers();
-    const { action, setAction, setStatus, status } = useNavigationVariables()
+       const [status, setStatus] = useQueryState('state',)
+
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [selectedUser, setSelectedDoctor] = useState<UserSchema | null>(null)
 
@@ -70,7 +72,6 @@ const Accounts = () => {
 
         createNewRecordLink: () => {
             setSelectedDoctor(null)
-            setAction('new')
             setStatus('')
             setIsOpen(true)
         },
@@ -83,7 +84,6 @@ const Accounts = () => {
             onEdit(row) {
 
                 setSelectedDoctor(row)
-                setAction('edi')
                 setStatus('')
 
 
@@ -92,7 +92,6 @@ const Accounts = () => {
             },
             onDelete(row) {
                 setSelectedDoctor(row)
-                setAction('delete')
                 setStatus('')
 
 
@@ -100,7 +99,6 @@ const Accounts = () => {
             },
             onView(row) {
                 setSelectedDoctor(row)
-                setAction('view')
                 setStatus('')
 
 
@@ -125,10 +123,10 @@ const Accounts = () => {
 
                 </DialogHeader>
                 <>
-                    {action == "view" && <DoctorViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
+                    {/* {action == "view" && <DoctorViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
                     {action == "delete" && <DoctorViewer data={selectedUser as UserSchema} deletee onChange={setIsOpen} />}
                     {"edit".includes(action) && <CreateAccountPage data={selectedUser as UserSchema} onChange={setIsOpen} />}
-                    {action == "new" && <CreateAccountPage onChange={setIsOpen} />}
+                    {action == "new" && <CreateAccountPage onChange={setIsOpen} />} */}
                 </>
 
 

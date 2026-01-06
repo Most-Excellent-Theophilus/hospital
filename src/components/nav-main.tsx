@@ -9,9 +9,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import { Label } from "./ui/label";
+
 import { cn } from "@/lib/utils"
-import { useNavigationVariables } from "@/hooks/url-hooks";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 
 
 
@@ -25,8 +27,8 @@ export function NavMain({
   }[];
 }) {
 
+  const page = usePathname().split('/')[2]
 
-  const { setPage, page } = useNavigationVariables()
 
   return (
     <SidebarGroup className="text-background border-t pt-12 ">
@@ -34,13 +36,10 @@ export function NavMain({
         {items.map((item) => (
           <SidebarMenuItem key={item.name} className="  " >
 
-            <button onClick={() => {
-              setPage(item.url)
-
-            }} className={cn(" py-3 px-5 w-full h-full flex space-x-2 border border-primary hover:border-accent  cursor-pointer", item.url.includes(page) && " bg-accent text-secondary-foreground ")}>
+            <Link href={`/dashboard/${item.url}`} className={cn(" py-3 px-5 w-full h-full flex space-x-2 border border-primary hover:border-accent  cursor-pointer", page.includes(item.url) && " bg-accent text-secondary-foreground ")}>
               {item.icon && <item.icon className="size-6" />}
-              <Label className="">{item.name}</Label>
-            </button>
+              <p className="">{item.name}</p>
+            </Link>
 
           </SidebarMenuItem>
         ))}

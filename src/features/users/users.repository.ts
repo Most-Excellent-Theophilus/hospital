@@ -10,7 +10,7 @@ export const usersRepository = {
   },
 
   getById: async (id: string): Promise<UserSchema> => {
-    const { data } = await api.get(`/doctors/${id}`);
+    const { data } = await api.get(`/doctors/${id}`, );
     return data as UserSchema;
   },
 

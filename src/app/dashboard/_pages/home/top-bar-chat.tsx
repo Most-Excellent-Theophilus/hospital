@@ -14,8 +14,7 @@ import {
   FileText,
   Venus,
   Mars,
-  Sigma
-} from 'lucide-react';
+  Sigma} from 'lucide-react';
 import {
   ColumnDef,
   flexRender,
@@ -185,9 +184,9 @@ export default function PatientDashboard() {
   const { data } = usePatients()
 
   const [globalFilter, setGlobalFilter] = useState<string>('');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sorting, setSorting] = useState<any[]>([]);
   const [dateRange, setDateRange] = useState<DateRange>({ from: dateUtils.getYearsAgoDate(100), to: new Date() });
   const [genderFilter, setGenderFilter] = useState<"male" | "female" | "other" | "all">("all")
@@ -385,100 +384,88 @@ export default function PatientDashboard() {
   const randomInt = (min: number, max: number) =>
     Math.floor(Math.random() * (max - min + 1)) + min
 
-  const getGenderStarts = (month: number, gender: 'male' | 'female' | 'other') => {
-    return filteredPatients?.filter((val) => {
-
-      const myDate = toDate(val[dateOption])
-      if (myDate.getDate() > dateRange.from?.getDate()! && myDate.getDate() < dateRange.to?.getDate()! && myDate.getMonth() == month && val.gender == gender) {
-
-        return true
-      }
-      return false
-    }).length!
-  }
-
   const lineChartData: LineChartType = useMemo(() => {
     return [
       {
-        female: getGenderStarts(0,'female'),
-        male:getGenderStarts(0,'male'),
-       other:getGenderStarts(0,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'Jan'
       },
       {
-        female:getGenderStarts(1,'female'),
-        male:getGenderStarts(1,'male'),
-       other:getGenderStarts(1,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'Feb'
       },
       {
-        female:getGenderStarts(2,'female'),
-        male:getGenderStarts(2,'male'),
-       other:getGenderStarts(2,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'March'
       },
       {
-        female:getGenderStarts(3,'female'),
-        male:getGenderStarts(3,'male'),
-       other:getGenderStarts(3,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'April'
       },
       {
-        female:getGenderStarts(4,'female'),
-        male:getGenderStarts(5,'male'),
-       other:getGenderStarts(4,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'May'
       },
       {
-        female:getGenderStarts(5,'female'),
-        male:getGenderStarts(5,'male'),
-       other:getGenderStarts(5,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'June'
       },
       {
-        female:getGenderStarts(6,'female'),
-        male:getGenderStarts(6,'male'),
-       other:getGenderStarts(6,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'July'
       },
       {
-        female:getGenderStarts(7,'female'),
-        male:getGenderStarts(7,'male'),
-       other:getGenderStarts(7,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'August'
       },
       {
-        female:getGenderStarts(8,'female'),
-        male:getGenderStarts(8,'male'),
-       other:getGenderStarts(8,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'Sept'
       },
       {
-        female:getGenderStarts(9,'female'),
-        male:getGenderStarts(9,'male'),
-       other:getGenderStarts(9,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'Octo'
       },
       {
-        female:getGenderStarts(10,'female'),
-        male:getGenderStarts(10,'male'),
-       other:getGenderStarts(10,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'Nov'
       },
       {
-        female:getGenderStarts(11,'female'),
-        male:getGenderStarts(11,'female'),
-        other:getGenderStarts(11,'other'),
+        female: randomInt(1, 100),
+        male: randomInt(1, 100),
+        other: randomInt(1, 100),
         month: 'Dec'
       },
     ]
-  }, [filteredPatients, dateOption])
+  }, [filteredPatients])
 
   return (
-    <div className="min-h-screen  sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br p-6">
       {!data && <LoadingBar />}
 
-      <div className=" mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -557,7 +544,7 @@ export default function PatientDashboard() {
 
           </div>
 
-          <div className='sm:col-span-3  flex items-center '> <ChartLineMultiple data={lineChartData} /> </div>
+          <div className='col-span-3  flex items-center '> <ChartLineMultiple data={lineChartData} /> </div>
 
         </div>
 

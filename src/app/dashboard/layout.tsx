@@ -9,10 +9,10 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
     if (!session.email) {
         redirect('/login')
     }
-    const { middleName, doctorId, customGender, verified, userType, lastName, gender, firstName, email, browser, browserVersion, city, continent, country, dateOfBirth, host, deviceType, ip, isTouch, timezone, screenWidth, vendor, screenHeight, region, osVersion, os, model, lon, lat, } = session
+    const { save, updateConfig, destroy, ...rest } = session
 
 
-    return <SharedProvider value={{ middleName, doctorId, customGender, verified, userType, lastName, gender, firstName, email, browser, browserVersion, city, continent, country, dateOfBirth, host, deviceType, ip, isTouch, timezone, screenWidth, vendor, screenHeight, region, osVersion, os, model, lon, lat, } as SessionUser}>  <AppSidebarProcider > {children} </AppSidebarProcider></SharedProvider>
+    return <SharedProvider value={rest as SessionUser}>  <AppSidebarProcider > {children} </AppSidebarProcider></SharedProvider>
 }
 
 export default DashBoardLayout

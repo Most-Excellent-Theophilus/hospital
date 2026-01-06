@@ -10,7 +10,7 @@ import TextInput from "@/components/form/auth/inputs/text-input";
 import { DropDownDatePicker } from "@/components/form/auth/inputs/date-input";
 import { RadioGroupField } from "@/components/form/auth/inputs/gender";
 import EmailUserNameInput from "@/components/form/auth/inputs/email-username";
-import { DoctorFormValues, registrationSchema,} from "@/features/users/users.types";
+import { DoctorFormValues, registrationSchema, } from "@/features/users/users.types";
 import { useCreateUser } from "@/features/users/users.mutations";
 
 import { toast } from "sonner";
@@ -20,7 +20,12 @@ import { checkUserEmail, updateDoctor } from "@/features/users/users.actions";
 import { useTransition } from "react";
 import { toDate } from "@/lib/utils/date";
 import { UserSchema } from "@/lib/firebase/firebase.types";
-import { useNavigationVariables } from "@/hooks/url-hooks";
+import {
+    useQueryState,
+    parseAsArrayOf,
+    parseAsString,
+} from "nuqs";
+
 
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success', { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
@@ -46,7 +51,7 @@ const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 
 export default function CreateAccountPage({ data, onChange }: { data?: UserSchema | null, onChange: (value: boolean) => void; }) {
     const createUser = useCreateUser()
     const [isPending, startTransition] = useTransition()
-    const { status, setStatus } = useNavigationVariables()
+    const [status, setStatus] = useQueryState('state',)
 
 
 

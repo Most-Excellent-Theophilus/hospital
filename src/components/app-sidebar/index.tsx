@@ -28,10 +28,10 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
       <Sidebar collapsible="icon" {...props}>
         <SidebarContent className="bg-primary">
           <div >
-            <SidebarHeader className={cn("flex  rounded-xl mt-4 mb-3  mx-0.5", "mx-3")}  >
-              <div className="flex w-full justify-between space-x-4">
-                <div className="flex w-full justify-start space-x-4 items-center"><Logo className="text-background " />
-                  {<Label className='text-background font-bold tracking-wide text-xl'>Hospital</Label>}</div>
+            <SidebarHeader className={cn("flex  rounded-xl  ")}  >
+              <div className="flex w-full justify-between ">
+                <div className="flex w-full justify-start space-x-4 items-center"><Logo className="p-6 bg-background" />
+                  </div>
 
 
 

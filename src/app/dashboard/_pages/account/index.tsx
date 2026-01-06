@@ -4,78 +4,46 @@ import { usePatients as useUsers } from "@/features/patient/patient.queries";
 import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
 
 
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
 
 
 import { dateUtils } from "@/lib/utils/date"
 
-
-import { useState } from "react";
-
-
-import { useNavigationVariables } from "@/hooks/url-hooks";
-import CreatePatientPage from "./patient.form";
-import PatientViewer from "./patients.view";
-import LoadingBar from "@/components/form/auth/feedback/loading.bar";
-import { PatientSchema } from "@/features/patient/patient.types";
 
 
 
 
 const Accounts = () => {
     const { data, } = useUsers();
-    const { action, setAction, setStatus, status } = useNavigationVariables()
-    const [isOpen, setIsOpen] = useState<boolean>(false)
-    const [selectedUser, setSelectedDoctor] = useState<UserSchema | null>(null)
+
+
 
 
 
 
     return (<>
 
-        {!data && <LoadingBar />}
+
         <GenericDataTable<UserSchema>
             data={data || []}
             pageSize={30}
 
             createNewRecordLink={() => {
-                setAction('nw')
-                setStatus('')
 
-                setSelectedDoctor(null)
-                setIsOpen(true)
+
             }}
             actionConfig={{
                 onEdit(row) {
 
-                    setSelectedDoctor(row)
-                    setAction('edi')
-                    setStatus('')
 
-
-                    setIsOpen(true)
 
                 },
                 onDelete(row) {
-                    setSelectedDoctor(row)
-                    setAction('delete')
-                    setStatus('')
 
 
-                    setIsOpen(true)
+
                 },
                 onView(row) {
-                    setSelectedDoctor(row)
-                    setAction('view')
-                    setStatus('')
 
-
-                    setIsOpen(true)
 
                 },
             }}
@@ -149,25 +117,7 @@ const Accounts = () => {
             ]}
 
         />
-        <Dialog open={isOpen && status !== 'success'} onOpenChange={setIsOpen}   >
 
-
-            <DialogContent className=" sm:max-w-[925px] max-h-[90dvh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="hidden">Edit profile</DialogTitle>
-
-                </DialogHeader>
-                <>
-                    {action == "view" && <PatientViewer data={selectedUser as UserSchema} onChange={setIsOpen} />}
-                    {action == "delete" && <PatientViewer data={selectedUser as UserSchema} deletee onChange={setIsOpen} />}
-                    {"edit".includes(action) && <CreatePatientPage data={selectedUser as unknown as PatientSchema} onChange={setIsOpen} />}
-                    {action == "nw" && <CreatePatientPage onChange={setIsOpen} />}
-                </>
-
-
-            </DialogContent>
-
-        </Dialog>
     </>);
 
 

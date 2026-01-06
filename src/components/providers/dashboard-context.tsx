@@ -4,7 +4,6 @@ import { createContext, useContext,  } from "react";
 
 type SharedState = {
     value: SessionUser;
-
 };
 
 const SharedContext = createContext<SharedState | null>(null);

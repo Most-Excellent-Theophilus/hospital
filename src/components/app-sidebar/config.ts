@@ -1,15 +1,15 @@
-import { IconType } from "react-icons";
-import { CgMenuGridO } from "react-icons/cg";
-
-import { LuAppWindow } from "react-icons/lu";
-import { FaFileAlt, FaHome } from "react-icons/fa";
-import { FaCircleUser } from "react-icons/fa6";
-
+import { MdOutlineSick } from "react-icons/md";
+import { FaCalendarMinus } from "react-icons/fa";
+import { FaCalendarPlus } from "react-icons/fa";
+import { IconType } from "react-icons"
+import { FaUserDoctor } from "react-icons/fa6";
+import { RiHome5Fill } from "react-icons/ri";
+import { GrSystem } from "react-icons/gr";
 export type DashBoardLinksType =
-  | "users"
-  | "account"
-  | "postOp"
-  | "preOp"
+  | "doctors"
+  | "patients"
+  | "pre-operation"
+  | "post-operation"
   | "home"
   | "system";
 export type DashBoardUrl = DashBoardLinksType
@@ -19,32 +19,32 @@ export const linksIconMap: Record<
 > = {
   home: {
     name: "Home",
-    icon: FaHome,
+    icon: RiHome5Fill,
     url: "home",
   },
-  account: {
+  patients: {
     name: "Patients",
-    icon: FaFileAlt,
-    url: "account",
+    icon: MdOutlineSick,
+    url: "patients",
   },
-  preOp: {
-    icon: CgMenuGridO,
+  "post-operation": {
+    icon: FaCalendarMinus,
     name: "Pre Operation",
-    url: "preOp",
+    url: "post-operation",
   },
-  postOp: {
-    icon: LuAppWindow,
+  "pre-operation": {
+    icon: FaCalendarPlus,
     name: "Post Operation ",
-    url: "postOp",
+    url: "pre-operation",
   },
-  users: {
+  doctors: {
     name: "Doctors",
-    icon: FaCircleUser,
-    url: "users",
+    icon: FaUserDoctor,
+    url: "doctors",
   },
   system: {
     name: "System",
-    icon: FaCircleUser,
+    icon: GrSystem,
     url: "system",
   },
 };

@@ -151,8 +151,8 @@ export default function LoginPage() {
       >
         <fieldset disabled={isLocked} className="min-w-[350px]">
           {/* Header */}
+            <LogoIcon className=" text-primary"  />
           <div className="flex items-center space-x-2.5">
-            <LogoIcon className="size-9 text-primary" />
             <h1 className="text-xl font-semibold text-primary">Log In</h1>
           </div>
 

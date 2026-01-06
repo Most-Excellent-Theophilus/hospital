@@ -6,7 +6,7 @@ import {
   DashBoardLinksType,
   linksIconMap,
 } from "@/components/app-sidebar/config";
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 
 
@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useNavigationVariables } from "@/hooks/url-hooks";
+
 
 import { AddressInfo, InfoField, Section } from "../review-componemts";
 import { Separator } from "../ui/separator";
@@ -32,12 +32,11 @@ const DashBoardHeader = () => {
 
   const { value: { browser, browserVersion, city, continent, country, dateOfBirth, deviceType, doctorId, email, firstName, gender, host, ip, isTouch, lastName, lat, lon, model, os, osVersion, region, screenHeight, screenWidth, timezone, userType, vendor, customGender, middleName, verified } } = useSharedState();
 
-
-  const { page } = useNavigationVariables()
+const page = usePathname().split('/')
 
 
   const router = useRouter()
-  const { icon: Icon, name: title } = linksIconMap[page as DashBoardLinksType] || linksIconMap['home'];
+  const { icon: Icon, name: title } = linksIconMap[page[2] as DashBoardLinksType] || linksIconMap['home'];
   const logout = () => {
     logoutNow()
   }
@@ -45,6 +44,7 @@ const DashBoardHeader = () => {
     <header className="flex justify-between h-16 px-5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       <div className="flex space-x-2 items-center">
         <SidebarTrigger className="sm:hidden" />
+      
         <Button onClick={() => router.back()} variant={'outline'} size="icon" className="rounded-full"> <ArrowLeft />  </Button>
 
         <Icon className="size-7 text-primary" />
