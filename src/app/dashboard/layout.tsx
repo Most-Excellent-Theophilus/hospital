@@ -12,7 +12,7 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
     const { save, updateConfig, destroy, ...rest } = session
 
 
-    return <SharedProvider value={rest as SessionUser}>  <AppSidebarProcider > {children} </AppSidebarProcider></SharedProvider>
+    return <SharedProvider value={rest as SessionUser}>  <AppSidebarProcider >  {children} </AppSidebarProcider></SharedProvider>
 }
 
 export default DashBoardLayout

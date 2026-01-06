@@ -48,3 +48,11 @@ export const linksIconMap: Record<
     url: "system",
   },
 };
+
+export type Module = keyof typeof linksIconMap
+const VALID_MODULES = Object.keys(linksIconMap);
+
+const actions = ['create', 'update', 'view', 'delete']
+
+export const isValidModule = (m: string): m is Module => VALID_MODULES.concat(['account']).includes(m as Module);
+export const isValidAction = (a: string) => actions.includes(a)

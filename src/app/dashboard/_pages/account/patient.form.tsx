@@ -19,7 +19,7 @@ import { useEffect, useState, useTransition } from "react";
 import { toDate } from "@/lib/utils/date";
 
 
-import { useNavigationVariables } from "@/hooks/url-hooks";
+
 import { patientSchema, PatientSchema } from "@/features/patient/patient.types";
 import { useSharedState } from "@/components/providers/dashboard-context";
 import { PatientSchema as Pt } from "@/lib/firebase/firebase.types"
@@ -33,6 +33,7 @@ import { CommandSelectField } from "@/components/form/auth/inputs/command-input"
 import { Label } from "@/components/ui/label";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { uploadMultipleFiles } from "@/hooks/useSingleFileUpload";
+import { useQueryState } from "nuqs";
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success' | "not-allowed", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
     "email-not-found": {
@@ -66,7 +67,7 @@ export default function CreatePatientPage({ data, onChange }: { data?: PatientSc
     const [isPending, startTransition] = useTransition()
     const [uploadProgress, setUploadProgress] = useState<number>(0)
     const { value: userSession } = useSharedState()
-    const { status, setStatus } = useNavigationVariables()
+    const [status, setStatus] = useQueryState('stat')
 
     const form = useForm<PatientSchema>({
         resolver: zodResolver(patientSchema),

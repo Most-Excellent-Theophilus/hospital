@@ -36,7 +36,7 @@ export function NavMain({
         {items.map((item) => (
           <SidebarMenuItem key={item.name} className="  " >
 
-            <Link href={`/dashboard/${item.url}`} className={cn(" py-3 px-5 w-full h-full flex space-x-2 border border-primary hover:border-accent  cursor-pointer", page.includes(item.url) && " bg-accent text-secondary-foreground ")}>
+            <Link href={`/dashboard/${item.url}`} className={cn(" py-3 px-5 w-full h-full flex space-x-2 border border-primary hover:border-accent  cursor-pointer", page?.includes(item.url) && " bg-accent text-secondary-foreground ")}>
               {item.icon && <item.icon className="size-6" />}
               <p className="">{item.name}</p>
             </Link>
