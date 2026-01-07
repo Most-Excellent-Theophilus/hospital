@@ -27,7 +27,7 @@ import {
 
 import { dateUtils, toDate } from '@/lib/utils/date';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
-import { usePatients } from '@/features/patient/patient.queries';
+import { usePatients } from '@/features/pages/patients/patient.queries';
 import { PatientSchema } from '@/lib/firebase/firebase.types';
 import LoadingBar from '@/components/form/auth/feedback/loading.bar';
 import { capitalizeFirstLetter } from '@/lib/utils';

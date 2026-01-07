@@ -1,6 +1,6 @@
 "use client";
 import { GenericDataTable } from "@/components/data-table/GenericDataTable";
-import { usePatients as useUsers } from "@/features/patient/patient.queries";
+import { usePatients as useUsers } from "@/features/pages/patients/patient.queries";
 import { PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
 
 

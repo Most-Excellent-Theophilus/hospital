@@ -40,6 +40,13 @@ export const dateUtils = {
       day: "numeric",
     }).format(parseDate(date));
   },
+  age(date: DateInput = new Date()): string {
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(parseDate(date));
+  },
 
   formatDateShort(date: DateInput = new Date()): string {
     return new Intl.DateTimeFormat("en-US").format(parseDate(date));

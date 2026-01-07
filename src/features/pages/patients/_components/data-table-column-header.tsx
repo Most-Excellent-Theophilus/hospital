@@ -1,4 +1,4 @@
-import { Column } from "@tanstack/react-table"
+import { type Column } from "@tanstack/react-table"
 import { ArrowDown, ArrowUp, ChevronsUpDown, EyeOff } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -35,7 +35,7 @@ export function DataTableColumnHeader<TData, TValue>({
             size="sm"
             className="data-[state=open]:bg-accent -ml-3 h-8"
           >
-            <span className="font-bold">{title}</span>
+            <span>{title}</span>
             {column.getIsSorted() === "desc" ? (
               <ArrowDown />
             ) : column.getIsSorted() === "asc" ? (
@@ -54,7 +54,11 @@ export function DataTableColumnHeader<TData, TValue>({
             <ArrowDown />
             Desc
           </DropdownMenuItem>
-        
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
+            <EyeOff />
+            Hide
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

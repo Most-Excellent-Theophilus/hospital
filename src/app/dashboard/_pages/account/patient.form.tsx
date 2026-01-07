@@ -20,11 +20,11 @@ import { toDate } from "@/lib/utils/date";
 
 
 
-import { patientSchema, PatientSchema } from "@/features/patient/patient.types";
+import { patientSchema, PatientSchema } from "@/features/pages/patients/patient.types";
 import { useSharedState } from "@/components/providers/dashboard-context";
 import { PatientSchema as Pt } from "@/lib/firebase/firebase.types"
 
-import { useCreatePatient } from "@/features/patient/patient.mutations";
+import { useCreatePatient } from "@/features/pages/patients/patient.mutations";
 import AddressInput from "@/components/form/auth/inputs/address-input";
 import PhoneInputField from "@/components/form/auth/inputs/phone-input";
 import DropzoneField from "@/components/form/auth/inputs/file-uploader";

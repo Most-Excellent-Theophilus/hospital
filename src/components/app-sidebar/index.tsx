@@ -48,7 +48,7 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
       </Sidebar>
       <SidebarInset>
         <DashBoardHeader  />
-        <div className=" h-full flex  justify-center items-center p-5 "> {children}</div>
+        <div className=" h-full  px-5"> {children}</div>
 
       </SidebarInset>
     </SidebarProvider>
