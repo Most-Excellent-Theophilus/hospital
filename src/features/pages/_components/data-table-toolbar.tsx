@@ -13,7 +13,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { usePathname, useRouter } from "next/navigation"
-import { PatientSchema } from "@/lib/firebase/firebase.types"
 import { toast } from "sonner"
 
 

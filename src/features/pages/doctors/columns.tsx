@@ -1,6 +1,5 @@
 import { DataTableColumnHeader } from "@/components/data-table/components/TableColumnHeader";
 import { SelectionCell, SelectionHeader } from "@/components/data-table/components/TableSelectionCell";
-import { Badge } from "@/components/ui/badge";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 import { dateUtils } from "@/lib/utils/date";
 import { ColumnDef } from "@tanstack/react-table";

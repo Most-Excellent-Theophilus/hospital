@@ -13,7 +13,6 @@ import { ArrowLeft } from "lucide-react";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
 
-import { logoutNow } from "@/features/auth/auth.actions";
 import { useSharedState } from "@/components/providers/dashboard-context"
 import Link from "next/link";
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";

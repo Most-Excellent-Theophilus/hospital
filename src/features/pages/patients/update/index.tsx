@@ -25,7 +25,7 @@ const PatientsupdateModule = () => {
   const selectedPatients = data?.filter((patient) => ids?.includes(patient.id))
   return (
     <div>
-      {selectedPatients?.map((patient, i) => <div className="flex"> <div className=""><Badge className="text-base mt-8 font-bold">{i + 1}.</Badge></div> <CreatePatientPage data={patient as unknown as PatientSchema} /></div>)}
+      {selectedPatients?.map((patient, i) => <div className="flex" key={i}> <div className=""><Badge className="text-base mt-8 font-bold">{i + 1}.</Badge></div> <CreatePatientPage data={patient as unknown as PatientSchema} /></div>)}
     </div>
   );
 

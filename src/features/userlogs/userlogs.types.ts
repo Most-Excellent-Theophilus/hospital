@@ -1,9 +1,10 @@
 import z from "zod";
-import { userSchema } from "../users/users.types";
+import { userSchema } from "../pages/doctors/users.types";
+
 const nullableString = (fallback = "unknown") =>
   z.string().nullable().transform(v => v ?? fallback);
 
-export const logsSchema = userSchema.merge(
+export const logsSchema = userSchema.and(
   z.object({
     os: z.string(),
     osVersion: z.string(),

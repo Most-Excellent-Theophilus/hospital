@@ -85,7 +85,7 @@ const PatientViewer = ({ data, deletee, }: { data: PatientSchema, deletee?: bool
         </div>
         <Section title="Other Contacts" className="grid grid-cols-1 md:grid-cols-2  gap-4">
 
-            {otherContacts.map((c) => <Section title={c.fullName} >
+            {otherContacts.map((c, key) => <Section key={key} title={c.fullName} >
 
                 <InfoField label="Relationship" value={c.relationship} />
                 <InfoField label={capitalizeFirstLetter(c.type)} value={<a href={` ${c.type == 'email' ? 'mailto:' : 'tel:'} ${c.contact}`} className={'text-xs hover:underline'}>{c.contact}</a>} />

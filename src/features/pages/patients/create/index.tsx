@@ -34,10 +34,9 @@ import { Label } from "@/components/ui/label";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import { uploadMultipleFiles } from "@/hooks/useSingleFileUpload";
 import { useQueryState } from "nuqs";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Section } from "@/components/review-componemts";
 import { Badge } from "@/components/ui/badge";
-import Logo from "@/components/logo";
 import Image from "next/image";
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success' | "not-allowed", { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
@@ -338,10 +337,7 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
               </div>
             </Section>}
             {<div>
-              {toUpdate?.documents?.map((doc) => <div>
-
-
-              </div>)}
+           
             </div>}
             {!toUpdate && <DropzoneField control={form.control} label="Supporting Documents" name="documents" maxSize={1} maxFiles={12} />}
           </div>
