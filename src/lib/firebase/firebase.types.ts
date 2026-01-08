@@ -1,8 +1,9 @@
 
 import { tokenSchema } from "@/features/auth/auth.types";
+import { userSchema } from "@/features/pages/doctors/users.types";
 import { patientSchema } from "@/features/pages/patients/patient.types";
 import { logsSchema } from "@/features/userlogs/userlogs.types";
-import { userSchema } from "@/features/users/users.types";
+
 import type admin from "firebase-admin";
 import { Timestamp } from "firebase-admin/firestore";
 import z from "zod";

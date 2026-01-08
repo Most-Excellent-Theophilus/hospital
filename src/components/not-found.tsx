@@ -9,7 +9,7 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from "@/components/ui/empty"
-import Logo, { LogoIcon } from "@/components/logo"
+import  { LogoIcon } from "@/components/logo"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 

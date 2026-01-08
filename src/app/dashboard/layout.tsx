@@ -9,6 +9,7 @@ const DashBoardLayout = async ({ children }: { children: React.ReactNode }) => {
     if (!session.email) {
         redirect('/login')
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { save, updateConfig, destroy, ...rest } = session
 
 

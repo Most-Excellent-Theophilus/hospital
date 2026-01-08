@@ -1,16 +1,9 @@
 
-import Logo from "@/components/logo";
-import { Skeleton } from "@/components/ui/skeleton";
+import LoadingPage from "@/components/loadingpage";
+
 
 const GlobalLoadingPage = () => {
-    return <div className="w-screen h-screen flex items-center justify-center">
-        <div>
-
-            <Logo className="animate-bounce" />
-            <Skeleton className="w-52 h-5" />
-        </div>
-
-    </div>;
+    return <LoadingPage ></LoadingPage>;
 }
 
 export default GlobalLoadingPage;

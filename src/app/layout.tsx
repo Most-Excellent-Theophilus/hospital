@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import "@/lib/interceptor"
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/components/providers";
 
 import type { Viewport } from 'next'
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
-import { capitalizeFirstLetter } from "@/lib/utils";
-import { linksIconMap } from "@/components/app-sidebar/config";
-import { Home } from "lucide-react";
+import { DismissToastOnRouteChange } from "@/components/dismis-toast";
+// import { mkdir, writeFile } from "fs/promises";
+// import path from "path";
+// import { capitalizeFirstLetter } from "@/lib/utils";
+// import { linksIconMap } from "@/components/app-sidebar/config";
+// import { Home } from "lucide-react";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -60,6 +62,7 @@ export default async function RootLayout({
       >
         <Providers>
           {children}
+          <DismissToastOnRouteChange />
           <Toaster />
         </Providers>
       </body>

@@ -1,0 +1,152 @@
+"use client"
+
+import { type Table } from "@tanstack/react-table"
+import { ChevronDownIcon, Eye, Pen, Plus, Search, Trash2, TrashIcon, X } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
+import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { genderOptions } from "./data"
+import { ButtonGroup, } from "@/components/ui/button-group"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { usePathname, useRouter } from "next/navigation"
+import { PatientSchema } from "@/lib/firebase/firebase.types"
+import { toast } from "sonner"
+
+
+interface DataTableToolbarProps<T> {
+  table: Table<T & { id: string }>
+}
+
+export function DataTableToolbar<T>({
+  table,
+  search, value
+
+
+}: DataTableToolbarProps<T> & { search: (term: string) => void, value?: string, }) {
+  const path = usePathname()
+  const router = useRouter()
+  const [open, setOpen] = useState<boolean>(false)
+  const isFiltered = table.getState().columnFilters.length > 0
+  const toggleOpen = () => setOpen((prev) => !prev)
+  const ids = table.getSelectedRowModel().rows.map(r => r.original.id!)
+  const selectedCount = ids.length
+
+  const enableActions = selectedCount == 0
+
+  const goto = (destiny: "view" | "create" | "update" | "delete") => {
+    toast.loading('Loading...')
+    router.push(`${path}/${destiny}?id=${encodeURIComponent(JSON.stringify(ids))}`)
+  }
+
+  return (
+    <div className=" bg-secondary  rounded   w-full sticky top-0 z-5 ">
+
+      <div className="flex items-center justify-between  p-3">
+        <div className="relative flex-1 mr-2">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-accent" />
+          <Input
+            placeholder="Search by name, email, or ID..."
+            value={value ?? ''}
+            onChange={(e) => search(e.target.value)}
+            className="pl-10 h-10 bg-accent/40"
+          />
+        </div>
+        <div className="flex flex-1 items-center gap-2">
+
+          {table.getColumn("gender") && (
+            <DataTableFacetedFilter
+              column={table.getColumn("gender")}
+              title="Gender"
+              options={genderOptions}
+            />
+          )}
+
+
+          {isFiltered && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => table.resetColumnFilters()}
+            >
+              Reset
+              <X />
+            </Button>
+          )}
+        </div>
+
+      </div>
+
+      <div className="flex mx-3 space-x-4 mb-1">
+        <ButtonGroup>
+          <Button variant="outline" size={'lg'} onClick={toggleOpen} disabled={enableActions}>Actions <Badge >{selectedCount}</Badge></Button>
+          <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenuTrigger asChild disabled={enableActions}>
+              <Button variant="outline" size={'icon-lg'} className="" >
+                <ChevronDownIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center"  >
+              <DropdownMenuGroup>
+
+
+                <DropdownMenuItem onClick={() => goto('view')} >
+                  <Eye />
+                  View
+
+
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => goto('update')} >
+
+                  <Pen />
+                  Edit
+
+
+                </DropdownMenuItem>
+                {/* {selectedCount > 1 ? <DropdownMenuItem onClick={() => {
+                  exportCSVTable(table, "patients", ids)
+                }}>
+                  <FaFileExcel />
+                  Export to Excel
+                </DropdownMenuItem> : null} */}
+
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                {/* <DropdownMenuItem asChild>
+
+
+                  <span><Archive />Archive : {selectedCount}</span>
+
+                </DropdownMenuItem> */}
+                <DropdownMenuItem variant="destructive" onClick={() => goto('delete')}>
+
+
+                  <TrashIcon />
+                  Delete : {selectedCount}
+
+
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </ButtonGroup>
+        <Button size={'lg'} variant={'outline'} onClick={() => table.resetRowSelection()} disabled={!table.getIsAllPageRowsSelected() && !table.getIsSomePageRowsSelected()}>
+          <Trash2 />
+          Clear
+        </Button>
+        <Button onClick={() => goto('create')} size={'lg'}><Plus />
+          Add</Button>
+
+        <div>
+
+
+
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -1,4 +1,5 @@
-import { getAllDoctor } from "@/features/users/users.actions";
+import { getAllDoctor } from "@/features/pages/doctors/users.actions";
+
 
 export async function GET() {
   const doctors = await getAllDoctor(); // Assume this function fetches the list of doctors

@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueryState, parseAsJson, parseAsString, parseAsInteger, parseAsArrayOf } from "nuqs";
+import { useQueryState, parseAsJson, parseAsString, parseAsInteger } from "nuqs";
 import { usePatients } from "./patient.queries";
 import {
   flexRender,
@@ -13,11 +13,12 @@ import {
 
 } from "@tanstack/react-table";
 import { z } from "zod";
-import { columns } from "./_components/columns";
-import { DataTableToolbar } from "./_components/data-table-toolbar";
+import { columns } from "./columns";
+import { DataTableToolbar } from "../_components/data-table-toolbar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DataTablePagination } from "./_components/data-table-pagination";
-import { PatientSchema } from "./patient.types";
+import { DataTablePagination } from "../_components/data-table-pagination";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 const sortingSchema = z.array(
   z.object({
@@ -109,7 +110,14 @@ const PatientsModule = () => {
 
 
 
+  useEffect(() => {
+    if (data) {
 
+      toast.dismiss()
+    } else {
+      toast.loading('Loading ...')
+    }
+  })
 
 
   return <div className="grid mb-20">

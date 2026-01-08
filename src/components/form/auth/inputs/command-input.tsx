@@ -80,7 +80,7 @@ export function CommandSelectField<T extends z.ZodTypeAny>({
                     role="combobox"
                     disabled={disabled}
                     className={cn(
-                      "w-full justify-between h-10 bg-accent",
+                      "w-full justify-between h-10 bg-accent/20",
                       !field.value && "text-muted-foreground"
                     )}
                   >

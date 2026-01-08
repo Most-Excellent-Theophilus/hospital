@@ -81,7 +81,7 @@ export function DropDownDatePicker<T extends FieldValues>({
               {/* YEAR */}
               <NativeSelect
                 className={cn(
-                  "bg-accent ",
+                  "bg-accent/20 ",
                   fieldState.invalid && year == ""
                     ? " border-destructive "
                     : "border-muted-foreground"
@@ -107,7 +107,7 @@ export function DropDownDatePicker<T extends FieldValues>({
               {/* MONTH */}
               <NativeSelect
                 className={cn(
-                  "bg-accent ",
+                  "bg-accent/20 ",
                   fieldState.invalid && month == ""
                     ? " border-destructive "
                     : "border-muted-foreground"
@@ -130,7 +130,7 @@ export function DropDownDatePicker<T extends FieldValues>({
               {/* DAY */}
               <NativeSelect
                 className={cn(
-                  "bg-accent ",
+                  "bg-accent/20 ",
                   fieldState.invalid && day == ""
                     ? " border-destructive "
                     : "border-muted-foreground"

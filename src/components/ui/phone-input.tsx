@@ -81,7 +81,7 @@ const InputComponent = React.forwardRef<
       ref={ref}
       placeholder=" "
       className={cn(
-        "peer  h-10   focus-visible:ring-[1px] bg-accent",
+        "peer  h-10   focus-visible:ring-[1px] bg-accent/20",
         error
           ? " focus-visible:ring-destructive focus-visible:border-destructive border-destructive"
           : "focus-visible:ring-primary focus-visible:border-primary border-muted-foreground ",

@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { linksIconMap } from "./config";
-import { Label } from "../ui/label";
+
 import DashBoardHeader from "./header";
 
 

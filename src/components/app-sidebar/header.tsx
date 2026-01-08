@@ -10,34 +10,35 @@ import { usePathname, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react";
 
 
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
 
 import { logoutNow } from "@/features/auth/auth.actions";
 import { useSharedState } from "@/components/providers/dashboard-context"
 import Link from "next/link";
+import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
 const DashBoardHeader = () => {
-
-  const { value: {  firstName,  }} = useSharedState();
+  const [ids] = useQueryState('id', parseAsArrayOf(parseAsString).withDefault([]))
+  const { value: { firstName, } } = useSharedState();
 
   const page = usePathname().split('/')
 
 
   const router = useRouter()
   const { icon: Icon, name: title } = linksIconMap[page[2] as DashBoardLinksType] || linksIconMap['home'];
-  const logout = () => {
-    logoutNow()
-  }
+  const opts = ['delete', 'create', 'update', 'view']
+  const option = opts?.filter((f) => page.includes(f))
   return (
-    <header className="flex justify-between h-16 px-5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+    <header suppressHydrationWarning className={cn("flex justify-between h-16 px-5 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12", page.length > 3 && " sticky top-0 z-50 bg-muted ")}>
+      <Button onClick={() => router.back()} variant={'secondary'} size={'icon-lg'}  > <ArrowLeft />  </Button>
+
       <div className="flex space-x-2 items-center">
         <SidebarTrigger className="sm:hidden" />
 
-        {page.length > 3 && <Button onClick={() => router.back()} variant={'secondary'}  > <ArrowLeft />  Back </Button>}
 
 
         <Icon className="size-7 text-primary" />
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-2xl font-bold"suppressHydrationWarning>{option[0] && <span suppressHydrationWarning>{ capitalizeFirstLetter(option[0])} : {ids?.length}</span>} {title} </h1>
       </div>
       <div className="flex flex-row-reverse">           <Button variant="link"> <Link href={'/dashboard/account'}>Dr. {capitalizeFirstLetter(firstName)}</Link></Button>
       </div>

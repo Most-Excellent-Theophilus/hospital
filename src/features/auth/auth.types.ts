@@ -1,6 +1,7 @@
 import z from "zod";
-import { userSchema } from "../users/users.types";
+
 import { passwordSchema } from "./auth.constants";
+import { userSchema } from "../pages/doctors/users.types";
 
 export const loginSchema = userSchema.pick({ email: true, password: true });
 export const verificationSchema = userSchema.pick({ email: true });

@@ -1,5 +1,6 @@
+import { userSchema } from "@/features/pages/doctors/users.types";
 import { logsSchema } from "@/features/userlogs/userlogs.types";
-import { userSchema } from "@/features/users/users.types";
+
 import { SessionOptions, getIronSession } from "iron-session";
 import { cookies } from "next/headers";
 import z from "zod";

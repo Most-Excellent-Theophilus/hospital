@@ -1,15 +1,14 @@
 import { DataTableColumnHeader } from "@/components/data-table/components/TableColumnHeader";
 import { SelectionCell, SelectionHeader } from "@/components/data-table/components/TableSelectionCell";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { PatientSchema } from "@/lib/firebase/firebase.types";
+import { UserSchema } from "@/lib/firebase/firebase.types";
 import { dateUtils } from "@/lib/utils/date";
 import { ColumnDef } from "@tanstack/react-table";
-import { genderOptions } from "./data";
+import { genderOptions } from "../_components/data";
 import { MinusCircle } from "lucide-react";
 import { cn, trimAndEllipsis } from "@/lib/utils";
 
-export const columns: ColumnDef<PatientSchema>[] = [
+export const columns: ColumnDef<UserSchema>[] = [
   {
     id: "select",
     header: ({ table }) => <SelectionHeader table={table} />,
@@ -48,32 +47,22 @@ export const columns: ColumnDef<PatientSchema>[] = [
     }
   },
   {
-    accessorKey: "doctorEmail",
+    accessorKey: "doctorId",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Doctor" />,
-    cell: ({ row }) => trimAndEllipsis(row.getValue('doctorEmail'), 15),
-    filterFn: (row, id, value: string[]) => {
-      if (!value?.length) return true;
-      return value.includes(row.getValue(id));
-    },
-  },{
-    accessorKey: "dateOfBirth",
-    header: 'Age',
-
-    cell: ({ row }) =>  dateUtils.timeAgo(row.getValue("dateOfBirth")).slice(0,3)
-    
+    cell: ({ row }) => trimAndEllipsis(row.getValue('doctorId')),
 
   },
   {
-    accessorKey: "documents",
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Documents" />,
+    accessorKey: "dateOfBirth",
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Date Of Birth" />,
 
-    cell: ({ row }) => {
-      const docs = row.getValue("documents") as Document[];
-      return  <Badge variant={docs.length > 0 ? 'default' : 'outline'}>{docs.length}</Badge> 
-    },
+    cell: ({ row }) => dateUtils.formatDateLong(row.getValue("dateOfBirth"))
+
+
   },
-  
-  
+
+
+
 
 ]
 
