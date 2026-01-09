@@ -29,11 +29,11 @@ import { dateUtils, toDate } from '@/lib/utils/date';
 import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select';
 import { usePatients } from '@/features/pages/patients/patient.queries';
 import { PatientSchema } from '@/lib/firebase/firebase.types';
-import LoadingBar from '@/components/form/auth/feedback/loading.bar';
 import { capitalizeFirstLetter } from '@/lib/utils';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { LabelList, Pie, PieChart } from 'recharts';
 import { ChartLineMultiple } from './line-chart';
+import LoadingPage from '@/components/loadingpage';
 
 
 // Type definitions
@@ -460,6 +460,7 @@ export default function PatientDashboard() {
       },
     ]
   }, [filteredPatients])
+  if (!filteredPatients) return <LoadingPage />
 
   return (
     <div className=" sm:p-6">

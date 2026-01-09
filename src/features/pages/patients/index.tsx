@@ -19,6 +19,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DataTablePagination } from "../_components/data-table-pagination";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import LoadingPage from "@/components/loadingpage";
+// import { PatientCards } from "./card-display";
 
 const sortingSchema = z.array(
   z.object({
@@ -110,18 +112,11 @@ const PatientsModule = () => {
 
 
 
-  useEffect(() => {
-    if (data) {
-
-      toast.dismiss()
-    } else {
-      toast.loading('Loading ...')
-    }
-  })
+  if (!data) return <LoadingPage />
 
 
   return <div className="grid mb-20">
-
+{/* <PatientCards table={table}/> */}
     <DataTableToolbar search={setGlobalFilterRaw} value={globalFilterRaw} table={table} />
     <div className="overflow-hidden rounded-md border my-4">
       <Table>
@@ -176,21 +171,7 @@ const PatientsModule = () => {
     <DataTablePagination table={table} />
   </div>
 
-  // return <div><button
-  //   className="px-3 py-1 border rounded"
-  //   onClick={() => {
-  //     setGlobalFilterRaw("");
-  //     setSorting([]);
-  //     setColumnFilters([]);
-  //     setGenderFilter([]);
-  //     setDoctorFilter([]);
-  //     setPageIndex(0);
-  //   }}
-  // >
-  //   Reset Filters
-  // </button>
-  //   <button onClick={() => exportCSVTable(table, `patients-table${dateUtils.formatFull(new Date())}`)}>Export CSV</button>
-  // </div>;
+  
 };
 
 export default PatientsModule;

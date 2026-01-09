@@ -16,10 +16,10 @@ import { z } from "zod";
 import { DataTableToolbar } from "../_components/data-table-toolbar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DataTablePagination } from "../_components/data-table-pagination";
-import { toast } from "sonner";
-import { useEffect } from "react";
+
 import { useUsers } from "./users.queries";
 import { columns } from "./columns";
+import LoadingPage from "@/components/loadingpage";
 
 const sortingSchema = z.array(
   z.object({
@@ -110,16 +110,7 @@ const PatientsModule = () => {
   });
 
 
-
-  useEffect(() => {
-    if (data) {
-
-      toast.dismiss()
-    } else {
-      toast.loading('Loading ...')
-    }
-  })
-
+  if (!data) return <LoadingPage />
 
   return <div className="grid mb-20">
 

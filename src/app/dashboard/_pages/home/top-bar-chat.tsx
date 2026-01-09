@@ -459,7 +459,7 @@ export default function PatientDashboard() {
         month: 'Dec'
       },
     ]
-  }, [filteredPatients])
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-6">

@@ -52,6 +52,20 @@ export class FirestoreDatabase {
     return { type: "doc", ref: ref as FirebaseFirestore.DocumentReference };
   }
 
+  private applySelect<T>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: Record<string, any>,
+    fields?: (keyof T)[]
+  ) {
+    if (!fields || fields.length === 0) return data;
+
+    return Object.fromEntries(
+      Object.entries(data).filter(([key]) =>
+        fields.includes(key as keyof T)
+      )
+    );
+  }
+
   // 🔹 Enhanced query builder - Remove generic constraint
   private buildQuery<T extends keyof TableTypeMap = CollectionNames>(
     ref: FirebaseFirestore.CollectionReference,
@@ -72,6 +86,9 @@ export class FirestoreDatabase {
         options.orderBy.forEach((o) => {
           query = query.orderBy(o.field as string, o.direction || "asc");
         });
+      }
+      if (options.select && options.select.length > 0) {
+        query = query.select(...options.select.map(String));
       }
 
       // Add pagination cursors
@@ -99,62 +116,66 @@ export class FirestoreDatabase {
 
   // 🔹 GET operations - Made more flexible with proper typing
   async get<T extends keyof TableTypeMap = CollectionNames>(
-  def: BuildRefType,
-  options?: QueryOptions<T>,
-  skipTimeStap?: boolean,
-): Promise<TypeReturn<TableTypeMap[T][] | null>> {
-  try {
-    const { type, ref } = this.buildRefOrCollection(def);
+    def: BuildRefType,
+    options?: QueryOptions<T>,
+    skipTimeStap?: boolean,
+  ): Promise<TypeReturn<TableTypeMap[T][] | null>> {
+    try {
+      const { type, ref } = this.buildRefOrCollection(def);
 
-    const withTimestamps = (
-      snap: FirebaseFirestore.DocumentSnapshot,
-    ) =>
-      skipTimeStap
-        ? {}
-        : {
+      const withTimestamps = (
+        snap: FirebaseFirestore.DocumentSnapshot,
+      ) =>
+        skipTimeStap
+          ? {}
+          : {
             createdAt: snap.createTime?.toDate(),
             updatedAt: snap.updateTime?.toDate(),
           };
 
-    if (type === "doc") {
-      const snap = await ref.get();
+      if (type === "doc") {
+        const snap = await ref.get();
+
+        return {
+          status: "success",
+          message: "",
+          data: snap.exists
+            ? ([
+              {
+                id: snap.id,
+                ...this.applySelect<TableTypeMap[T]>(
+                  snap.data() ?? {},
+                  options?.select as (keyof TableTypeMap[T])[]
+                ),
+                ...withTimestamps(snap),
+              },
+            ] as TableTypeMap[T][])
+            : null,
+        };
+      }
+
+
+      const query = this.buildQuery(ref, options);
+      const snap = await query.get();
 
       return {
         status: "success",
         message: "",
-        data: snap.exists
-          ? ([
-              {
-                id: snap.id,
-                ...snap.data(),
-                ...withTimestamps(snap),
-              },
-            ] as TableTypeMap[T][])
-          : null,
+        data: snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+          ...withTimestamps(d),
+        })) as TableTypeMap[T][],
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
       };
     }
-
-    const query = this.buildQuery(ref, options);
-    const snap = await query.get();
-
-    return {
-      status: "success",
-      message: "",
-      data: snap.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-        ...withTimestamps(d),
-      })) as TableTypeMap[T][],
-    };
-  } catch (error) {
-    return {
-      status: "error",
-      data: null,
-      message:
-        error instanceof Error ? error.message : "Unknown error occurred",
-    };
   }
-}
 
 
   // 🔹 GET single document by ID

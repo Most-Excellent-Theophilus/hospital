@@ -7,12 +7,14 @@ import {
   SidebarMenu,
 
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 
 import { cn } from "@/lib/utils"
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 
 
@@ -26,9 +28,21 @@ export function NavMain({
     url: string;
   }[];
 }) {
+  const { setOpenMobile } = useSidebar()
+  const router = useRouter()
+  const paths = usePathname().split('/')
+  const page = paths[2]
+  const handleNavigation = (id: string) => {
+    toast.loading('Please Wait...')
+    if (paths.length > 3) {
 
-  const page = usePathname().split('/')[2]
+      router.back()
+    } else {
+      router.replace(`/dashboard/${id}`)
 
+    }
+    setOpenMobile(false)
+  }
 
   return (
     <SidebarGroup className="text-background border-t pt-12 ">
@@ -36,10 +50,12 @@ export function NavMain({
         {items.map((item) => (
           <SidebarMenuItem key={item.name} className="  " >
 
-            <Link href={`/dashboard/${item.url}`} className={cn(" py-3 px-5 w-full h-full flex space-x-2 border border-primary hover:border-accent  cursor-pointer", page?.includes(item.url) && " bg-accent text-secondary-foreground ")}>
+            <button onClick={() => {
+              handleNavigation(item.url)
+            }} className={cn(" py-3 px-5 cursor-pointer w-full h-full flex space-x-2 border border-primary hover:border-accent  ", page?.includes(item.url) && " bg-accent text-secondary-foreground ")}>
               {item.icon && <item.icon className="size-6" />}
               <p className="">{item.name}</p>
-            </Link>
+            </button>
 
           </SidebarMenuItem>
         ))}

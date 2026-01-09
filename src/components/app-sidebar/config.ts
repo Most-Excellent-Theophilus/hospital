@@ -27,15 +27,15 @@ export const linksIconMap: Record<
     icon: MdOutlineSick,
     url: "patients",
   },
-  "post-operation": {
-    icon: FaCalendarMinus,
-    name: "Pre Operation",
-    url: "post-operation",
-  },
   "pre-operation": {
-    icon: FaCalendarPlus,
-    name: "Post Operation ",
+    icon: FaCalendarMinus,
+    name: "Pre Operation ",
     url: "pre-operation",
+  },
+  "post-operation": {
+    icon: FaCalendarPlus,
+    name: "Post Operation",
+    url: "post-operation",
   },
   doctors: {
     name: "Doctors",

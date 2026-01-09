@@ -32,12 +32,12 @@ const DashBoardHeader = () => {
         <SidebarTrigger className="sm:hidden" />
       <Button onClick={() => router.back()} variant={'secondary'} size={'icon-lg'} className="hidden sm:flex"  > <ArrowLeft />  </Button>
 
-      <div className="flex space-x-2 items-center">
+      <div className="flex space-x-2 items-center flex-1">
 
 
 
         <Icon className="size-7 text-primary" />
-        <h1 className="text-2xl font-bold"suppressHydrationWarning>{option[0] && <span suppressHydrationWarning>{ capitalizeFirstLetter(option[0])} : {ids?.length}</span>} {title} </h1>
+        <h1 className="text-sm sm:text-2xl font-bold"suppressHydrationWarning>{option[0] && <span suppressHydrationWarning>{ capitalizeFirstLetter(option[0])} : {ids?.length}</span>} {title} </h1>
       </div>
       <div className="flex flex-row-reverse">           <Button variant="link"> <Link href={'/dashboard/account'}>Dr. {capitalizeFirstLetter(firstName)}</Link></Button>
       </div>

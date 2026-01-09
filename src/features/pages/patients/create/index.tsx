@@ -87,14 +87,13 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
       otherContacts: [{
         contact: '',
         fullName: '',
-        relationship: "uncle",
+        
         type: 'phone'
       }],
       phoneNumber: '',
       documents: [],
       doctorEmail: userSession.email,
       doctorId: userSession.doctorId,
-      gender: 'female'
 
 
     },

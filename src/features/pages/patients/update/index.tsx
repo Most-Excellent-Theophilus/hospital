@@ -5,21 +5,15 @@ import { useEffect } from "react";
 import CreatePatientPage from "../create";
 import { PatientSchema } from "../patient.types";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+
+import LoadingPage from "@/components/loadingpage";
 
 
 const PatientsupdateModule = () => {
   const [ids] = useQueryState('id')
   const { data } = usePatients();
 
-  useEffect(() => {
-    if (data) {
-
-      toast.dismiss()
-    } else {
-      toast.loading('Loading ...')
-    }
-  })
+   if (!data) return <LoadingPage />
 
 
   const selectedPatients = data?.filter((patient) => ids?.includes(patient.id))

@@ -2,6 +2,7 @@
 import { tokenSchema } from "@/features/auth/auth.types";
 import { userSchema } from "@/features/pages/doctors/users.types";
 import { patientSchema } from "@/features/pages/patients/patient.types";
+import { preOpSchema } from "@/features/pages/pre-operation/preop.types";
 import { logsSchema } from "@/features/userlogs/userlogs.types";
 
 import type admin from "firebase-admin";
@@ -48,12 +49,15 @@ export const patientWithMetaSchema = mustHave.and(patientSchema.omit({ documents
   }))
 }))
 
+export const preOpwithMetaSchema = mustHave.and(preOpSchema)
+type PreopSchema = z.infer<typeof preOpwithMetaSchema>
 export type PatientSchema = z.infer<typeof patientWithMetaSchema>
 export type TableTypeMap = {
   databaseLogs: LogsShema;
   users: UserSchema;
   tokens: TokenSchema;
   patients: PatientSchema;
+  'pre-operation': PreopSchema
 };
 
 export type CollectionNames = keyof TableTypeMap;
@@ -82,6 +86,7 @@ export interface QueryOptions<T extends keyof TableTypeMap = CollectionNames> {
   startAt?: FirebaseFirestore.DocumentSnapshot;
   endBefore?: FirebaseFirestore.DocumentSnapshot;
   endAt?: FirebaseFirestore.DocumentSnapshot;
+  select?: (keyof TableTypeMap[T])[];
 }
 
 // 🔹 Batch operation result
