@@ -17,13 +17,13 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>,
-  count: number
+  count?: number
 }
 
 export function DataTablePagination<TData>({
   table,
 
-  count
+  count=0
 }: DataTablePaginationProps<TData>) {
 
 

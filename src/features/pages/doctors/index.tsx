@@ -114,7 +114,7 @@ const PatientsModule = () => {
 
   return <div className="grid mb-20">
 
-    <DataTableToolbar search={setGlobalFilterRaw} value={globalFilterRaw} table={table} />
+    <DataTableToolbar search={setGlobalFilterRaw} value={globalFilterRaw} table={table} ><div/></DataTableToolbar>
     <div className="overflow-hidden rounded-md border my-4">
       <Table>
         <TableHeader>

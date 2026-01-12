@@ -784,7 +784,7 @@ export class FirestoreDatabase {
   async listWithSearch<T extends keyof TableTypeMap = CollectionNames>(params: {
     def: BuildRefType;
     q?: string;
-    // eslint-disable-next-line typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     filters?: Array<{ id: string; value: any }>;
     sort?: Array<{ id: string; desc?: boolean }>;
     cursor?: string | null;
