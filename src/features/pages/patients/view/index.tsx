@@ -1,5 +1,5 @@
 import { useQueryState } from "nuqs";
-import { usePatients } from "../patient.queries";
+import { usePatientIds,  } from "../patient.queries";
 import { Badge } from "@/components/ui/badge";
 import { PatientSchema } from "@/lib/firebase/firebase.types";
 import PatientViewer from "./patients.view";
@@ -7,7 +7,10 @@ import LoadingPage from "@/components/loadingpage";
 
 const PatientsviewModule = () => {
   const [ids] = useQueryState('id')
-  const { data } = usePatients();
+ const jsonIds: string[] = JSON.parse(decodeURIComponent(ids || ''))
+   const toUrl = jsonIds?.join('/')
+   const { data } = usePatientIds(toUrl);
+ 
 
     if (!data) return <LoadingPage />
 

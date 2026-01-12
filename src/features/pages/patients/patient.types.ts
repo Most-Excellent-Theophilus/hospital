@@ -19,7 +19,7 @@ const contactTypeSchema = z.discriminatedUnion("type", [
 
 export const patientSchema = z.object({
     firstName: z.string().min(3).max(50),
-    middleName: z.string().min(3).max(50).optional(),
+    middleName: z.string().max(50).optional(),
     lastName: z.string().min(3).max(50),
     email: z.email(),
     otherContacts: z.array(

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import {  patirntRepository as usersRepository } from "./patient.repository"
+import { patirntRepository as usersRepository } from "./patient.repository"
 import { usersKeys } from "./patient.keys"
 
 export const useCreatePatient = () => {
@@ -7,6 +7,17 @@ export const useCreatePatient = () => {
 
   return useMutation({
     mutationFn: usersRepository.create,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: usersKeys.list() })
+    },
+  })
+}
+
+export const useUpdatePatient = () => {
+  const qc = useQueryClient()
+
+  return useMutation({
+    mutationFn: usersRepository.update,
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: usersKeys.list() })
     },

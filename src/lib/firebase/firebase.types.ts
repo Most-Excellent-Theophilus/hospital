@@ -88,6 +88,18 @@ export interface QueryOptions<T extends keyof TableTypeMap = CollectionNames> {
   endAt?: FirebaseFirestore.DocumentSnapshot;
   select?: (keyof TableTypeMap[T])[];
 }
+export type WriteType = "create" | "update" | "delete";
+
+export type BatchOperation<T extends keyof TableTypeMap> =
+  | {
+      type: "delete";
+      ref: BuildRefType;
+    }
+  | {
+      type: "create" | "update";
+      ref: BuildRefType;
+      data: CreateData<TableTypeMap[T]>;
+    };
 
 // 🔹 Batch operation result
 export interface BatchResult {

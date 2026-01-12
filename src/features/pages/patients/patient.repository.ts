@@ -14,10 +14,16 @@ export const patirntRepository = {
     return data as UserSchema;
   },
 
+  getByIds: async (id: string): Promise<UserSchema[]> => {
+    const { data } = await api.get(`/patients/${id}`);
+    return data as UserSchema[];
+  },
+
+
   create: async (payload: PatientSchema) => await createDoctor(payload as PatientSchema),
 
 
-  update: async (id: string, payload: Partial<PatientSchema>) => await updateDoctor(id, payload as PatientSchema),
+  update: async (payload: { id: string, payload: Partial<PatientSchema> }) => await updateDoctor(payload.id, payload.payload as PatientSchema),
 
   remove: async (id: string) => await deleteDoctor(id),
 };

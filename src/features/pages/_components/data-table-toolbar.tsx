@@ -16,16 +16,21 @@ import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 
+
 interface DataTableToolbarProps<T> {
   table: Table<T & { id: string }>
+  search: (term: string) => void, value?: string,
+  children: React.ReactNode
 }
 
 export function DataTableToolbar<T>({
   table,
-  search, value
+  search, value,
+  children
 
 
-}: DataTableToolbarProps<T> & { search: (term: string) => void, value?: string, }) {
+
+}: DataTableToolbarProps<T>) {
   const path = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState<boolean>(false)
@@ -81,7 +86,7 @@ export function DataTableToolbar<T>({
 
       <div className="flex mx-3 space-x-4 mb-1">
         <ButtonGroup>
-          <Button variant="outline" size={'lg'} onClick={toggleOpen} disabled={enableActions}>Actions <Badge >{selectedCount}</Badge></Button>
+          <Button variant="outline" size={'lg'} onClick={toggleOpen} disabled={enableActions}>Actions <Badge >{selectedCount}</Badge> /  {table.getFilteredRowModel().rows.length} </Button>
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger asChild disabled={enableActions}>
               <Button variant="outline" size={'icon-lg'} className="" >
@@ -105,22 +110,12 @@ export function DataTableToolbar<T>({
 
 
                 </DropdownMenuItem>
-                {/* {selectedCount > 1 ? <DropdownMenuItem onClick={() => {
-                  exportCSVTable(table, "patients", ids)
-                }}>
-                  <FaFileExcel />
-                  Export to Excel
-                </DropdownMenuItem> : null} */}
+
 
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                {/* <DropdownMenuItem asChild>
 
-
-                  <span><Archive />Archive : {selectedCount}</span>
-
-                </DropdownMenuItem> */}
                 <DropdownMenuItem variant="destructive" onClick={() => goto('delete')}>
 
 
@@ -137,8 +132,11 @@ export function DataTableToolbar<T>({
           <Trash2 />
           Clear
         </Button>
+
+
+   
         <Button onClick={() => goto('create')} size={'lg'}><Plus />
-          Add</Button>
+          Add Patient</Button>
 
         <div>
 
@@ -146,6 +144,8 @@ export function DataTableToolbar<T>({
 
         </div>
       </div>
+      <div className="m-3 ">{children}</div>
+
     </div>
   )
 }

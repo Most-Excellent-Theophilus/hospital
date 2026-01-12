@@ -1,7 +1,8 @@
 "use server";
 import "server-only";
 import { createCacheActions } from "@/lib/firebase/cached.database";
-import { PatientSchema } from "@/lib/firebase/firebase.types";
+import { BatchOperation, PatientSchema } from "@/lib/firebase/firebase.types";
+import { db } from "@/lib/firebase/database";
 
 
 
@@ -51,3 +52,10 @@ export const searchPatient = async <T extends keyof PatientSchema>(
     v: PatientSchema[T]
 ) => await patientSchema.search(f, v);
 export const countPatient = async () => await patientSchema.count();
+export const deletePatients = async (ids: string[]) => {
+
+    const ref: BatchOperation<"patients">[] = ids.map(id => ({
+        type: 'delete', ref: { path: 'patients', id }
+    }))
+    return db.batchWrite<'patients'>(ref)
+}

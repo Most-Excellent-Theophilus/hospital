@@ -1,4 +1,4 @@
-
+"use client"
 import { AddressInfo, InfoField, Section } from "@/components/review-componemts";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -7,13 +7,16 @@ import { PatientSchema } from "@/lib/firebase/firebase.types";
 
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import { dateUtils } from "@/lib/utils/date";
-import { Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink,  } from "lucide-react";
 
 import Image from "next/image"
+import { deletePatient } from "../patient.actions";
+import { useState } from "react";
+import { toast } from "sonner";
 
 
 const PatientViewer = ({ data, deletee, }: { data: PatientSchema, deletee?: boolean, }) => {
-
+    const [deleted, setDeleted] = useState<boolean>(false)
     const {
 
         firstName,
@@ -27,7 +30,7 @@ const PatientViewer = ({ data, deletee, }: { data: PatientSchema, deletee?: bool
         phoneNumber,
         doctorId,
         documents,
-        id,
+        id: i,
         otherContacts,
         updatedAt,
         createdAt,
@@ -36,9 +39,23 @@ const PatientViewer = ({ data, deletee, }: { data: PatientSchema, deletee?: bool
 
 
     const onDelete = () => {
+        const id = toast.loading('Please Wait..')
+        deletePatient(i).then((da) => {
+            toast[da.status](da.message, { duration: Infinity, dismissible: true, id })
 
+            if (da.status == 'success') {
+                setDeleted(true)
+
+            } else (
+                setDeleted(false)
+            )
+        }).catch(() => setDeleted(false)).finally(() => {
+            setTimeout(() => {
+                toast.dismiss()
+            }, 3000)
+        })
     }
-    return (<div className="w-full max-w-7xl m-1 p-1 sm:m-3 border sm:p-3 space-y-4 ">
+    return (<div className={cn("w-full max-w-7xl m-1 p-1 sm:m-3 border sm:p-3 space-y-4 ", deleted && "hidden")}>
 
 
 
@@ -61,7 +78,7 @@ const PatientViewer = ({ data, deletee, }: { data: PatientSchema, deletee?: bool
 
                 <InfoField label="Email" value={<a href={`mailto:${email}`} className={'text-xs hover:underline'}>{email}</a>} />
                 <InfoField label="Phone Number" value={<a href={`tel:${phoneNumber}`} className={'text-xs hover:underline'}>{phoneNumber}</a>} />
-                <InfoField label="Patient ID" value={id} />
+                <InfoField label="Patient ID" value={i} />
                 <Separator className="my-2" />
 
             </Section>
@@ -128,9 +145,9 @@ const PatientViewer = ({ data, deletee, }: { data: PatientSchema, deletee?: bool
                 </div>
             </Section>}
 
-            {deletee && <Button onClick={onDelete} variant={'destructive'}> Delete</Button>}
 
         </div>
+        {deletee && <Button onClick={onDelete} variant={'destructive'}> Delete</Button>}
 
     </div>);
 }

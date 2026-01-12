@@ -14,3 +14,9 @@ export const usePatient = (id: string) =>
     queryFn: () => usersRepository.getById(id),
     enabled: !!id,
   })
+export const usePatientIds = (id: string) =>
+  useQuery({
+    queryKey: usersKeys.detail(id),
+    queryFn: () => usersRepository.getByIds(id),
+    enabled: !!id,
+  })

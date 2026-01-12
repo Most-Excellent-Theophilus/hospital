@@ -24,7 +24,7 @@ import { patientSchema, PatientSchema } from "@/features/pages/patients/patient.
 import { useSharedState } from "@/components/providers/dashboard-context";
 import { PatientSchema as Pt } from "@/lib/firebase/firebase.types"
 
-import { useCreatePatient } from "@/features/pages/patients/patient.mutations";
+import { useCreatePatient, useUpdatePatient } from "@/features/pages/patients/patient.mutations";
 import AddressInput from "@/components/form/auth/inputs/address-input";
 import PhoneInputField from "@/components/form/auth/inputs/phone-input";
 import DropzoneField from "@/components/form/auth/inputs/file-uploader";
@@ -69,6 +69,8 @@ const controller = new AbortController();
 export default function CreatePatientPage({ data, }: { data?: PatientSchema | null, }) {
   const createUser = useCreatePatient()
   const toUpdate: Pt = data as unknown as Pt
+  const updateUser = useUpdatePatient()
+  const [updated, setUpdate] = useState<boolean>(false)
   const [isPending, startTransition] = useTransition()
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const { value: userSession } = useSharedState()
@@ -87,7 +89,7 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
       otherContacts: [{
         contact: '',
         fullName: '',
-        
+
         type: 'phone'
       }],
       phoneNumber: '',
@@ -107,7 +109,11 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
 
   const onSubmit = (dataT: PatientSchema) => {
     const id = toast.loading(`Please wait ${uploadProgress}...  `)
+
     startTransition(() => {
+
+
+
 
       uploadMultipleFiles({
         files: dataT.documents,
@@ -151,6 +157,9 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
 
     })
 
+
+
+
   }
   useEffect(() => {
     const fn = () => {
@@ -161,11 +170,12 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
     fn()
   })
   return (
-    <Form {...form}>
+    <Form {...form} >
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="w-full items-center justify-center flex px-7   mt-8 mb-20"
+        className={cn("w-full items-center justify-center flex px-7   mt-8 mb-20 ", updated && "hidden")}
       >
+   
         <fieldset disabled={form.formState.isSubmitting || isPending || userSession.userType == 'viewer'}>
           <div>
             <div className="flex items-center space-x-2.5">
@@ -318,14 +328,14 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
                         {doc.size}
                       </Badge>
                     </div>
-                    {doc.type.startsWith('image')&& <Image src={`/api/image?url=${encodeURIComponent(doc.ufsUrl)}`} alt="" width={300}  height={200}/>}
+                    {doc.type.startsWith('image') && <Image src={`/api/image?url=${encodeURIComponent(doc.ufsUrl)}`} alt="" width={300} height={200} />}
                     <div className="flex items-center justify-between mt-4">
                       <Button size={'sm'} variant={'link'} className="text-xs"><Download />Download</Button>
                       <a
                         href={doc.ufsUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={cn(buttonVariants({variant:"ghost"}), 'text-xs')}
+                        className={cn(buttonVariants({ variant: "ghost" }), 'text-xs')}
                       >
                         View Document <ExternalLink className="w-3 h-3" />
                       </a></div>
@@ -336,7 +346,7 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
               </div>
             </Section>}
             {<div>
-           
+
             </div>}
             {!toUpdate && <DropzoneField control={form.control} label="Supporting Documents" name="documents" maxSize={1} maxFiles={12} />}
           </div>
@@ -344,9 +354,40 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
             <Button type="button" size="lg" variant={'secondary'} onClick={() => form.reset()}>
               Clear
             </Button>
-            <Button type="submit" size="lg" className=" ">
-              {toUpdate ? "Update" : "Create"} Patient
-            </Button>
+            {toUpdate ? <Button type="button" onClick={() => {
+
+              const i = toast.loading(`Updating Patient info  `)
+              updateUser.mutate({
+                id: toUpdate.id,
+                payload: form.watch() as unknown as Pt
+              }, {
+                onSuccess: (value) => {
+                  const { status, message } = value
+
+                  toast[status](message, { id: i })
+                  toast.success("Record Updated")
+                  setStatus("success")
+
+                  setUpdate(true)
+
+                },
+                onError: () => {
+                  toast.error("Something went wrong", { id: i })
+                },
+                onSettled: () => {
+                  toast.dismiss(i)
+
+                },
+              })
+
+
+            }} size="lg" className=" ">
+              Update Patient
+            </Button> : <Button type="submit" size="lg" className=" ">
+              Create Patient
+            </Button>}
+
+
           </div>
 
 

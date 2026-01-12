@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing image url" }, { status: 400 });
   }
 
-  const res = await fetch(imageUrl);
+  const res = await fetch(imageUrl) ??{};
 
   if (!res.ok) {
     return NextResponse.json({ error: "Failed to fetch image" }, { status: 500 });

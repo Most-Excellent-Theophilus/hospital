@@ -1,7 +1,5 @@
 import { useQueryState } from "nuqs";
 
-import { useEffect } from "react";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {  UserSchema } from "@/lib/firebase/firebase.types";
 import { useUsers } from "../users.queries";

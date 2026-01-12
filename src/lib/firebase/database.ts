@@ -1,7 +1,7 @@
 import { firestore } from "firebase-admin";
 import { Firestore } from "firebase-admin/firestore";
 import { db as database } from "./init";
-import { BatchResult, BuildRefType, CollectionNames, CreateData, QueryOptions, TableTypeMap, TypeReturn } from "./firebase.types";
+import { BatchOperation, BatchResult, BuildRefType, CollectionNames, CreateData, QueryOptions, TableTypeMap, TypeReturn } from "./firebase.types";
 
 export class FirestoreDatabase {
   private db: Firestore;
@@ -9,6 +9,8 @@ export class FirestoreDatabase {
   constructor() {
     this.db = database;
   }
+
+
 
   private buildRefOrCollection(
     def: BuildRefType
@@ -519,65 +521,60 @@ export class FirestoreDatabase {
   }
 
   // 🔹 BATCH operations
-  async batchWrite<T extends keyof TableTypeMap = CollectionNames>(
-    operations: Array<{
-      type: "create" | "update" | "delete";
-      ref: BuildRefType;
-      data?: CreateData<TableTypeMap[T]>;
-    }>
-  ): Promise<BatchResult> {
-    const batch = this.db.batch();
-    let processedCount = 0;
-    const errors: string[] = [];
+ async batchWrite<T extends keyof TableTypeMap = CollectionNames>(
+  operations: BatchOperation<T>[]
+): Promise<BatchResult> {
+  const batch = this.db.batch();
 
-    try {
-      for (const operation of operations) {
-        const { type: refType, ref } = this.buildRefOrCollection(operation.ref);
+  let processedCount = 0;
+  const errors: string[] = [];
 
-        switch (operation.type) {
-          case "create":
-            if (refType !== "doc" || !operation.data) {
-              errors.push(`Invalid create operation for ${operation.ref.path}`);
-              continue;
-            }
-            const createData = {
-              ...operation.data,
-              createdAt: firestore.FieldValue.serverTimestamp(),
-              updatedAt: firestore.FieldValue.serverTimestamp(),
-            };
-            batch.set(ref, createData);
-            break;
+  try {
+    for (const operation of operations) {
+      const { type: refType, ref } =
+        this.buildRefOrCollection(operation.ref);
 
-          case "update":
-            if (refType !== "doc" || !operation.data) {
-              errors.push(`Invalid update operation for ${operation.ref.path}`);
-              continue;
-            }
-            const updateData = {
-              ...operation.data,
-              updatedAt: firestore.FieldValue.serverTimestamp(),
-            };
-            batch.update(ref, updateData);
-            break;
-
-          case "delete":
-            if (refType !== "doc") {
-              errors.push(`Invalid delete operation for ${operation.ref.path}`);
-              continue;
-            }
-            batch.delete(ref);
-            break;
-        }
-        processedCount++;
+      if (refType !== "doc") {
+        errors.push(
+          `Invalid ${operation.type} operation for ${operation.ref.path}`
+        );
+        continue;
       }
 
-      await batch.commit();
-      return { success: true, processedCount, errors };
-    } catch (error) {
-      errors.push(error instanceof Error ? error.message : String(error));
-      return { success: false, processedCount, errors };
+      switch (operation.type) {
+        case "create": {
+          batch.set(ref, {
+            ...operation.data,
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            updatedAt: firestore.FieldValue.serverTimestamp(),
+          });
+          break;
+        }
+
+        case "update": {
+          batch.update(ref, {
+            ...operation.data,
+            updatedAt: firestore.FieldValue.serverTimestamp(),
+          });
+          break;
+        }
+
+        case "delete": {
+          batch.delete(ref);
+          break;
+        }
+      }
+
+      processedCount++;
     }
+
+    await batch.commit();
+    return { success: true, processedCount, errors };
+  } catch (error) {
+    errors.push(error instanceof Error ? error.message : String(error));
+    return { success: false, processedCount, errors };
   }
+}
 
   // 🔹 TRANSACTION operations
   async runTransaction<T>(
@@ -783,6 +780,152 @@ export class FirestoreDatabase {
       );
     }
     return ref;
+  }
+  async listWithSearch<T extends keyof TableTypeMap = CollectionNames>(params: {
+    def: BuildRefType;
+    q?: string;
+    // eslint-disable-next-line typescript-eslint/no-explicit-any
+    filters?: Array<{ id: string; value: any }>;
+    sort?: Array<{ id: string; desc?: boolean }>;
+    cursor?: string | null;
+    limit?: number;
+  }): Promise<
+    TypeReturn<{
+      data: TableTypeMap[T][];
+      nextCursor: string | null;
+      count: number;
+    }>
+  > {
+    try {
+      const { def, q, filters = [], sort = [], cursor, limit = 25 } = params;
+
+      const { type, ref } = this.buildRefOrCollection(def);
+      if (type !== "col") {
+        return {
+          status: "error",
+          message: "listWithSearch() requires a collection path",
+          data: null,
+        };
+      }
+
+      let query: FirebaseFirestore.Query = ref;
+
+      // -------- GLOBAL SEARCH (array-contains keywords) -----------
+      if (q && q.trim()) {
+        query = query.where("keywords", "array-contains", q.trim().toLowerCase());
+      }
+
+      // -------- FILTERS ----------
+      filters.forEach((f) => {
+        if (Array.isArray(f.value)) {
+          query = query.where(f.id, "in", f.value);
+        } else {
+          query = query.where(f.id, "==", f.value);
+        }
+      });
+
+      // -------- SORTING ----------
+      if (sort.length > 0) {
+        sort.forEach((s) => {
+          query = query.orderBy(s.id, s.desc ? "desc" : "asc");
+        });
+      } else {
+        query = query.orderBy("createdAt", "desc");
+      }
+
+      // -------- CURSOR PAGINATION ----------
+      if (cursor) {
+        const snap = await ref.doc(cursor).get();
+        if (snap.exists) query = query.startAfter(snap);
+      }
+
+      query = query.limit(limit);
+
+      // -------- EXECUTE ----------
+      const snap = await query.get();
+
+      const docs = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: d.createTime?.toMillis?.() ?? null,
+        updatedAt: d.updateTime?.toMillis?.() ?? null,
+      })) as unknown as TableTypeMap[T][];
+
+      // COUNT (without limit)
+      const countSnap = await ref.count().get();
+      const nextCursor =
+        snap.docs.length === limit ? snap.docs[snap.docs.length - 1].id : null;
+
+      return {
+        status: "success",
+        message: "",
+        data: {
+          data: docs,
+          nextCursor,
+          count: countSnap.data().count,
+        },
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message:
+          error instanceof Error ? error.message : "Failed listWithSearch()",
+      };
+    }
+  }
+
+  async getByIds<T extends keyof TableTypeMap = CollectionNames>(
+    def: BuildRefType
+    ,
+    ids: string[]
+
+  ): Promise<TypeReturn<TableTypeMap[T][] | null>> {
+    try {
+      const { type, ref } = this.buildRefOrCollection(def);
+
+
+
+      if (type !== "col") {
+        return {
+          status: "error",
+          message: "getByIds() requires a collection path",
+          data: null,
+        };
+      }
+
+      // Build doc refs
+      const docRefs = ids.map((id) => ref.doc(id));
+
+      // 🔥 Admin SDK batch read (VERY fast)
+      const snaps = await this.db.getAll(...docRefs);
+
+      const data = snaps
+        .filter((s) => s.exists)
+        .map((snap) => ({
+          id: snap.id,
+
+          ...snap.data(),
+          createdAt: snap.createTime?.toDate(),
+          updatedAt: snap.updateTime?.toDate(),
+
+
+        })) as TableTypeMap[T][];
+
+
+      return {
+        status: "success",
+        message: "",
+        data: data as TableTypeMap[T][] || null,
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
+      };
+    }
   }
 }
 
