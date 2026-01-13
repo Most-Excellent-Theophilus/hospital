@@ -1,7 +1,7 @@
 "use client"
 
 import { type Table } from "@tanstack/react-table"
-import { CalendarPlus, ChevronDownIcon, Eye, Pen, Plus, Search, Trash2, TrashIcon, X } from "lucide-react"
+import { CalendarPlus, ChevronDownIcon, Eye, Pen, Search, Trash2, TrashIcon, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

@@ -13,45 +13,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 /* -------------------------------------------------
    Utilities
 -------------------------------------------------- */
 
-const useDebouncedCallback = <T extends (...args: any[]) => void>(
-  callback: T,
-  delay = 50
-) => {
-  const timeout = useRef<NodeJS.Timeout>(undefined);
 
-  return useCallback(
-    (...args: Parameters<T>) => {
-      if (timeout.current) clearTimeout(timeout.current);
-      timeout.current = setTimeout(() => callback(...args), delay);
-    },
-    [callback, delay]
-  );
-};
-
-const useLongPress = (action: () => void, delay = 40, interval = 80) => {
-  const timeout = useRef<NodeJS.Timeout>(undefined);
-  const intervalRef = useRef<NodeJS.Timeout>(undefined);
-
-  const start = () => {
-    action();
-    timeout.current = setTimeout(() => {
-      intervalRef.current = setInterval(action, interval);
-    }, delay);
-  };
-
-  const stop = () => {
-    if (timeout.current) clearTimeout(timeout.current);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-
-  return { start, stop };
-};
 
 /* -------------------------------------------------
    Types
