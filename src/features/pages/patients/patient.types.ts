@@ -22,6 +22,9 @@ export const patientSchema = z.object({
     middleName: z.string().max(50).optional(),
     lastName: z.string().min(3).max(50),
     email: z.email(),
+    gender: z.enum(["male", "female", "other"]),
+    phoneNumber: z.string().min(3).max(50),
+    address: z.string().min(3).max(550),
     otherContacts: z.array(
         z.object({
             fullName: z.string(),
@@ -57,9 +60,6 @@ export const patientSchema = z.object({
             "Only images, PDF, Word, and Excel files are allowed"
         ),
     dateOfBirth: z.date(),
-    gender: z.enum(["male", "female", "other"]),
-    address: z.string().min(3).max(550),
-    phoneNumber: z.string().min(3).max(50),
     doctorEmail: z.email(),
     doctorId: z.string()
 

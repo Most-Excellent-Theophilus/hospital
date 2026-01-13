@@ -1,16 +1,24 @@
+
 import { useQuery } from "@tanstack/react-query"
-import { preOpRepository as usersRepository } from "./preop.repository"
-import { usersKeys } from "./preop.keys"
+import { preopKeys } from "./preop.keys"
+import { preopRepository } from "./preop.repository"
 
-export const usePatientsCommand = () =>
-  useQuery({
-    queryKey: usersKeys.list(),
-    queryFn: usersRepository.getAllCommand,
-  })
 
-export const usePatient = (id: string) =>
-  useQuery({
-    queryKey: usersKeys.detail(id),
-    queryFn: () => usersRepository.getById(id),
-    enabled: !!id,
-  })
+export const usePreops = () =>
+    useQuery({
+        queryKey: preopKeys.list(),
+        queryFn: preopRepository.getAll,
+    })
+
+export const usePreop = (id: string) =>
+    useQuery({
+        queryKey: preopKeys.detail(id),
+        queryFn: () => preopRepository.getById(id),
+        enabled: !!id,
+    })
+// export const usePatientIds = (id: string) =>
+//     useQuery({
+//         queryKey: preopKeys.detail(id),
+//         queryFn: () => preopRepository.getByIds(id),
+//         enabled: !!id,
+//     })

@@ -2,12 +2,18 @@ import z from "zod";
 
 export const preOpSchema = z.object({
 
-    patientId: z.string(),
-    riskPriority: z.enum(["row", "mid", "high"]),
-    diagnosis: z.string(),
-    hieght: z.number(),
-    weight: z.number(),
-    //   treatment: z.string(),
+    patientId: z.string().min(2),
+    riskPriority: z.enum(["low", "mid", "high"]),
+    diagnosis: z.string().min(2),
+    patient: z.object({
+        firstName: z.string().min(3).max(50),
+        middleName: z.string().max(50).optional(),
+        lastName: z.string().min(3).max(50),
+        email: z.email(),
+        gender: z.enum(["male", "female", "other"]),
+        phoneNumber: z.string().min(3).max(50),
+        dateOfBirth: z.date()
+    }),
     supportingDocuments: z
         .array(z.instanceof(File))
         .min(1, "Please upload at least one file")
@@ -36,20 +42,24 @@ export const preOpSchema = z.object({
             "Only images, PDF, Word, and Excel files are allowed"
         ),
     date: z.date(),
-    sats: z.string().optional(),
-    bloodPressure: z.number(),
-    heartRate: z.number(),
-    hF: z.number(),
-    wT: z.number(),
-    bsa: z.string(),
-    bmi: z.number(),
-    dentalHistory: z.string().max(1000),
+    sats: z.string().min(2).optional(),
+    bsa: z.string().min(2),
+    dentalHistory: z.string().min(2).max(51000),
     hospital: z.enum(["queens", "adventist"]),
-    todo: z.string().max(5000),
-    vitalSigns: z.array(z.object({ name: z.string() })),
+    todo: z.string().min(2).max(55000),
+    vitalSigns: z.array(z.object({ name: z.string().min(2) })),
 
+
+    // Measurements
+    hieght: z.number().min(0.1),
+    weight: z.number().min(0.1),
+    bloodPressure: z.number().min(0.1),
+    heartRate: z.number().min(0.1),
+    hF: z.number().min(0.1),
+    wT: z.number().min(0.1),
+    bmi: z.number().min(0.1),
     // ID for the user that made the preOp entries
-    staffId: z.string(),
+    staffId: z.string().min(2),
 });
 
 export type PreopSchemaWithoutMeta = z.infer<typeof preOpSchema>

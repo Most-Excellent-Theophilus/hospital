@@ -49,8 +49,23 @@ export const patientWithMetaSchema = mustHave.and(patientSchema.omit({ documents
   }))
 }))
 
-export const preOpwithMetaSchema = mustHave.and(preOpSchema)
-type PreopSchema = z.infer<typeof preOpwithMetaSchema>
+export const preOpwithMetaSchema = mustHave.and(preOpSchema.omit({ supportingDocuments: true, dateOfBirth: true }).extend({
+
+  supportingDocuments: z.array(z.object({
+    customId: z.string().nullable(),
+    fileHash: z.string(),
+    key: z.string(),
+    name: z.string(),
+    size: z.number(),
+    type: z.string(),
+    ufsUrl: z.string(),
+    lastModified: z.number().optional(),
+    serverData: z.object({ uploadedBy: z.string() }),
+    url: z.string(),
+    appUrl: z.string()
+  }))
+}))
+export type PreopSchema = z.infer<typeof preOpwithMetaSchema>
 export type PatientSchema = z.infer<typeof patientWithMetaSchema>
 export type TableTypeMap = {
   databaseLogs: LogsShema;
@@ -92,14 +107,14 @@ export type WriteType = "create" | "update" | "delete";
 
 export type BatchOperation<T extends keyof TableTypeMap> =
   | {
-      type: "delete";
-      ref: BuildRefType;
-    }
+    type: "delete";
+    ref: BuildRefType;
+  }
   | {
-      type: "create" | "update";
-      ref: BuildRefType;
-      data: CreateData<TableTypeMap[T]>;
-    };
+    type: "create" | "update";
+    ref: BuildRefType;
+    data: CreateData<TableTypeMap[T]>;
+  };
 
 // 🔹 Batch operation result
 export interface BatchResult {

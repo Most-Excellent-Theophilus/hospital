@@ -1,5 +1,5 @@
-export const usersKeys = {
+export const preopKeys = {
   all: ["patientsCommand"] as const,
-  list: () => [...usersKeys.all, "list"] as const,
-  detail: (id: string) => [...usersKeys.all, "detail", id] as const,
+  list: () => [...preopKeys.all, "list"] as const,
+  detail: (id: string) => [...preopKeys.all, "detail", id] as const,
 }

@@ -6,14 +6,15 @@ import { CalendarPlus, ChevronDownIcon, Eye, Pen, Plus, Search, Trash2, TrashIco
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import { DataTableFacetedFilter } from "./data-table-faceted-filter"
-import { genderOptions } from "./data"
+
 import { ButtonGroup, } from "@/components/ui/button-group"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { DataTableFacetedFilter } from "../_components/data-table-faceted-filter"
+import { genderOptions } from "../_components/data"
 
 
 
@@ -44,7 +45,7 @@ export function DataTableToolbar<T>({
   const goto = (destiny: "view" | "create" | "update" | "delete" | 'pre-op') => {
     toast.loading('Loading...')
     if (destiny === 'pre-op') {
-      return router.push(`/dashboard/pre-operation/create?id=${encodeURIComponent(JSON.stringify(ids))}`)
+      return router.push(`/dashboard/post-operation/create?id=${encodeURIComponent(JSON.stringify(ids))}`)
     }
     router.push(`${path}/${destiny}?id=${encodeURIComponent(JSON.stringify(ids))}`)
   }
@@ -113,7 +114,7 @@ export function DataTableToolbar<T>({
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => goto('pre-op')} disabled={selectedCount > 1} >
                   <CalendarPlus />
-                  Add to Pre Op
+                  Add to Post Op
                 </DropdownMenuItem>
 
 
@@ -139,9 +140,6 @@ export function DataTableToolbar<T>({
         </Button>
 
 
-
-        <Button onClick={() => goto('create')} size={'lg'}><Plus />
-          Add Patient</Button>
 
         <div>
 

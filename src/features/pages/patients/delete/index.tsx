@@ -27,7 +27,11 @@ const PatientsviewModule = () => {
 
     </div>
 
-    {data?.map((patient, i) => <div className="flex relative" key={i}> <div className=" absolute -left-4 "><Badge className="text-base sm:mt-6 font-bold">{i + 1}</Badge></div> <PatientViewer data={patient as unknown as PatientSchema} deletee /></div>)}
+    {(!data.length ? [data] : data).map((patient, i) => <div className="flex relative" key={i}> 
+      <div className=" absolute -left-4 ">
+      <Badge className="text-base sm:mt-6 font-bold">{i + 1}</Badge>
+      </div> 
+      <PatientViewer data={patient as unknown as PatientSchema} deletee /></div>)}
 
     <Button className="w-full" size={'lg'} onClick={() => {
       const id = toast.loading('Please Wait...')

@@ -1,40 +1,15 @@
 import { api } from "@/lib/api";
-;
-import { createPatient as createDoctor, deletePatient as deleteDoctor,  updatePatient as updateDoctor } from "./preop.actions";
-import { PatientSchema, PatientSchema as UserSchema } from "@/lib/firebase/firebase.types";
+import { PreopSchema } from "@/lib/firebase/firebase.types";
 
-export const preOpRepository = {
-  getAllCommand: async (): Promise<{
-    id: string,
-    lastName: string,
-    firstName: string,
-    phoneNumber: string,
-    email: string,
-    createdAt: string,
-    updatedAt: string
-  }[]> => {
-    const { data } = await api.get("/patients/command");
+type PreOpWithPath = PreopSchema & { path: string }
+export const preopRepository = {
+    getAll: async (): Promise<PreOpWithPath[]> => {
+        const { data } = await api.get("/preop");
+        return data as PreOpWithPath[];
+    },
 
-    return data as {
-      id: string,
-      lastName: string,
-      firstName: string,
-      phoneNumber: string,
-      email: string,
-      createdAt: string,
-      updatedAt: string
-    }[]
-  },
-
-  getById: async (id: string): Promise<UserSchema> => {
-    const { data } = await api.get(`/patients/${id}`);
-    return data as UserSchema;
-  },
-
-  create: async (payload: PatientSchema) => await createDoctor(payload as PatientSchema),
-
-
-  update: async (id: string, payload: Partial<PatientSchema>) => await updateDoctor(id, payload as PatientSchema),
-
-  remove: async (id: string) => await deleteDoctor(id),
-};
+    getById: async (id: string): Promise<PreOpWithPath> => {
+        const { data } = await api.get(`/preop/${id}`);
+        return data as PreOpWithPath;
+    },
+}

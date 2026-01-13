@@ -31,20 +31,22 @@ export const Section = ({
     title,
     children,
     className = "",
+    parentClassName = ''
 }: {
     title: string;
     children: React.ReactNode;
     className?: string;
+    parentClassName?: string;
 }) => (
     <div
-        className={`bg-background border border-secondary-foreground-200 `}
+        className={cn(`bg-background border border-secondary-foreground-200 `, parentClassName)}
     >
         <div className="px-3 py-2 border-b rounded-t-lg">
             <h3 className="text-sm font-semibold tracking-wide text-accent-foreground">
                 {title}
             </h3>
         </div>
-        <div className={cn("p-3 space-y-1",className )}>{children}</div>
+        <div className={cn("p-3 space-y-1", className)}>{children}</div>
     </div>
 );
 
