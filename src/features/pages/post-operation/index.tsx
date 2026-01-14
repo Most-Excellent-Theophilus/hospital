@@ -1,5 +1,8 @@
+import { usePostOps } from "./postop.queries";
+
 const Post_operationModule = () => {
-  return <div>Post_operation Module</div>;
+  const { data } = usePostOps()
+  return <div>{JSON.stringify(data)}</div>;
 };
 
 export default Post_operationModule;
