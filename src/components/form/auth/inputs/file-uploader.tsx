@@ -139,7 +139,7 @@ function DropzoneInner<T extends FieldValues>({
         }
       });
     };
-  }, []);
+  }, [dropzone.fileStatuses]);
 
   return (
     <FormItem className={className}>

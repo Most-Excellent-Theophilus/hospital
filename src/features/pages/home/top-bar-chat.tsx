@@ -459,7 +459,7 @@ export default function PatientDashboard() {
         month: 'Dec'
       },
     ]
-  }, [filteredPatients])
+  }, [])
   if (!filteredPatients) return <LoadingPage />
 
   return (

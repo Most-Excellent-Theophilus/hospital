@@ -237,6 +237,7 @@ function usePlaceSearch({
         props.lon,
         props.zoom,
         props.locationBiasScale,
+        props
     ])
 
     return { results, isLoading, error, hasSearched }

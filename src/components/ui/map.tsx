@@ -240,7 +240,7 @@ function MapTileLayer({
                 attribution: resolvedAttribution,
             })
         }
-    }, [context, name, url, attribution])
+    }, [context, name, url, attribution,resolvedAttribution,resolvedUrl])
 
     if (context && context.selectedTileLayer !== name) {
         return null
@@ -798,7 +798,7 @@ function MapLocateControl({
         setIsLocating(false)
     }
 
-    useEffect(() => () => stopLocating(), [])
+    useEffect(() => () => stopLocating(), [stopLocating])
 
     return (
         <MapControlContainer className={cn("right-1 bottom-1", className)}>
@@ -1218,7 +1218,7 @@ function MapDrawEdit({
         L.drawLocal.edit.handlers.remove.tooltip = {
             text: "Click on a shape to remove.",
         }
-    }, [mapDrawHandleIcon])
+    }, [mapDrawHandleIcon,L])
 
     return (
         <MapDrawActionButton

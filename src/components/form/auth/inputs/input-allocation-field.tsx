@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -80,10 +80,8 @@ export function AllocationInputField<T extends FieldValues>({
         const numericValue = Number(field.value ?? 0);
 
 
-
-        const sliderPercent = useMemo(() => {
-          return ((numericValue - min) / (max - min)) * 100;
-        }, [numericValue, min, max]);
+        const sliderPercent =
+          max === min ? 0 : ((numericValue - min) / (max - min)) * 100;
 
         return (
           <FormItem className="space-y-2">

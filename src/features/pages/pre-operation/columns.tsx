@@ -1,3 +1,4 @@
+"use client"
 import { DataTableColumnHeader } from "@/components/data-table/components/TableColumnHeader";
 import { SelectionCell, SelectionHeader } from "@/components/data-table/components/TableSelectionCell";
 import { PreopSchema } from "@/lib/firebase/firebase.types";
@@ -37,10 +38,25 @@ export const columns: ColumnDef<PreopSchema>[] = [
             </DialogHeader>
             <div className="grid gap-4">
               <Section title="Diagnosis">
-                <article dangerouslySetInnerHTML={{ __html: data.diagnosis }} />
+                <article className={cn("min-h-[200px]  rounded border bg-background p-2",
+                  " w-full overflow-y-auto rounded-lg border bg-background p-4 ",
+
+                  "[&_h1]:text-4xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3",
+                  "[&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:mt-5 [&_h2]:mb-3",
+                  "[&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2",
+                  "[&_h4]:text-xl [&_h4]:font-medium [&_h4]:mt-4 [&_h4]:mb-2",
+                  "[&_h5]:text-lg [&_h5]:font-medium [&_h5]:mt-3 [&_h5]:mb-1",
+                  "[&_h6]:text-base [&_h6]:font-medium [&_h6]:mt-3 [&_h6]:mb-1 [&_h6]:text-muted-foreground",
+                )} dangerouslySetInnerHTML={{ __html: data.diagnosis }} />
               </Section>
-              <Section title="Vital Signs" className="grid sm:grid-cols-2 gap-2.5">
-                {data.vitalSigns.map((sign, id) => <InfoField key={id + sign.name} label={`Sign ${id + 1}`} value={sign.name} />)}
+              <Section title="Vital Signs" className="flex gap-2.5">
+                {data.vitalSigns.map((sign, id) => <Badge
+                  variant={"outline"}
+                  key={id}
+                  className="text-xs text-right text-secondary-foreground truncate pr-2"
+                >
+                  {sign.name}
+                </Badge>)}
               </Section>
               <Section title="" className="grid sm:grid-cols-2 gap-2.5"><InfoField label="BSA" value={data.bsa} />
                 <InfoField label="Priority" value={data.riskPriority} />
@@ -54,7 +70,7 @@ export const columns: ColumnDef<PreopSchema>[] = [
               <Section title="Dental History">
                 <article className={cn(
                   "min-h-[200px]  rounded border bg-background p-2",
-                  "min-h-screen w-full overflow-y-auto rounded-lg border bg-background p-4 ",
+                  " w-full overflow-y-auto rounded-lg border bg-background p-4 ",
 
                   "[&_h1]:text-4xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3",
                   "[&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:mt-5 [&_h2]:mb-3",
@@ -69,9 +85,10 @@ export const columns: ColumnDef<PreopSchema>[] = [
                 <InfoField label="FullName" value={`${data?.patient?.firstName} ${data?.patient?.middleName} ${data?.patient?.lastName} `} />
                 <InfoField label="Email" value={`${data?.patient?.email} `} />
                 <InfoField label="Phone Number" value={`${data?.patient?.phoneNumber} `} />
-                <InfoField label="Gender" value={`${data?.patient?.dateOfBirth} `} />
+                <InfoField label="Gender" value={`${data?.patient?.gender} `} />
+                <InfoField label="Date Of Birth" value={dateUtils.formatFull(data?.patient?.dateOfBirth)} />
               </Section>
-              <Section title="Supporting Documents" className="grid sm:grid-cols-2">
+              <Section title="Supporting Documents" className="grid sm:grid-cols-2 gap-4">
                 {data.supportingDocuments.map((doc, index) => (
                   <div
                     key={index}
