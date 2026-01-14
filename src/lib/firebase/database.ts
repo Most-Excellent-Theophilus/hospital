@@ -521,60 +521,60 @@ export class FirestoreDatabase {
   }
 
   // 🔹 BATCH operations
- async batchWrite<T extends keyof TableTypeMap = CollectionNames>(
-  operations: BatchOperation<T>[]
-): Promise<BatchResult> {
-  const batch = this.db.batch();
+  async batchWrite<T extends keyof TableTypeMap = CollectionNames>(
+    operations: BatchOperation<T>[]
+  ): Promise<BatchResult> {
+    const batch = this.db.batch();
 
-  let processedCount = 0;
-  const errors: string[] = [];
+    let processedCount = 0;
+    const errors: string[] = [];
 
-  try {
-    for (const operation of operations) {
-      const { type: refType, ref } =
-        this.buildRefOrCollection(operation.ref);
+    try {
+      for (const operation of operations) {
+        const { type: refType, ref } =
+          this.buildRefOrCollection(operation.ref);
 
-      if (refType !== "doc") {
-        errors.push(
-          `Invalid ${operation.type} operation for ${operation.ref.path}`
-        );
-        continue;
+        if (refType !== "doc") {
+          errors.push(
+            `Invalid ${operation.type} operation for ${operation.ref.path}`
+          );
+          continue;
+        }
+
+        switch (operation.type) {
+          case "create": {
+            batch.set(ref, {
+              ...operation.data,
+              createdAt: firestore.FieldValue.serverTimestamp(),
+              updatedAt: firestore.FieldValue.serverTimestamp(),
+            });
+            break;
+          }
+
+          case "update": {
+            batch.update(ref, {
+              ...operation.data,
+              updatedAt: firestore.FieldValue.serverTimestamp(),
+            });
+            break;
+          }
+
+          case "delete": {
+            batch.delete(ref);
+            break;
+          }
+        }
+
+        processedCount++;
       }
 
-      switch (operation.type) {
-        case "create": {
-          batch.set(ref, {
-            ...operation.data,
-            createdAt: firestore.FieldValue.serverTimestamp(),
-            updatedAt: firestore.FieldValue.serverTimestamp(),
-          });
-          break;
-        }
-
-        case "update": {
-          batch.update(ref, {
-            ...operation.data,
-            updatedAt: firestore.FieldValue.serverTimestamp(),
-          });
-          break;
-        }
-
-        case "delete": {
-          batch.delete(ref);
-          break;
-        }
-      }
-
-      processedCount++;
+      await batch.commit();
+      return { success: true, processedCount, errors };
+    } catch (error) {
+      errors.push(error instanceof Error ? error.message : String(error));
+      return { success: false, processedCount, errors };
     }
-
-    await batch.commit();
-    return { success: true, processedCount, errors };
-  } catch (error) {
-    errors.push(error instanceof Error ? error.message : String(error));
-    return { success: false, processedCount, errors };
   }
-}
 
   // 🔹 TRANSACTION operations
   async runTransaction<T>(
@@ -927,6 +927,41 @@ export class FirestoreDatabase {
       };
     }
   }
+  async getByIdsWithPaths<T extends keyof TableTypeMap = CollectionNames>(
+    paths: string[]
+  ): Promise<TypeReturn<TableTypeMap[T][] | null>> {
+    try {
+      if (!paths.length) {
+        return { status: "success", data: [], message: "" }
+      }
+
+      const refs = paths.map((path) => this.db.doc(path))
+
+      const snaps = await this.db.getAll(...refs)
+
+      const data = snaps
+        .filter((s) => s.exists)
+        .map((snap) => ({
+          id: snap.id,
+          ...snap.data(),
+          createdAt: snap.createTime?.toDate(),
+          updatedAt: snap.updateTime?.toDate(),
+        })) as TableTypeMap[T][]
+
+      return {
+        status: "success",
+        data: data.length ? data : null,
+        message: "",
+      }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+
 }
 
 export const db = new FirestoreDatabase();

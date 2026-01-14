@@ -12,4 +12,8 @@ export const preopRepository = {
         const { data } = await api.get(`/preop/${id}`);
         return data as PreOpWithPath;
     },
+    getByIds: async (id: string): Promise<PreOpWithPath[]> => {
+        const { data } = await api.get(`/preop/${id}`);
+        return data as PreOpWithPath[];
+    },
 }

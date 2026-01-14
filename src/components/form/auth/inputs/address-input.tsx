@@ -34,7 +34,7 @@ const AddressInput = <T extends FieldValues>({
             control={control}
             name={name}
             render={({ field, fieldState }) => (
-                <FormItem>
+                <FormItem className="w-full">
                     <FormControl>
                         <div className="relative">
                             <Textarea

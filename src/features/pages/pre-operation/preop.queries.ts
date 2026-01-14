@@ -16,9 +16,10 @@ export const usePreop = (id: string) =>
         queryFn: () => preopRepository.getById(id),
         enabled: !!id,
     })
-// export const usePatientIds = (id: string) =>
-//     useQuery({
-//         queryKey: preopKeys.detail(id),
-//         queryFn: () => preopRepository.getByIds(id),
-//         enabled: !!id,
-//     })
+export const usePreopIds = (id: string) =>
+    useQuery({
+        queryKey: preopKeys.detail(id),
+
+        queryFn: () => preopRepository.getByIds(id),
+        enabled: !!id,
+    })

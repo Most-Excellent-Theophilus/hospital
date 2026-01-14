@@ -46,8 +46,11 @@ export function DataTableToolbar<T>({
 
   const goto = (destiny: "view" | "create" | "update" | "delete" | 'pre-op') => {
     toast.loading('Loading...')
+
+    const paths = table.getSelectedRowModel().rows.map(r => r.original.path)
+    const url = paths.join('🔟').replaceAll('/', '9️⃣')
     if (destiny === 'pre-op') {
-      return router.push(`/dashboard/post-operation/create?id=${encodeURIComponent(JSON.stringify(ids))}`)
+      return router.push(`/dashboard/post-operation/create?id=${url}`)
     }
 
     if (destiny == 'delete') {
@@ -64,6 +67,8 @@ export function DataTableToolbar<T>({
           }
           setTimeout(() => {
             toast.dismiss()
+            router['refresh']()
+
           }, 2_500)
         }).catch(() => toast.error('Unable to delete Record!', {
           id
@@ -75,7 +80,7 @@ export function DataTableToolbar<T>({
       }
       return
     }
-    router.push(`${path}/${destiny}?id=${encodeURIComponent(JSON.stringify(ids))}`)
+    router.push(`${path}/${destiny}?id=${url}`)
   }
 
   return (

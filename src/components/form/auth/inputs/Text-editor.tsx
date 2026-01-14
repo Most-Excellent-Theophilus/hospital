@@ -88,7 +88,6 @@ const TextEditor = <T extends FieldValues>({
                             content={field.value ?? ""}
                             placeholder={placeholder ? placeholder : ` ${label} ...`}
                             limit={limit}
-                            autofocus
                             className={cn(
                                 "min-h-[200px]  rounded border bg-background p-2",
                                 "min-h-screen w-full overflow-y-auto rounded-lg border bg-background p-4 ",

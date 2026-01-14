@@ -2,6 +2,7 @@
 import { tokenSchema } from "@/features/auth/auth.types";
 import { userSchema } from "@/features/pages/doctors/users.types";
 import { patientSchema } from "@/features/pages/patients/patient.types";
+import { postOpSchema } from "@/features/pages/post-operation/postop.types";
 import { preOpSchema } from "@/features/pages/pre-operation/preop.types";
 import { logsSchema } from "@/features/userlogs/userlogs.types";
 
@@ -66,6 +67,7 @@ export const preOpwithMetaSchema = mustHave.and(preOpSchema.omit({ supportingDoc
   }))
 }))
 export type PreopSchema = z.infer<typeof preOpwithMetaSchema>
+export type PostopSchema = z.infer<typeof postOpSchema>
 export type PatientSchema = z.infer<typeof patientWithMetaSchema>
 export type TableTypeMap = {
   databaseLogs: LogsShema;
@@ -73,6 +75,7 @@ export type TableTypeMap = {
   tokens: TokenSchema;
   patients: PatientSchema;
   'pre-operation': PreopSchema
+  'post-operation':PostopSchema
 };
 
 export type CollectionNames = keyof TableTypeMap;
