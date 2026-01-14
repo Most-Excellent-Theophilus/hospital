@@ -15,11 +15,13 @@ import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { DataTableFacetedFilter } from "../_components/data-table-faceted-filter"
 import { genderOptions } from "../_components/data"
+import { deletePreopPatient } from "./preop.actions"
+import { PreOpWithPath } from "./preop.repository"
 
 
 
 interface DataTableToolbarProps<T> {
-  table: Table<T & { id: string }>
+  table: Table<PreOpWithPath>
   search: (term: string) => void, value?: string,
   children: React.ReactNode
 }
@@ -46,6 +48,32 @@ export function DataTableToolbar<T>({
     toast.loading('Loading...')
     if (destiny === 'pre-op') {
       return router.push(`/dashboard/post-operation/create?id=${encodeURIComponent(JSON.stringify(ids))}`)
+    }
+
+    if (destiny == 'delete') {
+      const id2 = table.getSelectedRowModel().rows?.[0].original
+      const paths = id2.path.split('/')
+      if (confirm(` Want to delete? ${id2?.patient?.firstName} ${id2?.patient?.lastName}`)) {
+        const id = toast.loading('Loading...')
+        deletePreopPatient(paths[1], paths[3]).then((res) => {
+          toast[res.status](res.message, {
+            id
+          })
+          if (res.status == 'success') {
+            router['refresh']()
+          }
+          setTimeout(() => {
+            toast.dismiss()
+          }, 2_500)
+        }).catch(() => toast.error('Unable to delete Record!', {
+          id
+        })).finally(() => {
+          setTimeout(() => {
+            toast.dismiss()
+          }, 2_500)
+        })
+      }
+      return
     }
     router.push(`${path}/${destiny}?id=${encodeURIComponent(JSON.stringify(ids))}`)
   }

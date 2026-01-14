@@ -11,3 +11,11 @@ export const createPreOpPatient = async (id: string, data: Omit<PreopSchema, 'id
 
 
 }, data as PreopSchema)
+
+
+export const deletePreopPatient = async (id1: string, id2: string) => db.delete({
+    path: 'patients', id: id1, sub: {
+        path: 'pre-operation',
+        id: id2
+    }
+})

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback,  useState } from "react";
 import { Control, FieldValues, Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -121,6 +121,8 @@ export function AllocationInputField<T extends FieldValues>({
 
 
                 </div>
+
+
 
                 {showSlider && (
 

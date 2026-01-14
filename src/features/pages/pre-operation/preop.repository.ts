@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { PreopSchema } from "@/lib/firebase/firebase.types";
 
-type PreOpWithPath = PreopSchema & { path: string }
+export type PreOpWithPath = PreopSchema & { path: string }
 export const preopRepository = {
     getAll: async (): Promise<PreOpWithPath[]> => {
         const { data } = await api.get("/preop");

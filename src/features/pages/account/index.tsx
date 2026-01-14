@@ -3,10 +3,14 @@ import { CheckCircle, XCircle } from "lucide-react";
 
 
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { useSharedState } from "@/components/providers/dashboard-context"
 
-
-
+import { useSharedState } from "@/components/providers/dashboard-context";
+import {
+  Map,
+  MapMarker,
+  MapTileLayer,
+  MapTooltip,
+} from "@/components/ui/map"
 import { dateUtils } from "@/lib/utils/date";
 import { logoutNow } from "@/features/auth/auth.actions";
 import { AddressInfo, InfoField, Section } from "@/components/review-componemts";
@@ -30,7 +34,25 @@ const AccountModule = () => {
         </h1>
       </div>
     </div>
-    {/* Compact Grid Layout */}
+    <Map center={[Number(value.lat) || 12.9236, Number(value.lon) || 100.8825]} zoom={1} >
+      <MapTileLayer
+      // url="https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}"
+      />
+      {/* {POPUP_CITIES.map((city) => (
+        <MapMarker key={city.name} position={city.coordinates}>
+          <MapPopup className="w-56"> {city.name}!</MapPopup>
+        </MapMarker>
+      ))} */}
+
+      <MapMarker  key={"Your Are Here"} position={[Number(value.lat) || 12.9236, Number(value.lon) || 100.8825]}>
+        <MapTooltip side="bottom">
+          {"Your Are Here"}!
+        </MapTooltip>
+      </MapMarker>
+
+
+    </Map>
+
     <div className="grid grid-cols-1 md:grid-cols-2  gap-4 ">
       {/* Personal Information */}
       <Section title="Personal Information">
