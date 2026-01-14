@@ -684,6 +684,8 @@ export class FirestoreDatabase {
         const results = snapshot.docs.map((d) => ({
           id: d.id,
           ...d.data(),
+          path: d.ref.path,
+
           createdAt: d.createTime?.toDate(),
           updatedAt: d.updateTime?.toDate(),
         }));
@@ -729,6 +731,8 @@ export class FirestoreDatabase {
       const results = snapshot.docs.map((d) => ({
         id: d.id,
         ...d.data(),
+        path: d.ref.path,
+
         createdAt: d.createTime?.toDate(),
         updatedAt: d.updateTime?.toDate(),
       }));
@@ -847,6 +851,8 @@ export class FirestoreDatabase {
       const docs = snap.docs.map((d) => ({
         id: d.id,
         ...d.data(),
+        path: d.ref.path,
+
         createdAt: d.createTime?.toMillis?.() ?? null,
         updatedAt: d.updateTime?.toMillis?.() ?? null,
       })) as unknown as TableTypeMap[T][];
@@ -927,6 +933,7 @@ export class FirestoreDatabase {
       };
     }
   }
+
   async getByIdsWithPaths<T extends keyof TableTypeMap = CollectionNames>(
     paths: string[]
   ): Promise<TypeReturn<TableTypeMap[T][] | null>> {
@@ -943,6 +950,7 @@ export class FirestoreDatabase {
         .filter((s) => s.exists)
         .map((snap) => ({
           id: snap.id,
+          path: snap.ref.path,
           ...snap.data(),
           createdAt: snap.createTime?.toDate(),
           updatedAt: snap.updateTime?.toDate(),
@@ -953,6 +961,148 @@ export class FirestoreDatabase {
         data: data.length ? data : null,
         message: "",
       }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+
+  async addByPathnames<T extends keyof TableTypeMap = CollectionNames>(
+    collectionPath: string,
+    data: TableTypeMap[T]
+  ): Promise<TypeReturn<{ id: string }>> {
+    try {
+      const ref = this.db.collection(collectionPath).doc()
+
+      await ref.set({
+        ...data,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+
+      return {
+        status: "success",
+        message: "",
+        data: {
+
+          id: ref.id,
+
+        },
+      }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+  async getByPath<T extends keyof TableTypeMap = CollectionNames>(
+    path: string
+  ): Promise<TypeReturn<TableTypeMap[T] | null>> {
+    try {
+      const snap = await this.db.doc(path).get()
+
+      if (!snap.exists) {
+        return { status: "success", message: '', data: null }
+      }
+
+      return {
+        status: "success",
+        message: '',
+        data: {
+          id: snap.id,
+          path: snap.ref.path,
+          ...snap.data()
+        } as unknown as TableTypeMap[T]
+      }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+
+  async getByPaths<T extends keyof TableTypeMap = CollectionNames>(
+    paths: string[]
+  ): Promise<TypeReturn<TableTypeMap[T][] | null>> {
+    try {
+      const refs = paths.map(p => this.db.doc(p))
+      const snaps = await this.db.getAll(...refs)
+
+      const data = snaps
+        .filter(s => s.exists)
+        .map(s => ({
+          id: s.id,
+          path: s.ref.path,
+          ...s.data(),
+        } as unknown as TableTypeMap[T]))
+
+      return { status: "success", message: '', data }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+  async updateByPath<T extends keyof TableTypeMap = CollectionNames>(
+    collectionPath: string,
+    data: Partial<TableTypeMap[T]>
+  ): Promise<TypeReturn<{ id: string }>> {
+    try {
+      const res = await this.db.doc(collectionPath).update({
+        ...data,
+        updatedAt: new Date(),
+      })
+
+      return { status: "success", message: '', data: { id: res.writeTime.nanoseconds.toString() } }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+
+
+  async deleteByPath(
+    path: string
+  ): Promise<TypeReturn<{ id: string }>> {
+    try {
+      await this.db.doc(path).delete()
+      return { status: "success", message: '', data: { id: "" } }
+    } catch (error) {
+      return {
+        status: "error",
+        data: null,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }
+    }
+  }
+
+  async batchUpdate<T extends keyof TableTypeMap = CollectionNames>(
+    ops: { path: string; data: TableTypeMap[T] }[]
+  ): Promise<TypeReturn<true>> {
+    try {
+      const batch = this.db.batch()
+
+      ops.forEach(({ path, data }) => {
+        batch.update(this.db.doc(path), {
+          ...data,
+          updatedAt: new Date(),
+        })
+      })
+
+      await batch.commit()
+      return { status: "success", message: '', data: true }
     } catch (error) {
       return {
         status: "error",

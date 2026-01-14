@@ -21,7 +21,7 @@ import { PreOpWithPath } from "./preop.repository"
 
 
 interface DataTableToolbarProps<T> {
-  table: Table<PreOpWithPath>
+  table: Table< T & PreOpWithPath>
   search: (term: string) => void, value?: string,
   children: React.ReactNode
 }

@@ -17,15 +17,14 @@ import { useTransition } from "react";
 import {
     useQueryState,
 } from "nuqs";
-import { useCreateUser } from "@/features/pages/doctors/users.mutations";
 import { postOpSchema, PostOpSchema } from "../postop.types";
 import { PreOpWithPath } from "../../pre-operation/preop.repository";
 import { useSharedState } from "@/components/providers/dashboard-context";
 
 import TextEditor from "@/components/form/auth/inputs/Text-editor";
-import TextInput from "@/components/form/auth/inputs/text-input";
 import AddressInput from "@/components/form/auth/inputs/address-input";
 import { toDate } from "@/lib/utils/date";
+import { createPostOp } from "../postop.actions";
 
 
 const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 'success', { title: string, message?: string, variant?: "default" | "destructive" | null | undefined }> = {
@@ -51,7 +50,7 @@ const alertMap: Record<"email-not-found" | "email-taken" | 'failed-to-update' | 
 export default function CreatePostOp({ data, }: { data: PreOpWithPath }) {
 
     const [isPending, startTransition] = useTransition()
-    const [status, setStatus] = useQueryState('state',)
+    const [status] = useQueryState('state',)
     const { doctorId, email, firstName, lastName, middleName } = useSharedState().value
 
 
@@ -75,7 +74,17 @@ export default function CreatePostOp({ data, }: { data: PreOpWithPath }) {
         const id = toast.loading("Please wait...", {
             position: 'top-center'
         })
+        startTransition(() => {
 
+            createPostOp(data.path, dataT).then((res) => {
+                if (res.status == 'success') {
+                    toast[res.status]('Succefully Created!', { id })
+                }
+                toast[res.status](res.message, { id })
+            }).catch((err: Error) => toast.error(err?.message, { id })).finally(() => setTimeout(() => {
+                toast.dismiss()
+            }, 2500))
+        })
 
     }
 

@@ -23,6 +23,7 @@ export const timestampToDate = z.union([
 );
 const mustHave = z.object({
   id: z.string(),
+  path: z.string(),
   createdAt: timestampToDate,
   updatedAt: timestampToDate,
 });
@@ -75,7 +76,7 @@ export type TableTypeMap = {
   tokens: TokenSchema;
   patients: PatientSchema;
   'pre-operation': PreopSchema
-  'post-operation':PostopSchema
+  'post-operation': PostopSchema
 };
 
 export type CollectionNames = keyof TableTypeMap;

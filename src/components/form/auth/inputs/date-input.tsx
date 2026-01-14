@@ -93,6 +93,7 @@ export function DropDownDatePicker<T extends FieldValues>({
                 }}
               >
                 <NativeSelectOptGroup label="Years">
+                <NativeSelectOption>Year</NativeSelectOption>
                   {years
                     .slice()
                     .reverse()
@@ -118,7 +119,9 @@ export function DropDownDatePicker<T extends FieldValues>({
                   setDay(""); // reset day when month changes
                 }}
               >
+
                 <NativeSelectOptGroup label="Months">
+                <NativeSelectOption>Month</NativeSelectOption>
                   {months.map((m, i) => (
                     <NativeSelectOption key={i} value={i}>
                       {m}
@@ -140,7 +143,9 @@ export function DropDownDatePicker<T extends FieldValues>({
                   setDay(e.target.value !== "" ? Number(e.target.value) : "")
                 }
               >
+
                 <NativeSelectOptGroup label="Days">
+                  <NativeSelectOption>Day</NativeSelectOption>
                   {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(
                     (d) => (
                       <NativeSelectOption key={d} value={d}>

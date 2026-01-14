@@ -4,13 +4,10 @@ import { SelectionCell, SelectionHeader } from "@/components/data-table/componen
 import { dateUtils } from "@/lib/utils/date";
 import { ColumnDef } from "@tanstack/react-table";
 import { genderOptions } from "../_components/data";
-import { Download, ExternalLink, MinusCircle } from "lucide-react";
+import { MinusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Image from "next/image"
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { InfoField, Section } from "@/components/review-componemts";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { PreOpWithPath } from "./preop.repository";
 
 // Shared className for HTML content styling
