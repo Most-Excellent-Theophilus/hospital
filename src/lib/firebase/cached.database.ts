@@ -73,7 +73,7 @@ export async function createCacheActions<T extends CollectionNames>(
         const response = await db.get<T>(
           { path: collectionName },
 
-          { limit: 50, ...options },
+          { limit: 850, ...options },
           skipTimeStap,
 
 

@@ -13,13 +13,14 @@ import {
 
 } from "@tanstack/react-table";
 import { z } from "zod";
-import { DataTableToolbar } from "../_components/data-table-toolbar";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DataTablePagination } from "../_components/data-table-pagination";
 
 import { useUsers } from "./users.queries";
 import { columns } from "./columns";
 import LoadingPage from "@/components/loadingpage";
+import { DataTableToolbar } from "./data-table-toolbar";
 
 const sortingSchema = z.array(
   z.object({

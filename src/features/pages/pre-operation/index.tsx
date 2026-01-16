@@ -70,6 +70,10 @@ function resolveUpdater<T>(
 //
 const PatientsModule = () => {
   //
+  //
+  // ─── INFINITE QUERY ────────────────────────────────────────────────────────
+  //
+  const { data, } = usePreops()
   // ─── URL STATE ─────────────────────────────────────────────────────────────
   //
   const [globalFilterRaw, setGlobalFilterRaw] = useQueryState(
@@ -97,10 +101,6 @@ const PatientsModule = () => {
     parseAsInteger.withDefault(10)
   );
 
-  //
-  // ─── INFINITE QUERY ────────────────────────────────────────────────────────
-  //
-  const { data, } = usePreops()
 
 
   //
