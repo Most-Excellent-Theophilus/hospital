@@ -1,7 +1,8 @@
-import { getAllPatient as getAllDoctor } from "@/features/pages/patients/patient.actions";
+import { db } from "@/lib/firebase/database";
+
 
 export async function GET() {
-    const doctors = await getAllDoctor(); // Assume this function fetches the list of doctors
+    const doctors = await db.get({ path: 'patients' }) // Assume this function fetches the list of doctors
     // console.log(doctors.data)
     return Response.json(doctors.data);
 }
