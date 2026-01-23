@@ -1,7 +1,7 @@
 "use client"
 
 import { type Table } from "@tanstack/react-table"
-import { CalendarPlus, ChevronDownIcon, Eye, Pen, Plus, Search, Trash2, TrashIcon, X } from "lucide-react"
+import { ChevronDownIcon, Eye, Plus, Search, Trash2, TrashIcon, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +20,7 @@ import { PostopSchema } from "@/lib/firebase/firebase.types"
 
 
 interface DataTableToolbarProps<T> {
-  table: Table<PostopSchema & { id: string }>
+  table: Table<PostopSchema & { id: string, path: string } & T>
   search: (term: string) => void, value?: string,
   children: React.ReactNode
 }
@@ -45,10 +45,15 @@ export function DataTableToolbar<T>({
 
   const goto = (destiny: "view" | "create" | "update" | "delete" | 'pre-op') => {
     toast.loading('Loading...')
+    const paths = table.getSelectedRowModel().rows.map(r => r.original.path)
+    const url = paths.join('🔟').replaceAll('/', '9️⃣')
     if (destiny === 'pre-op') {
-      return router.push(`/dashboard/pre-operation/create?id=${encodeURIComponent(JSON.stringify(ids))}`)
+      return router.push(`/dashboard/pre-operation/create?id=${encodeURIComponent(JSON.stringify(url))}`)
     }
-    router.push(`${path}/${destiny}?id=${encodeURIComponent(JSON.stringify(ids))}`)
+    if (destiny === 'view') {
+      return router.push(`${path}/view?id=${encodeURIComponent(url)}`)
+    }
+    router.push(`${path}/${destiny}?id=${encodeURIComponent(url)}`)
   }
 
   return (
@@ -109,14 +114,7 @@ export function DataTableToolbar<T>({
 
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => goto('update')} >
-                  <Pen />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => goto('pre-op')} disabled={selectedCount > 1} >
-                  <CalendarPlus />
-                  Add to Pre Op
-                </DropdownMenuItem>
+
 
 
               </DropdownMenuGroup>

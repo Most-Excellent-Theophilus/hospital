@@ -9,7 +9,8 @@ import LoadingPage from "@/components/loadingpage";
 
 const PatientsviewModule = () => {
   const [ids] = useQueryState('id')
-  const { data } = useUsers();
+    const { data } = useUsers();
+  
 
   if (!data) return <LoadingPage />
 

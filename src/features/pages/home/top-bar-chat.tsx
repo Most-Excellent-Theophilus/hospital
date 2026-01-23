@@ -30,9 +30,6 @@ import { NativeSelect, NativeSelectOption } from '@/components/ui/native-select'
 import { usePatients } from '@/features/pages/patients/patient.queries';
 import { PatientSchema } from '@/lib/firebase/firebase.types';
 import { capitalizeFirstLetter } from '@/lib/utils';
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LabelList, Pie, PieChart } from 'recharts';
-import { ChartLineMultiple } from './line-chart';
 import LoadingPage from '@/components/loadingpage';
 
 
@@ -181,7 +178,9 @@ function DateRangePicker({ dateRange, setDateRange }: DateRangePickerProps) {
 }
 
 export default function PatientDashboard() {
-  const { data } = usePatients()
+  
+  
+  const { data } = usePatients();
 
   const [globalFilter, setGlobalFilter] = useState<string>('');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -348,118 +347,8 @@ export default function PatientDashboard() {
     };
   }, [filteredPatients]);
 
-  const chartConfig = {
-    all: {
-      label: "All",
-    },
-    male: {
-      label: "Male",
-      color: "var(--chart-1)",
-    },
-    female: {
-      label: "Female",
-      color: "var(--chart-2)",
-    },
 
-    other: {
-      label: "Other",
-      color: "var(--chart-5)",
-    },
-  } satisfies ChartConfig
 
-  const chartData = [
-    { gender: "male", count: stats.male.count, fill: "var(--color-male)" },
-    { gender: "female", count: stats.female.count, fill: "var(--color-female)" },
-
-    { gender: "other", count: Number(stats?.total.count) - (Number(stats.female.count) + Number(stats.male.count)), fill: "var(--color-other)" },
-  ]
-  type LineChartItem = {
-    month: string
-    male: number
-    female: number
-    other: number
-  }
-
-  type LineChartType = LineChartItem[]
-  const randomInt = (min: number, max: number) =>
-    Math.floor(Math.random() * (max - min + 1)) + min
-
-  const lineChartData: LineChartType = useMemo(() => {
-    return [
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'Jan'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'Feb'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'March'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'April'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'May'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'June'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'July'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'August'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'Sept'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'Octo'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'Nov'
-      },
-      {
-        female: randomInt(1, 100),
-        male: randomInt(1, 100),
-        other: randomInt(1, 100),
-        month: 'Dec'
-      },
-    ]
-  }, [])
   if (!filteredPatients) return <LoadingPage />
 
   return (
@@ -483,69 +372,10 @@ export default function PatientDashboard() {
 
           <div>
 
-            <ChartContainer
-              config={chartConfig}
-              className="mx-auto aspect-square max-h-[250px]"
-            >
-              <PieChart>
-                <ChartTooltip
-                  cursor
-                  content={<ChartTooltipContent />}
-                />
-                <Pie
-                  data={chartData}
-                  dataKey="count"
-                  nameKey="gender"
-                // innerRadius={60}
-                // strokeWidth={5}
-                >
-                  {/* <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                        >
-                          <tspan
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            className="fill-foreground text-3xl font-bold"
-                          >
-                            {stats.total.count}
-                          </tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 24}
-                            className="fill-muted-foreground"
-                          >
-                            Patients
-                          </tspan>
-                        </text>
-                      )
-                    }
-                  }}
-
-                /> */}
-                  <LabelList
-                    dataKey="gender"
-                    className="fill-background"
-                    stroke="none"
-                    fontSize={12}
-                    formatter={(value: keyof typeof chartConfig) =>
-                      chartConfig[value]?.label
-                    }
-                  />
-                </Pie>
-              </PieChart>
-            </ChartContainer>
-
+       
 
           </div>
 
-          <div className='col-span-3  flex items-center '> <ChartLineMultiple data={lineChartData} /> </div>
 
         </div>
 

@@ -20,6 +20,7 @@ import { checkEmail, login } from "@/features/auth/auth.actions";
 import { useOtpTimer } from "@/hooks/use-otp-timer";
 import { useDeviceInfo } from "@/hooks/use-device-info";
 import { useDeviceVendor } from "@/hooks/use-device-vendor";
+import { useRouter } from "next/navigation";
 
 /* ---------------------------------- */
 /* Alert Configuration */
@@ -75,6 +76,7 @@ export default function LoginPage() {
   const [status, setStatus] = useQueryState("s");
   const [isPending, startTransition] = useTransition();
   const [timer, setTimer] = useState<number>(0)
+  const router = useRouter()
   const info = useDeviceInfo()
   const vendor = useDeviceVendor()
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -126,6 +128,9 @@ export default function LoginPage() {
     startTransition(async () => {
       try {
         const res = await login(data, { ...info, ...vendor });
+        if (res.status == 'success') {
+          return router.replace('/dashboard', { scroll: true })
+        }
         setStatus(res.message as AlertKey);
       } catch {
         setStatus("something-wrong");
@@ -151,7 +156,7 @@ export default function LoginPage() {
       >
         <fieldset disabled={isLocked} className="min-w-[350px]">
           {/* Header */}
-            <LogoIcon className=" text-primary"  />
+          <LogoIcon className=" text-primary" />
           <div className="flex items-center space-x-2.5">
             <h1 className="text-xl font-semibold text-primary">Log In</h1>
           </div>

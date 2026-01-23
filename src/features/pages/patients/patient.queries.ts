@@ -8,15 +8,15 @@ export const usePatients = () =>
     queryFn: usersRepository.getAll,
   })
 
-export const usePatient = (id: string) =>
+export const usePatient = ({ id,  }: { id: string, }) =>
   useQuery({
     queryKey: usersKeys.detail(id),
-    queryFn: () => usersRepository.getById(id),
+    queryFn: () => usersRepository.getById({ id}),
     enabled: !!id,
   })
-export const usePatientIds = (id: string) =>
+export const usePatientIds = ({ id, }: { id: string, }) =>
   useQuery({
     queryKey: usersKeys.detail(id),
-    queryFn: () => usersRepository.getByIds(id),
+    queryFn: () => usersRepository.getByIds({ id, }),
     enabled: !!id,
   })

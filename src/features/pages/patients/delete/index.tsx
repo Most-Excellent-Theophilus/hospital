@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { deletePatients } from "../patient.actions";
 import { toast } from "sonner";
 import { AlertDescription } from "@/components/ui/alert";
+import { useSharedState } from "@/components/providers/dashboard-context";
 
 
 const PatientsviewModule = () => {
@@ -15,7 +16,10 @@ const PatientsviewModule = () => {
 
   const jsonIds: string[] = JSON.parse(decodeURIComponent(ids || ''))
   const toUrl = jsonIds?.join('/')
-  const { data } = usePatientIds(toUrl);
+  const { value } = useSharedState()
+    ;
+  const { data } = usePatientIds({ id: toUrl, auth: value.password as string });
+
 
 
   if (!data) return <LoadingPage />
@@ -27,10 +31,10 @@ const PatientsviewModule = () => {
 
     </div>
 
-    {(!data.length ? [data] : data).map((patient, i) => <div className="flex relative" key={i}> 
+    {(!data.length ? [data] : data).map((patient, i) => <div className="flex relative" key={i}>
       <div className=" absolute -left-4 ">
-      <Badge className="text-base sm:mt-6 font-bold">{i + 1}</Badge>
-      </div> 
+        <Badge className="text-base sm:mt-6 font-bold">{i + 1}</Badge>
+      </div>
       <PatientViewer data={patient as unknown as PatientSchema} deletee /></div>)}
 
     <Button className="w-full" size={'lg'} onClick={() => {

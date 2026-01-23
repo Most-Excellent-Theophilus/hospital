@@ -6,8 +6,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { genderOptions } from "../_components/data";
 import { MinusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { PreOpWithPath } from "./preop.repository";
 
 // Shared className for HTML content styling
@@ -52,27 +50,9 @@ export const columns: ColumnDef<PreOpWithPath>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="Full Name" />,
     cell: ({ row }) => {
       const { original: data } = row;
-      const fullName = `${data?.patient?.firstName} ${data?.patient?.lastName}`;
+      return  `${data?.patient?.firstName} ${data?.patient?.lastName}`;
       
-      return (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="link">{fullName}</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[925px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{fullName}</DialogTitle>
-            </DialogHeader>
-            
      
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Close</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      );
     }
   },
 

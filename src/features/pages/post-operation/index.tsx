@@ -6,7 +6,7 @@ import { parseAsInteger, parseAsJson, parseAsString, useQueryState } from "nuqs"
 import { toast } from "sonner";
 import { type Table as TT } from "@tanstack/react-table"
 
-import { Table, TableHeader, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableRow } from "@/components/ui/table";
+import { Table, TableHeader, TableBody,   TableCell, TableHead, TableRow } from "@/components/ui/table";
 import z from "zod";
 import { DataTablePagination } from "../_components/data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
@@ -51,7 +51,9 @@ function resolveUpdater<T>(
 }
 
 const Post_operationModule = () => {
-  const { data } = usePostOps()
+      ;
+   
+  const { data } = usePostOps();
   // ─── URL STATE ─────────────────────────────────────────────────────────────
   //
   const [globalFilterRaw, setGlobalFilterRaw] = useQueryState(
@@ -125,7 +127,7 @@ const Post_operationModule = () => {
       <DataTableToolbar
         search={setGlobalFilterRaw}
         value={globalFilterRaw}
-        table={table as unknown as TT<PostopSchema & { id: string }>}
+        table={table as unknown as TT<PostopSchema & { id: string, path:string }>}
       >
         <div className="flex justify-between space-x-3.5">
           <div className="flex-1 flex items-center">

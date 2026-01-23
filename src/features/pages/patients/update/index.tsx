@@ -6,13 +6,16 @@ import { PatientSchema } from "../patient.types";
 import { Badge } from "@/components/ui/badge";
 
 import LoadingPage from "@/components/loadingpage";
+import { useSharedState } from "@/components/providers/dashboard-context";
 
 
 const PatientsupdateModule = () => {
   const [ids] = useQueryState('id')
   const jsonIds: string[] = JSON.parse(decodeURIComponent(ids || ''))
   const toUrl = jsonIds?.join('/')
-  const { data } = usePatientIds(toUrl);
+  const { value } = useSharedState()
+      ;
+    const { data } = usePatientIds({ id: toUrl, auth: value.password as string });
 
   if (!data) return <LoadingPage />
 

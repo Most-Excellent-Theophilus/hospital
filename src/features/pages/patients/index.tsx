@@ -73,6 +73,8 @@ const PatientsModule = () => {
   //
   // ─── URL STATE ─────────────────────────────────────────────────────────────
   //
+
+
   const [globalFilterRaw, setGlobalFilterRaw] = useQueryState(
     "globalft",
     parseAsString.withDefault("")

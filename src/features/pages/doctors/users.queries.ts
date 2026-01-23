@@ -8,9 +8,9 @@ export const useUsers = () =>
     queryFn: usersRepository.getAll,
   })
 
-export const useUser = (id: string) =>
+export const useUser = ({ id, }: { id: string, }) =>
   useQuery({
     queryKey: usersKeys.detail(id),
-    queryFn: () => usersRepository.getById(id),
+    queryFn: () => usersRepository.getById({ id, }),
     enabled: !!id,
   })

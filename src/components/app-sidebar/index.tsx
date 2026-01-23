@@ -15,12 +15,23 @@ import {
 import { linksIconMap } from "./config";
 
 import DashBoardHeader from "./header";
+import { useSharedState } from "../providers/dashboard-context";
+import { setAuthToken } from "@/lib/api";
+
 
 
 const data = {
   navMain: Object.values(linksIconMap).map((item) => item),
 };
 export function AppSidebarProcider({ children, ...props }: React.ComponentProps<typeof Sidebar> & { children?: React.ReactNode, }) {
+
+  const { value } = useSharedState()
+  React.useEffect(() => {
+    const token = value?.password as string | undefined;
+    if (token) {
+      setAuthToken(token);
+    }
+  }, []);
 
 
   return (
@@ -31,7 +42,7 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
             <SidebarHeader className={cn("flex  rounded-xl  ")}  >
               <div className="flex w-full justify-between ">
                 <div className="flex w-full justify-start space-x-4 items-center"><Logo className="p-6 bg-background" />
-                  </div>
+                </div>
 
 
 
@@ -47,7 +58,7 @@ export function AppSidebarProcider({ children, ...props }: React.ComponentProps<
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <DashBoardHeader  />
+        <DashBoardHeader />
         <div className=" h-full  px-5"> {children}</div>
 
       </SidebarInset>

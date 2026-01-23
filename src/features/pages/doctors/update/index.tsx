@@ -9,11 +9,12 @@ import { useUsers } from "../users.queries";
 import { UserSchema } from "@/lib/firebase/firebase.types";
 import CreateAccountPage from "../create";
 import LoadingPage from "@/components/loadingpage";
+import { useSharedState } from "@/components/providers/dashboard-context";
 
 
 const PatientsupdateModule = () => {
   const [ids] = useQueryState('id')
-  const { data } = useUsers();
+   const { data } = useUsers();
 
   if (!data) return <LoadingPage />
 

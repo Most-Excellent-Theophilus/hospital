@@ -9,13 +9,13 @@ export const patirntRepository = {
     return data as UserSchema[];
   },
 
-  getById: async (id: string): Promise<UserSchema> => {
+  getById: async ({  id }: { id: string,  }): Promise<UserSchema> => {
     const { data } = await api.get(`/patients/${id}`);
     return data as UserSchema;
   },
 
-  getByIds: async (id: string): Promise<UserSchema[]> => {
-    const { data } = await api.get(`/patients/${id}`);
+  getByIds: async ({  id }: { id: string, }): Promise<UserSchema[]> => {
+    const { data } = await api.get(`/patients/${id}`)
     return data as UserSchema[];
   },
 

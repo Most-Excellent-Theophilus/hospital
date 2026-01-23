@@ -139,9 +139,9 @@ export default function CreatePatientPage({ data, }: { data?: PatientSchema | nu
             setStatus("success")
 
             toast.loading('Redirecting ...')
-            setTimeout(() => {
+            // setTimeout(() => {
               router.replace('/dashboard/patients')
-            }, 3000)
+            // }, 3000)
           },
           onError: () => {
             toast.error("Something went wrong", { id })

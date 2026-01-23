@@ -1,7 +1,7 @@
 "use client"
 
 import { type Table } from "@tanstack/react-table"
-import { CalendarPlus, ChevronDownIcon, Eye, Pen, Plus, Search, Trash2, TrashIcon, X } from "lucide-react"
+import {  ChevronDownIcon, Eye, Pen, Plus, Search, Trash2, TrashIcon, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -54,7 +54,7 @@ export function DataTableToolbar<T>({
     }
 
     if (destiny == 'delete') {
-      const id2 = table.getSelectedRowModel().rows?.[0].original
+      // const id2 = table.getSelectedRowModel().rows?.[0].original
       // const paths = id2.path.split('/')
       // if (confirm(` Want to delete? ${id2?.patient?.firstName} ${id2?.patient?.lastName}`)) {
       //   const id = toast.loading('Loading...')

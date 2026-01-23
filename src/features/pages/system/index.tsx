@@ -14,7 +14,7 @@ import LoadingPage from "@/components/loadingpage";
 const Example = () => {
 
   const { value } = useSharedState()
-  const { data } = uselogs()
+  const { data } = uselogs(value.password as string);
   // const POPUP_CITIES = [
   //   {
   //     name: "Toronto",

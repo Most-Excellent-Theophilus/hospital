@@ -14,6 +14,8 @@ import z from "zod";
 import { redirect } from "next/navigation";
 import { createSession, deleteSession, SessionUser } from "./auth.session";
 import { useDeviceInfo } from "@/hooks/use-device-info";
+import { signToken } from "@/lib/jwt";
+import { cookies } from "next/headers";
 
 
 
@@ -84,11 +86,27 @@ export const login = async (data: Login, device: ReturnType<typeof useDeviceInfo
             status: "error",
             message: "email-or-password",
         } as const;
-    }
-    await createSession({ ...user, ...clientInfo, ...device } as unknown as SessionUser)
-    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as unknown as LogsShema)
 
-    redirect('/dashboard')
+
+    }
+    const token = await signToken({
+        sub: user.id,
+        email: user.email,
+        role: user.password,
+    });
+    await createSession({ ...user, ...clientInfo, ...device, password: token } as unknown as SessionUser)
+    await db.create<'databaseLogs'>({ path: 'databaseLogs' }, { ...user, ...clientInfo, ...device, worked: false, action: 'login', dataString: 'unable-to-verify' } as unknown as LogsShema);
+
+    (await cookies()).set("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+    });
+    return {
+        status: "success",
+        message: "redirecting",
+    } as const
 }
 
 export const setResetPassword = async (email: Login["email"],) => {

@@ -8,8 +8,8 @@ export const logRepository = {
         return data as PreOpWithPath[];
     },
 
-    getById: async (id: string): Promise<PreOpWithPath> => {
-        const { data } = await api.get(`/bplogs/${id}`);
+    getById: async ({  id }: { id: string, }): Promise<PreOpWithPath> => {
+        const { data } = await api.get(`/dblogs/${id}`);
         return data as PreOpWithPath;
     },
 }

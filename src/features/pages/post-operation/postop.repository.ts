@@ -8,11 +8,11 @@ export const postpRepository = {
         return data as PreOpWithPath[];
     },
 
-    getById: async (id: string): Promise<PreOpWithPath> => {
+    getById: async ({  id }: { id: string }): Promise<PreOpWithPath> => {
         const { data } = await api.get(`/postop/${id}`);
         return data as PreOpWithPath;
     },
-    getByIds: async (id: string): Promise<PreOpWithPath[]> => {
+    getByIds: async ({  id }: { id: string }): Promise<PreOpWithPath[]> => {
         const { data } = await api.get(`/postop/${id}`);
         return data as PreOpWithPath[];
     },
