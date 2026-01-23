@@ -10,13 +10,11 @@ import { dateUtils } from "@/lib/utils/date";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Download, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useSharedState } from "@/components/providers/dashboard-context";
 const Pre_operationviewModule = () => {
   const [ids] = useQueryState('id')
-const { value } = useSharedState()
     ;
 
-  const { data } = usePreopIds({ id: ids || '', auth: value.password as string });
+  const { data } = usePreopIds({ id: ids || '', });
   if (!data) return <LoadingPage />
   return <div>
     {data?.map((patient, i) => <div className="flex relative" key={i}> <div className=" absolute -left-4 sm:left-0"><Badge className="text-base sm:mt-6 font-bold">{i + 1}</Badge></div> < PreopView data={patient} /></div>)}

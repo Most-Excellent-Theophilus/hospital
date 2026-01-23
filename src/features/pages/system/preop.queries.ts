@@ -8,7 +8,7 @@ import { logRepository } from "./preop.repository"
 export const useLogs = () =>
     useQuery({
         queryKey: logKeys.list(),
-        queryFn: () => logRepository.getAll,
+        queryFn:  logRepository.getAll,
     })
 
 export const useLog = ({ id, }: { id: string, auth: string }) =>

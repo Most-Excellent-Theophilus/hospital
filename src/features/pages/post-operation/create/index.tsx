@@ -6,7 +6,7 @@ import CreatePostOp from "./form";
 const Post_operationcreateModule = () => {
   const [ids] = useQueryState('id')
 
-  const { data } = usePreopIds(ids || "")
+  const { data } = usePreopIds({id:ids || ""})
   if (!data) {
     return <LoadingPage />
   }

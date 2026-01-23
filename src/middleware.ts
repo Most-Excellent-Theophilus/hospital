@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     console.log({ token });
 
     if (!token) {
-        return NextResponse.json({ message: "Invalid or expired token" }, { status: 401 });
+        return NextResponse.json({ message: "You Do Not Have Access To This Page" }, { status: 401 });
 
     }
 
@@ -24,5 +24,5 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-    matcher: ["/api/:path*"],
+    matcher: ["/api/:path*", '/dashboard/:path*'],
 };

@@ -36,9 +36,8 @@ const PatientsviewModule = () => {
   const [ids] = useQueryState('id')
   const jsonIds: string[] = JSON.parse(decodeURIComponent(ids || ''))
   const toUrl = jsonIds?.join('/')
-  const { value } = useSharedState()
 
-  const { data } = usePatientIds({ id: toUrl, auth: value.password as string });
+  const { data } = usePatientIds({ id: toUrl||'' });
 
 
 

@@ -5,7 +5,6 @@ import { Section } from "@/components/review-componemts";
 
 import { usePostOpIds } from "../postop.queries";
 import { PostopSchema } from "@/lib/firebase/firebase.types";
-import { useSharedState } from "@/components/providers/dashboard-context";
 const Pre_operationviewModule = () => {
   const [ids] = useQueryState('id')
     ;

@@ -4,15 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { PatientSchema } from "@/lib/firebase/firebase.types";
 import PatientViewer from "./patients.view";
 import LoadingPage from "@/components/loadingpage";
-import { useSharedState } from "@/components/providers/dashboard-context";
 
 const PatientsviewModule = () => {
   const [ids] = useQueryState('id')
  const jsonIds: string[] = JSON.parse(decodeURIComponent(ids || ''))
    const toUrl = jsonIds?.join('/')
-   const { value } = useSharedState()
        ;
-     const { data } = usePatientIds({ id: toUrl, auth: value.password as string });
+     const { data } = usePatientIds({ id: toUrl });
    
  
 

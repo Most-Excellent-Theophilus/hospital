@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { deletePatients } from "../patient.actions";
 import { toast } from "sonner";
 import { AlertDescription } from "@/components/ui/alert";
-import { useSharedState } from "@/components/providers/dashboard-context";
 
 
 const PatientsviewModule = () => {
@@ -16,9 +15,8 @@ const PatientsviewModule = () => {
 
   const jsonIds: string[] = JSON.parse(decodeURIComponent(ids || ''))
   const toUrl = jsonIds?.join('/')
-  const { value } = useSharedState()
     ;
-  const { data } = usePatientIds({ id: toUrl, auth: value.password as string });
+  const { data } = usePatientIds({ id: toUrl,  });
 
 
 
