@@ -12,6 +12,6 @@ export async function GET() {
     return Response.json(snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
-        path: doc.ref.path, // useful to know parent user
+        path: doc.ref.path, 
     })));
 }
