@@ -71,6 +71,7 @@
     "firebase": "^12.6.0",
     "firebase-admin": "^13.6.0",
     "fuse.js": "^7.1.0",
+    "hospital": "link:",
     "input-otp": "^1.4.2",
     "iron-session": "^8.0.4",
     "jose": "^6.1.3",

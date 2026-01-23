@@ -51,7 +51,7 @@ export const patientWithMetaSchema = mustHave.and(patientSchema.omit({ documents
   }))
 }))
 
-export const preOpwithMetaSchema = mustHave.and(preOpSchema.omit({ supportingDocuments: true, dateOfBirth: true }).extend({
+export const preOpwithMetaSchema = mustHave.and(preOpSchema.omit({ supportingDocuments: true,}).extend({
 
   supportingDocuments: z.array(z.object({
     customId: z.string().nullable(),

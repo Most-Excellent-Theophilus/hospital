@@ -182,6 +182,9 @@ importers:
       fuse.js:
         specifier: ^7.1.0
         version: 7.1.0
+      hospital:
+        specifier: 'link:'
+        version: 'link:'
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
